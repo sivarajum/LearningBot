@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compute Engine Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --gcp-blue: #4285F4;
+            --gcp-red: #EA4335;
+            --gcp-yellow: #FBBC05;
+            --gcp-green: #34A853;
+            --gcp-purple: #9C27B0;
+            --gcp-dark: #202124;
+            --gcp-light: #FFFFFF;
+            --gcp-gray: #F8F9FA;
+            --primary-color: #4285F4;
+            --secondary-color: #EA4335;
+            --accent-color: #34A853;
+            --warning-color: #FBBC05;
+            --info-color: #9C27B0;
+            --dark-color: #202124;
+            --light-color: #F8F9FA;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4285F4 0%, #9C27B0 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--gcp-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 200px;
+            border: 1px solid #dee2e6;
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .run-preview {
+            background: var(--gcp-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            position: relative;
+            border: 2px solid var(--gcp-blue);
+        }
+
+        .instance-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 180px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .instance-card:hover {
+            transform: scale(1.05);
+        }
+
+        .instance-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .instance-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .vm-progress {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .perf-metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .vm-config {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .config-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .config-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-config {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-config-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .vm-logs {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid var(--accent-color);
+        }
+
+        .machine-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .machine-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .machine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .machine-card.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            height: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: width 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .infrastructure-visualization {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .vm-resource {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .resource-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .status-running {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .status-stopped {
+            background: var(--warning-color);
+            color: black;
+        }
+
+        .status-terminated {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .os-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .os-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .os-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .os-card.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .machine-types {
+                grid-template-columns: 1fr;
+            }
+
+            .os-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useContext, createContext } = React;
+
+        // Compute Engine context
+        const ComputeEngineContext = createContext();
+
+        // Main App Component
+        const App = () => {
+            const [currentCode, setCurrentCode] = useState(`gcloud compute instances create my-instance \\
+  --zone=us-central1-a \\
+  --machine-type=e2-medium \\
+  --network-tier=PREMIUM \\
+  --maintenance-policy=MIGRATE \\
+  --image=debian-11-bullseye-v20230124 \\
+  --image-project=debian-cloud \\
+  --boot-disk-size=10GB \\
+  --boot-disk-type=pd-balanced \\
+  --boot-disk-device-name=my-instance \\
+  --no-shielded-secure-boot \\
+  --shielded-vtpm \\
+  --shielded-integrity-monitoring \\
+  --reservation-affinity=any`);
+            const [output, setOutput] = useState('');
+            const [isRunning, setIsRunning] = useState(false);
+            const [activeTab, setActiveTab] = useState('instances');
+            const [instanceName, setInstanceName] = useState('my-instance');
+            const [machineType, setMachineType] = useState('e2-medium');
+            const [os, setOs] = useState('debian-11');
+            const [zone, setZone] = useState('us-central1-a');
+            const [diskSize, setDiskSize] = useState(10);
+            const [diskType, setDiskType] = useState('pd-balanced');
+            const [cpu, setCpu] = useState(2);
+            const [memory, setMemory] = useState(4);
+            const [networkTier, setNetworkTier] = useState('PREMIUM');
+            const [preemptible, setPreemptible] = useState(false);
+            const [vmConfigs, setVmConfigs] = useState([
+                {
+                    type: 'Web Server',
+                    name: 'WebServer',
+                    config: `gcloud compute instances create web-server \\\n  --zone=us-central1-a \\\n  --machine-type=e2-medium \\\n  --image=ubuntu-2004-focal-v20230114 \\\n  --image-project=ubuntu-os-cloud`
+                }
+            ]);
+            const [newConfigType, setNewConfigType] = useState('');
+
+            // Performance metrics
+            const [performance, setPerformance] = useState({
+                instances: 8,
+                cpuUsage: 35,
+                memoryUsage: 280,
+                networkIn: 45,
+                networkOut: 67,
+                cost: 12.45
+            });
+
+            // Instance statistics
+            const [instanceStats, setInstanceStats] = useState([
+                { name: 'Instances', count: 8, icon: 'dns' },
+                { name: 'CPU Usage', count: 35, icon: 'memory', unit: '%' },
+                { name: 'Memory', count: 280, icon: 'data_usage', unit: 'MB' },
+                { name: 'Network In', count: 45, icon: 'call_received', unit: 'MB/s' },
+                { name: 'Network Out', count: 67, icon: 'call_made', unit: 'MB/s' },
+                { name: 'Cost (24h)', count: 12.45, icon: 'attach_money', unit: '$' }
+            ]);
+
+            // VM creation progress
+            const [vmProgress, setVmProgress] = useState({
+                status: 'idle',
+                progress: 0,
+                currentStep: 'Ready',
+                eta: 'Ready'
+            });
+
+            // Current project state
+            const [projectState, setProjectState] = useState({
+                projectId: 'my-compute-project',
+                region: 'us-central1',
+                zone: 'us-central1-a',
+                network: 'default'
+            });
+
+            // Instance status
+            const [instanceStatus, setInstanceStatus] = useState([
+                { name: 'web-server-01', status: 'running', type: 'e2-medium', zone: 'us-central1-a', ip: '10.128.0.10', uptime: '2d 4h' },
+                { name: 'api-server-01', status: 'running', type: 'n1-standard-1', zone: 'us-central1-b', ip: '10.128.0.11', uptime: '1d 12h' },
+                { name: 'db-server-01', status: 'running', type: 'n1-highmem-2', zone: 'us-central1-c', ip: '10.128.0.12', uptime: '3d 8h' },
+                { name: 'cache-server-01', status: 'stopped', type: 'e2-micro', zone: 'us-central1-a', ip: '10.128.0.13', uptime: '0s' }
+            ]);
+
+            // Update performance metrics
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setPerformance(prev => ({
+                        instances: prev.instances,
+                        cpuUsage: Math.floor(Math.random() * 30 + 20),
+                        memoryUsage: Math.floor(Math.random() * 100 + 200),
+                        networkIn: Math.floor(Math.random() * 30 + 30),
+                        networkOut: Math.floor(Math.random() * 40 + 40),
+                        cost: (prev.cost + Math.random() * 1).toFixed(2)
+                    }));
+                }, 3000);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            // Simulate VM creation progress
+            useEffect(() => {
+                if (vmProgress.status === 'running') {
+                    const interval = setInterval(() => {
+                        setVmProgress(prev => {
+                            const newProgress = Math.min(prev.progress + Math.random() * 20, 100);
+                            const steps = ['Creating', 'Allocating Resources', 'Configuring Network', 'Setting up Disk', 'Installing OS', 'Starting Instance', 'Ready'];
+                            const currentStepIndex = Math.floor((newProgress / 100) * steps.length);
+                            const eta = newProgress >= 100 ? 'Complete' : `${Math.floor((100 - newProgress) / 12)}s remaining`;
+
+                            return {
+                                ...prev,
+                                progress: newProgress,
+                                currentStep: steps[Math.min(currentStepIndex, steps.length - 1)],
+                                eta: eta,
+                                status: newProgress >= 100 ? 'completed' : 'running'
+                            };
+                        });
+                    }, 1000);
+
+                    return () => clearInterval(interval);
+                }
+            }, [vmProgress.status]);
+
+            const createInstance = async () => {
+                setIsRunning(true);
+                setOutput('Creating Compute Engine instance...\n\n');
+
+                // Start VM creation progress
+                setVmProgress({
+                    status: 'running',
+                    progress: 0,
+                    currentStep: 'Creating',
+                    eta: '60s'
+                });
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
+                    // Simulate instance creation
+                    const result = simulateInstanceCreation(currentCode);
+                    setOutput(result);
+
+                    // Add to instance status
+                    const newInstance = {
+                        name: instanceName,
+                        status: 'running',
+                        type: machineType,
+                        zone: zone,
+                        ip: `10.128.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+                        uptime: '0s'
+                    };
+                    setInstanceStatus(prev => [newInstance, ...prev.slice(0, 9)]);
+
+                } catch (error) {
+                    setOutput('Error: ' + error.message);
+                    setVmProgress(prev => ({ ...prev, status: 'failed' }));
+                } finally {
+                    setIsRunning(false);
+                }
+            };
+
+            const simulateInstanceCreation = (code) => {
+                let result = 'Compute Engine Instance Creation Results:\n\n';
+
+                if (code.includes('gcloud compute instances create') || code.includes('instances create')) {
+                    result += '✅ Instance creation command detected\n';
+                }
+                if (code.includes('--zone=') || code.includes('zone=')) {
+                    result += '✅ Zone configuration specified\n';
+                }
+                if (code.includes('--machine-type=') || code.includes('machine-type=')) {
+                    result += '✅ Machine type configured\n';
+                }
+                if (code.includes('--image=') || code.includes('image=')) {
+                    result += '✅ Boot image specified\n';
+                }
+                if (code.includes('--boot-disk') || code.includes('disk')) {
+                    result += '✅ Disk configuration found\n';
+                }
+                if (code.includes('--network') || code.includes('network')) {
+                    result += '✅ Network settings configured\n';
+                }
+
+                result += '\n🚀 Instance Status:\n';
+                result += 'Instance Name: ' + instanceName + '\n';
+                result += 'Machine Type: ' + machineType + '\n';
+                result += 'Zone: ' + zone + '\n';
+                result += 'OS: ' + os + '\n';
+                result += 'CPU: ' + cpu + ' vCPU\n';
+                result += 'Memory: ' + memory + ' GB\n';
+                result += 'Disk: ' + diskSize + ' GB ' + diskType + '\n';
+                result += 'Network Tier: ' + networkTier + '\n';
+                result += 'Status: Running\n\n';
+
+                result += '📊 Instance Details:\n';
+                result += `Internal IP: 10.128.0.10\n`;
+                result += `External IP: 34.102.XXX.XXX\n`;
+                result += `Project: ${projectState.projectId}\n`;
+                result += `Service Account: compute@developer.gserviceaccount.com\n\n`;
+
+                result += '🔗 Connection Info:\n';
+                result += `SSH: gcloud compute ssh ${instanceName} --zone=${zone}\n`;
+                result += `Console: https://console.cloud.google.com/compute/instances\n\n`;
+
+                result += 'Instance created successfully! You can now connect to your VM instance.';
+
+                return result;
+            };
+
+            const configureInstance = () => {
+                if (!instanceName) return;
+
+                const instanceTemplates = {
+                    'web-server': `gcloud compute instances create ${instanceName} \\
+  --zone=${zone} \\
+  --machine-type=${machineType} \\
+  --network-tier=${networkTier} \\
+  --maintenance-policy=MIGRATE \\
+  --image=ubuntu-2004-focal-v20230114 \\
+  --image-project=ubuntu-os-cloud \\
+  --boot-disk-size=${diskSize}GB \\
+  --boot-disk-type=${diskType} \\
+  --tags=http-server,https-server \\
+  --metadata startup-script="#!/bin/bash
+sudo apt-get update
+sudo apt-get install -y nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx"`,
+                    'database-server': `gcloud compute instances create ${instanceName} \\
+  --zone=${zone} \\
+  --machine-type=${machineType} \\
+  --network-tier=${networkTier} \\
+  --maintenance-policy=MIGRATE \\
+  --image=debian-11-bullseye-v20230124 \\
+  --image-project=debian-cloud \\
+  --boot-disk-size=${diskSize}GB \\
+  --boot-disk-type=${diskType} \\
+  --data-disk=name=${instanceName}-data,size=100GB,type=${diskType},mode=rw \\
+  --tags=database \\
+  --metadata startup-script="#!/bin/bash
+sudo apt-get update
+sudo apt-get install -y postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql"`,
+                    'application-server': `gcloud compute instances create ${instanceName} \\
+  --zone=${zone} \\
+  --machine-type=${machineType} \\
+  --network-tier=${networkTier} \\
+  --maintenance-policy=MIGRATE \\
+  --image=cos-cloud/cos-stable \\
+  --boot-disk-size=${diskSize}GB \\
+  --boot-disk-type=${diskType} \\
+  --tags=app-server \\
+  --metadata startup-script="#!/bin/bash
+# Docker installation and app deployment
+sudo apt-get update
+sudo apt-get install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo docker run -d -p 8080:8080 --name my-app my-app:latest"`,
+                    'development-vm': `gcloud compute instances create ${instanceName} \\
+  --zone=${zone} \\
+  --machine-type=${machineType} \\
+  --network-tier=${networkTier} \\
+  --maintenance-policy=MIGRATE \\
+  --image=ubuntu-2004-focal-v20230114 \\
+  --image-project=ubuntu-os-cloud \\
+  --boot-disk-size=${diskSize}GB \\
+  --boot-disk-type=${diskType} \\
+  --tags=development \\
+  --metadata startup-script="#!/bin/bash
+sudo apt-get update
+sudo apt-get install -y git python3 python3-pip nodejs npm
+# Install development tools
+pip3 install flask django
+npm install -g @angular/cli @vue/cli"`,
+                    'gpu-instance': `gcloud compute instances create ${instanceName} \\
+  --zone=${zone} \\
+  --machine-type=n1-standard-4 \\
+  --network-tier=${networkTier} \\
+  --maintenance-policy=TERMINATE \\
+  --image=cuda-debian-10 \\
+  --image-project=deeplearning-platform-release \\
+  --boot-disk-size=${diskSize}GB \\
+  --boot-disk-type=${diskType} \\
+  --accelerator=type=nvidia-tesla-k80,count=1 \\
+  --tags=gpu-instance \\
+  --metadata startup-script="#!/bin/bash
+# Install GPU drivers and ML frameworks
+sudo apt-get update
+sudo apt-get install -y python3-pip
+pip3 install tensorflow-gpu torch torchvision"`
+                };
+
+                const instanceCode = instanceTemplates[os.split('-')[0]] || instanceTemplates['web-server'];
+                setCurrentCode(instanceCode);
+            };
+
+            const testInstance = () => {
+                const testCode = `# Test instance configuration
+import subprocess
+import sys
+
+# Test gcloud command
+try:
+    result = subprocess.run(['gcloud', 'version'], capture_output=True, text=True, timeout=10)
+    print("✅ gcloud CLI available")
+    print(f"Version: {result.stdout.split()[1] if result.stdout else 'Unknown'}")
+except:
+    print("❌ gcloud CLI not found")
+
+# Validate instance parameters
+print("\\n📋 Configuration Validation:")
+print(f"Instance Name: {instanceName}")
+print(f"Machine Type: {machineType}")
+print(f"Zone: {zone}")
+print(f"Disk Size: {diskSize}GB")
+print(f"Disk Type: {diskType}")
+print(f"Network Tier: {networkTier}")
+
+# Check resource availability
+print("\\n🔍 Resource Availability:")
+print("✅ Zone availability: Confirmed")
+print("✅ Machine type availability: Confirmed")
+print("✅ Disk type availability: Confirmed")
+print("✅ Network quota: Available")
+
+print("\\n✅ Configuration validation passed!")`;
+
+                setCurrentCode(testCode);
+            };
+
+            const addVmConfig = () => {
+                if (!newConfigType) return;
+
+                const templates = {
+                    'Web Server': {
+                        name: 'WebServer',
+                        config: `gcloud compute instances create web-server \\\n  --zone=us-central1-a \\\n  --machine-type=e2-medium \\\n  --image=ubuntu-2004-focal-v20230114 \\\n  --image-project=ubuntu-os-cloud`
+                    },
+                    'Database Server': {
+                        name: 'DBServer',
+                        config: `gcloud compute instances create db-server \\\n  --zone=us-central1-b \\\n  --machine-type=n1-highmem-2 \\\n  --image=debian-11-bullseye-v20230124 \\\n  --image-project=debian-cloud`
+                    },
+                    'Application Server': {
+                        name: 'AppServer',
+                        config: `gcloud compute instances create app-server \\\n  --zone=us-central1-c \\\n  --machine-type=n1-standard-2 \\\n  --image=cos-cloud/cos-stable \\\n  --image-project=cos-cloud`
+                    },
+                    'Development VM': {
+                        name: 'DevVM',
+                        config: `gcloud compute instances create dev-vm \\\n  --zone=us-central1-a \\\n  --machine-type=e2-standard-2 \\\n  --image=ubuntu-2004-focal-v20230114 \\\n  --image-project=ubuntu-os-cloud`
+                    },
+                    'GPU Instance': {
+                        name: 'GPUInstance',
+                        config: `gcloud compute instances create gpu-instance \\\n  --zone=us-central1-b \\\n  --machine-type=n1-standard-4 \\\n  --accelerator=type=nvidia-tesla-k80,count=1 \\\n  --image=cuda-debian-10 \\\n  --image-project=deeplearning-platform-release`
+                    }
+                };
+
+                const template = templates[newConfigType];
+                if (template) {
+                    setVmConfigs([...vmConfigs, {
+                        type: newConfigType,
+                        name: template.name,
+                        config: template.config
+                    }]);
+                }
+
+                setNewConfigType('');
+            };
+
+            const removeVmConfig = (index) => {
+                setVmConfigs(vmConfigs.filter((_, i) => i !== index));
+            };
+
+            const loadInstanceExample = (example) => {
+                const examples = {
+                    'basic-instance': `gcloud compute instances create my-instance \\
+  --zone=us-central1-a \\
+  --machine-type=e2-medium \\
+  --network-tier=PREMIUM \\
+  --maintenance-policy=MIGRATE \\
+  --image=debian-11-bullseye-v20230124 \\
+  --image-project=debian-cloud \\
+  --boot-disk-size=10GB \\
+  --boot-disk-type=pd-balanced \\
+  --boot-disk-device-name=my-instance \\
+  --no-shielded-secure-boot \\
+  --shielded-vtpm \\
+  --shielded-integrity-monitoring \\
+  --reservation-affinity=any`,
+                    'with-startup-script': `gcloud compute instances create my-instance \\
+  --zone=us-central1-a \\
+  --machine-type=e2-medium \\
+  --network-tier=PREMIUM \\
+  --maintenance-policy=MIGRATE \\
+  --image=ubuntu-2004-focal-v20230114 \\
+  --image-project=ubuntu-os-cloud \\
+  --boot-disk-size=20GB \\
+  --boot-disk-type=pd-ssd \\
+  --metadata startup-script="#!/bin/bash
+sudo apt-get update
+sudo apt-get install -y nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+echo '<h1>Hello from Compute Engine!</h1>' | sudo tee /var/www/html/index.html"`,
+                    'with-data-disk': `gcloud compute instances create my-instance \\
+  --zone=us-central1-a \\
+  --machine-type=n1-standard-1 \\
+  --network-tier=PREMIUM \\
+  --maintenance-policy=MIGRATE \\
+  --image=debian-11-bullseye-v20230124 \\
+  --image-project=debian-cloud \\
+  --boot-disk-size=10GB \\
+  --boot-disk-type=pd-balanced \\
+  --data-disk=name=my-instance-data,size=100GB,type=pd-ssd,mode=rw \\
+  --metadata startup-script="#!/bin/bash
+sudo mkfs.ext4 /dev/sdb
+sudo mkdir /data
+sudo mount /dev/sdb /data
+echo '/dev/sdb /data ext4 defaults 0 0' | sudo tee -a /etc/fstab"`,
+                    'preemptible-instance': `gcloud compute instances create my-preemptible-instance \\
+  --zone=us-central1-a \\
+  --machine-type=e2-medium \\
+  --network-tier=PREMIUM \\
+  --maintenance-policy=TERMINATE \\
+  --image=debian-11-bullseye-v20230124 \\
+  --image-project=debian-cloud \\
+  --boot-disk-size=10GB \\
+  --boot-disk-type=pd-balanced \\
+  --preemptible \\
+  --metadata startup-script="#!/bin/bash
+# Preemptible instance startup script
+sudo apt-get update
+sudo apt-get install -y stress
+# Run workload that can handle interruptions
+stress --cpu 1 --timeout 3600"`,
+                    'with-load-balancer': `gcloud compute instances create my-instance \\
+  --zone=us-central1-a \\
+  --machine-type=e2-medium \\
+  --network-tier=PREMIUM \\
+  --maintenance-policy=MIGRATE \\
+  --image=ubuntu-2004-focal-v20230114 \\
+  --image-project=ubuntu-os-cloud \\
+  --boot-disk-size=10GB \\
+  --boot-disk-type=pd-balanced \\
+  --tags=http-server,https-server \\
+  --metadata startup-script="#!/bin/bash
+sudo apt-get update
+sudo apt-get install -y nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+# Configure health check endpoint
+echo 'server {
+    listen 80;
+    location /health {
+        access_log off;
+        return 200 \"healthy\\n\";
+        add_header Content-Type text/plain;
+    }
+}' | sudo tee /etc/nginx/sites-available/health-check
+sudo ln -s /etc/nginx/sites-available/health-check /etc/nginx/sites-enabled/
+sudo systemctl reload nginx"`
+                };
+
+                setCurrentCode(examples[example] || examples['basic-instance']);
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-server"></i> Compute Engine Interactive Demo</h1>
+                        <p>Virtual machines and infrastructure management</p>
+                    </div>
+
+                    {/* Compute Engine Features Overview */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-star"></i> Compute Engine Key Features</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="feature-grid">
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-microchip"></i></div>
+                                    <div className="feature-title">Flexible Machine Types</div>
+                                    <div className="feature-description">Choose from general-purpose, compute-optimized, memory-optimized, and GPU instances. Scale vCPUs and memory independently.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-shield-alt"></i></div>
+                                    <div className="feature-title">Security & Compliance</div>
+                                    <div className="feature-description">Shielded VMs, confidential computing, OS patch management, and compliance with industry standards.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-globe"></i></div>
+                                    <div className="feature-title">Global Infrastructure</div>
+                                    <div className="feature-description">Deploy across 35+ regions worldwide with 140+ zones. Global load balancing and CDN integration.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-hdd"></i></div>
+                                    <div className="feature-title">Persistent Disks</div>
+                                    <div className="feature-description">High-performance SSD and HDD storage with automatic encryption, snapshots, and regional replication.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-network-wired"></i></div>
+                                    <div className="feature-title">Advanced Networking</div>
+                                    <div className="feature-description">Global VPC, subnetting, firewall rules, load balancing, and direct connectivity to other GCP services.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-chart-line"></i></div>
+                                    <div className="feature-title">Monitoring & Logging</div>
+                                    <div className="feature-description">Integrated monitoring, logging, and alerting with Cloud Monitoring and Cloud Logging.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* VM Creation Progress */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-spinner"></i> VM Creation Progress</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="vm-progress">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                                    <h5>Instance Status</h5>
+                                    <span className={`badge ${vmProgress.status === 'running' ? 'bg-primary' : vmProgress.status === 'completed' ? 'bg-success' : 'bg-secondary'}`}>
+                                        {vmProgress.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div className="progress" style={{ height: '25px' }}>
+                                    <div
+                                        className="progress-bar"
+                                        style={{ width: `${vmProgress.progress}%` }}
+                                        role="progressbar"
+                                        aria-valuenow={vmProgress.progress}
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                    >
+                                        {vmProgress.progress.toFixed(1)}%
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', fontSize: '0.9rem', color: '#6c757d' }}>
+                                    <span>Step: {vmProgress.currentStep}</span>
+                                    <span>ETA: {vmProgress.eta}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Machine Types */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-cogs"></i> Machine Types</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="machine-types">
+                                <div className={`machine-card ${machineType === 'e2-micro' ? 'selected' : ''}`} onClick={() => { setMachineType('e2-micro'); setCpu(0.2); setMemory(1); }}>
+                                    <i className="fas fa-microchip" style={{ fontSize: '2rem', color: '#28a745', marginBottom: '10px' }}></i>
+                                    <h6>E2 Micro</h6>
+                                    <p>0.2 vCPU, 1 GB RAM</p>
+                                    <small>$0.008/h</small>
+                                </div>
+                                <div className={`machine-card ${machineType === 'e2-small' ? 'selected' : ''}`} onClick={() => { setMachineType('e2-small'); setCpu(0.5); setMemory(2); }}>
+                                    <i className="fas fa-memory" style={{ fontSize: '2rem', color: '#007bff', marginBottom: '10px' }}></i>
+                                    <h6>E2 Small</h6>
+                                    <p>0.5 vCPU, 2 GB RAM</p>
+                                    <small>$0.016/h</small>
+                                </div>
+                                <div className={`machine-card ${machineType === 'e2-medium' ? 'selected' : ''}`} onClick={() => { setMachineType('e2-medium'); setCpu(2); setMemory(4); }}>
+                                    <i className="fas fa-server" style={{ fontSize: '2rem', color: '#ffc107', marginBottom: '10px' }}></i>
+                                    <h6>E2 Medium</h6>
+                                    <p>2 vCPU, 4 GB RAM</p>
+                                    <small>$0.063/h</small>
+                                </div>
+                                <div className={`machine-card ${machineType === 'n1-standard-1' ? 'selected' : ''}`} onClick={() => { setMachineType('n1-standard-1'); setCpu(1); setMemory(3.75); }}>
+                                    <i className="fas fa-cogs" style={{ fontSize: '2rem', color: '#dc3545', marginBottom: '10px' }}></i>
+                                    <h6>N1 Standard</h6>
+                                    <p>1 vCPU, 3.75 GB RAM</p>
+                                    <small>$0.047/h</small>
+                                </div>
+                                <div className={`machine-card ${machineType === 'n1-highcpu-4' ? 'selected' : ''}`} onClick={() => { setMachineType('n1-highcpu-4'); setCpu(4); setMemory(3.6); }}>
+                                    <i className="fas fa-rocket" style={{ fontSize: '2rem', color: '#6f42c1', marginBottom: '10px' }}></i>
+                                    <h6>N1 High CPU</h6>
+                                    <p>4 vCPU, 3.6 GB RAM</p>
+                                    <small>$0.149/h</small>
+                                </div>
+                                <div className={`machine-card ${machineType === 'n1-highmem-2' ? 'selected' : ''}`} onClick={() => { setMachineType('n1-highmem-2'); setCpu(2); setMemory(13); }}>
+                                    <i className="fas fa-database" style={{ fontSize: '2rem', color: '#17a2b8', marginBottom: '10px' }}></i>
+                                    <h6>N1 High Mem</h6>
+                                    <p>2 vCPU, 13 GB RAM</p>
+                                    <small>$0.119/h</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Code Editor */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-code"></i> Instance Configuration</h3>
+                        </div>
+                        <div className="card-body">
+                            <textarea
+                                className="code-editor"
+                                value={currentCode}
+                                onChange={(e) => setCurrentCode(e.target.value)}
+                                placeholder="Write your gcloud compute command here..."
+                            />
+                            <div style={{ marginTop: '15px' }}>
+                                <button className="run-btn" onClick={createInstance} disabled={isRunning}>
+                                    <i className="fas fa-play"></i> Create Instance
+                                </button>
+                                <button className="run-btn" onClick={testInstance} style={{ marginLeft: '10px' }}>
+                                    <i className="fas fa-flask"></i> Validate Config
+                                </button>
+                                <button className="run-btn" onClick={() => loadInstanceExample('basic-instance')} style={{ marginLeft: '10px' }}>
+                                    <i className="fas fa-file-import"></i> Load Example
+                                </button>
+                            </div>
+                            {output && <div className="output-panel">{output}</div>}
+                        </div>
+                    </div>
+
+                    {/* OS Options */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-ubuntu"></i> Operating Systems</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="os-options">
+                                <div className={`os-card ${os === 'ubuntu-2004' ? 'selected' : ''}`} onClick={() => setOs('ubuntu-2004')}>
+                                    <i className="fab fa-ubuntu" style={{ fontSize: '2rem', color: '#E95420', marginBottom: '10px' }}></i>
+                                    <h6>Ubuntu 20.04</h6>
+                                    <p>LTS, Popular for web apps</p>
+                                </div>
+                                <div className={`os-card ${os === 'debian-11' ? 'selected' : ''}`} onClick={() => setOs('debian-11')}>
+                                    <i className="fas fa-linux" style={{ fontSize: '2rem', color: '#A81D33', marginBottom: '10px' }}></i>
+                                    <h6>Debian 11</h6>
+                                    <p>Stable, Minimal footprint</p>
+                                </div>
+                                <div className={`os-card ${os === 'centos-7' ? 'selected' : ''}`} onClick={() => setOs('centos-7')}>
+                                    <i className="fab fa-centos" style={{ fontSize: '2rem', color: '#262577', marginBottom: '10px' }}></i>
+                                    <h6>CentOS 7</h6>
+                                    <p>RHEL-compatible</p>
+                                </div>
+                                <div className={`os-card ${os === 'windows-2019' ? 'selected' : ''}`} onClick={() => setOs('windows-2019')}>
+                                    <i className="fab fa-windows" style={{ fontSize: '2rem', color: '#0078D4', marginBottom: '10px' }}></i>
+                                    <h6>Windows 2019</h6>
+                                    <p>Server edition</p>
+                                </div>
+                                <div className={`os-card ${os === 'cos-stable' ? 'selected' : ''}`} onClick={() => setOs('cos-stable')}>
+                                    <i className="fas fa-docker" style={{ fontSize: '2rem', color: '#2496ED', marginBottom: '10px' }}></i>
+                                    <h6>Container OS</h6>
+                                    <p>Optimized for containers</p>
+                                </div>
+                                <div className={`os-card ${os === 'rhel-8' ? 'selected' : ''}`} onClick={() => setOs('rhel-8')}>
+                                    <i className="fab fa-redhat" style={{ fontSize: '2rem', color: '#EE0000', marginBottom: '10px' }}></i>
+                                    <h6>RHEL 8</h6>
+                                    <p>Enterprise Linux</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Instance Configuration */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-sliders-h"></i> Instance Settings</h3>
+                        </div>
+                        <div className="card-body">
+                            {/* Operation Tabs */}
+                            <div className="operation-tabs">
+                                <button className={`operation-tab ${activeTab === 'instances' ? 'active' : ''}`} onClick={() => setActiveTab('instances')}>
+                                    <i className="fas fa-server"></i> Instances
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'networking' ? 'active' : ''}`} onClick={() => setActiveTab('networking')}>
+                                    <i className="fas fa-network-wired"></i> Networking
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'storage' ? 'active' : ''}`} onClick={() => setActiveTab('storage')}>
+                                    <i className="fas fa-hdd"></i> Storage
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'security' ? 'active' : ''}`} onClick={() => setActiveTab('security')}>
+                                    <i className="fas fa-shield-alt"></i> Security
+                                </button>
+                            </div>
+
+                            {/* Instances Tab */}
+                            {activeTab === 'instances' && (
+                                <div className="interactive-demo">
+                                    <h4>Instance Management</h4>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Instance Name:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={instanceName}
+                                                    onChange={(e) => setInstanceName(e.target.value)}
+                                                    placeholder="my-instance"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Zone:</label>
+                                                <select className="form-control" value={zone} onChange={(e) => setZone(e.target.value)}>
+                                                    <option value="us-central1-a">us-central1-a</option>
+                                                    <option value="us-central1-b">us-central1-b</option>
+                                                    <option value="us-central1-c">us-central1-c</option>
+                                                    <option value="us-west1-a">us-west1-a</option>
+                                                    <option value="us-east1-b">us-east1-b</option>
+                                                    <option value="europe-west1-b">europe-west1-b</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Preemptible:</label>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={preemptible}
+                                                    onChange={(e) => setPreemptible(e.target.checked)}
+                                                    style={{ marginLeft: '10px' }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className="run-btn" onClick={configureInstance}>
+                                        <i className="fas fa-plus"></i> Configure Instance
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Networking Tab */}
+                            {activeTab === 'networking' && (
+                                <div className="interactive-demo">
+                                    <h4>Network Configuration</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Network Tier:</label>
+                                                <select className="form-control" value={networkTier} onChange={(e) => setNetworkTier(e.target.value)}>
+                                                    <option value="PREMIUM">Premium</option>
+                                                    <option value="STANDARD">Standard</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>VPC Network:</label>
+                                                <input type="text" className="form-control" value={projectState.network} onChange={(e) => setProjectState({ ...projectState, network: e.target.value })} placeholder="default" />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Firewall Tags:</label>
+                                                <input type="text" className="form-control" placeholder="http-server,https-server" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>External IP:</label>
+                                                <select className="form-control">
+                                                    <option value="ephemeral">Ephemeral</option>
+                                                    <option value="static">Static IP</option>
+                                                    <option value="none">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Storage Tab */}
+                            {activeTab === 'storage' && (
+                                <div className="interactive-demo">
+                                    <h4>Storage Configuration</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Boot Disk Size (GB):</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    value={diskSize}
+                                                    onChange={(e) => setDiskSize(parseInt(e.target.value))}
+                                                    min="10"
+                                                    max="65536"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Disk Type:</label>
+                                                <select className="form-control" value={diskType} onChange={(e) => setDiskType(e.target.value)}>
+                                                    <option value="pd-standard">Standard HDD</option>
+                                                    <option value="pd-balanced">Balanced</option>
+                                                    <option value="pd-ssd">SSD</option>
+                                                    <option value="pd-extreme">Extreme</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Data Disks:</label>
+                                                <textarea className="form-control" rows="3" placeholder="name=my-data-disk,size=100GB,type=pd-ssd"></textarea>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Snapshots:</label>
+                                                <input type="text" className="form-control" placeholder="snapshot-name" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Security Tab */}
+                            {activeTab === 'security' && (
+                                <div className="interactive-demo">
+                                    <h4>Security Settings</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Service Account:</label>
+                                                <input type="text" className="form-control" placeholder="compute@developer.gserviceaccount.com" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Access Scopes:</label>
+                                                <select className="form-control">
+                                                    <option value="default">Default</option>
+                                                    <option value="full">Full API Access</option>
+                                                    <option value="custom">Custom</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Shielded VM:</label>
+                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                    <input type="checkbox" defaultChecked /> vTPM
+                                                    <input type="checkbox" defaultChecked /> Integrity Monitoring
+                                                    <input type="checkbox" /> Secure Boot
+                                                </div>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Metadata:</label>
+                                                <textarea className="form-control" rows="2" placeholder="key1=value1&#10;key2=value2"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Instance Statistics */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-chart-bar"></i> Instance Statistics</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="run-preview">
+                                {instanceStats.map((stat, index) => (
+                                    <div key={index} className="instance-card">
+                                        <div className="instance-value">{stat.count}{stat.unit || ''}</div>
+                                        <div className="instance-label">{stat.name}</div>
+                                        <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '5px' }}>
+                                            <i className="material-icons">{stat.icon}</i>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div style={{ position: 'absolute', bottom: '20px', right: '20px' }}>
+                                    <button className="run-btn" onClick={() => {
+                                        setInstanceStats(prev => prev.map(stat => ({
+                                            ...stat,
+                                            count: stat.unit === '$' ? (Math.random() * 25 + 10).toFixed(2) :
+                                                stat.unit === '%' ? Math.floor(Math.random() * 30 + 40) :
+                                                    stat.unit === 'MB' ? Math.floor(Math.random() * 100 + 200) :
+                                                        stat.unit === 'MB/s' ? Math.floor(Math.random() * 30 + 30) :
+                                                            Math.floor(Math.random() * 10) + 5
+                                        })));
+                                    }}>
+                                        <i className="fas fa-sync"></i> Refresh Stats
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Infrastructure Visualization */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-sitemap"></i> Infrastructure Overview</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="infrastructure-visualization">
+                                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                    <h5>VM Instances & Resources</h5>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                                    {instanceStatus.map((instance, index) => (
+                                        <div key={index} className="vm-resource">
+                                            <i className={`fas ${instance.status === 'running' ? 'fa-server' : instance.status === 'stopped' ? 'fa-stop-circle' : 'fa-times-circle'}`}></i> {instance.name}
+                                            <span className={`resource-status status-${instance.status}`}>
+                                                {instance.status}
+                                            </span>
+                                            <br />
+                                            <small>{instance.type} • {instance.zone} • {instance.uptime}</small>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                    <small style={{ color: '#6c757d' }}>Project: {projectState.projectId} • Region: {projectState.region} • Total VMs: {instanceStatus.length}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* VM Config Builder */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tools"></i> VM Config Builder</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="vm-config">
+                                <h5>Build Advanced VM Configurations</h5>
+                                {vmConfigs.map((config, index) => (
+                                    <div key={index} className="config-row">
+                                        <div className="config-header">
+                                            <span className="config-type">{config.type}: {config.name}</span>
+                                            <button className="remove-config" onClick={() => removeVmConfig(index)}>
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <pre style={{ fontSize: '12px', margin: '10px 0' }}>{config.config}</pre>
+                                    </div>
+                                ))}
+
+                                <div className="form-group">
+                                    <label>Add VM Type:</label>
+                                    <select className="form-control" value={newConfigType} onChange={(e) => setNewConfigType(e.target.value)}>
+                                        <option value="">Select VM type...</option>
+                                        <option value="Web Server">Web Server</option>
+                                        <option value="Database Server">Database Server</option>
+                                        <option value="Application Server">Application Server</option>
+                                        <option value="Development VM">Development VM</option>
+                                        <option value="GPU Instance">GPU Instance</option>
+                                    </select>
+                                </div>
+
+                                <button className="add-config-btn" onClick={addVmConfig} disabled={!newConfigType}>
+                                    <i className="fas fa-plus"></i> Add VM Config
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Performance Metrics */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tachometer-alt"></i> Performance Metrics</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="performance-metrics">
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.instances}</div>
+                                    <div className="perf-metric-label">Total Instances</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.cpuUsage}%</div>
+                                    <div className="perf-metric-label">CPU Usage</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.memoryUsage}MB</div>
+                                    <div className="perf-metric-label">Memory Usage</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.networkIn}MB/s</div>
+                                    <div className="perf-metric-label">Network In</div>
+                                </div>
+                            </div>
+
+                            <div className="execution-stats">
+                                <div className="stat-item">
+                                    <span className="stat-label">Project ID:</span>
+                                    <span className="stat-value">{projectState.projectId}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Region:</span>
+                                    <span className="stat-value">{projectState.region}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Zone:</span>
+                                    <span className="stat-value">{projectState.zone}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Network:</span>
+                                    <span className="stat-value">{projectState.network}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Cost (24h):</span>
+                                    <span className="stat-value">${performance.cost}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-book"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/compute" target="_blank"><i className="fas fa-external-link-alt"></i> Compute Engine Site</a></li>
+                                        <li><a href="https://cloud.google.com/compute/docs" target="_blank"><i className="fas fa-external-link-alt"></i> Documentation</a></li>
+                                        <li><a href="https://console.cloud.google.com/compute" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Console</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/compute/docs/quickstarts" target="_blank"><i className="fas fa-external-link-alt"></i> Quickstarts</a></li>
+                                        <li><a href="https://cloud.google.com/compute/docs/machine-types" target="_blank"><i className="fas fa-external-link-alt"></i> Machine Types</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/google-compute-engine" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+
+</html>

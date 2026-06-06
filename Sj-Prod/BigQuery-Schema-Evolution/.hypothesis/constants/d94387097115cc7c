@@ -1,0 +1,4 @@
+# file: /Users/sivarajumalladi/Documents/GitHub/LearningBot/POCs/BigQuery-Schema-Evolution/src/pipeline/load_job.py
+# hypothesis_version: 6.151.5
+
+['\nUNION ALL\n', "'", ', ', 'FALSE', 'NULL', 'SELECT ', 'STRING', 'TRUE', '\\', "\\'", '\\\\', '_load_id', 'cnt', 'isoformat', 'load_id', 'trade_id']

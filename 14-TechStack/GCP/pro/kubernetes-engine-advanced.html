@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Engine Advanced - GCP Learning Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #326ce5 0%, #4285f4 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #326ce5;
+        }
+
+        .sidebar-header .service-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .sidebar-header .service-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #326ce5;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header .service-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(50, 108, 229, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #326ce5;
+        }
+
+        .nav-item {
+            padding: 10px 15px;
+            margin: 2px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(50, 108, 229, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #326ce5;
+            color: white;
+            box-shadow: 0 4px 12px rgba(50, 108, 229, 0.3);
+        }
+
+        .nav-item .nav-icon {
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .nav-item .nav-level {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-left: auto;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 320px;
+            padding: 30px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #326ce5;
+        }
+
+        .section-icon {
+            font-size: 35px;
+            margin-right: 15px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #326ce5;
+            margin: 0;
+        }
+
+        .section-level {
+            background: #326ce5;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .section-content {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .section-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(50, 108, 229, 0.1), rgba(66, 133, 244, 0.1));
+            border-left: 4px solid #326ce5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .highlight-box .highlight-title {
+            font-weight: bold;
+            color: #326ce5;
+            margin-bottom: 10px;
+        }
+
+        /* Kubernetes Architecture Animation */
+        .k8s-architecture {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .architecture-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .architecture-diagram {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, #326ce5 0%, #4285f4 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .architecture-stage {
+            position: absolute;
+            width: 80px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stage-cluster {
+            left: 50px;
+            top: 170px;
+            background: #4caf50;
+        }
+
+        .stage-nodepool {
+            left: 180px;
+            top: 170px;
+            background: #ff9800;
+        }
+
+        .stage-nodes {
+            left: 310px;
+            top: 120px;
+            background: #1565c0;
+        }
+
+        .stage-pods {
+            left: 310px;
+            top: 220px;
+            background: #9c27b0;
+        }
+
+        .stage-services {
+            right: 50px;
+            top: 170px;
+            background: #e91e63;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .connection-line.line1 {
+            left: 130px;
+            top: 190px;
+            width: 100px;
+        }
+
+        .connection-line.line2 {
+            left: 260px;
+            top: 190px;
+            width: 100px;
+        }
+
+        .connection-line.line3 {
+            left: 390px;
+            top: 190px;
+            width: 100px;
+        }
+
+        .connection-line.line4 {
+            left: 310px;
+            top: 180px;
+            width: 2px;
+            height: 40px;
+        }
+
+        .architecture-label {
+            position: absolute;
+            left: 280px;
+            top: 80px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Code Examples */
+        .code-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        .code-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .code-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .code-tab {
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            color: #326ce5;
+            border-bottom-color: #326ce5;
+        }
+
+        .code-tab:hover {
+            color: #326ce5;
+        }
+
+        .code-content {
+            display: none;
+        }
+
+        .code-content.active {
+            display: block;
+        }
+
+        .code-language {
+            position: absolute;
+            top: 15px;
+            right: 80px;
+            font-size: 12px;
+            color: #666;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .code-copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .code-copy-btn:hover {
+            background: #3367d6;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .code-block .line {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-block .line-number {
+            display: inline-block;
+            width: 30px;
+            color: #718096;
+            text-align: right;
+            margin-right: 10px;
+            user-select: none;
+        }
+
+        .code-block .line-content {
+            display: inline;
+        }
+
+        .code-block .comment {
+            color: #68d391;
+        }
+
+        .code-block .keyword {
+            color: #63b3ed;
+        }
+
+        .code-block .string {
+            color: #fbb6ce;
+        }
+
+        .code-block .function {
+            color: #f6ad55;
+        }
+
+        .code-block .number {
+            color: #fbb6ce;
+        }
+
+        /* Cluster Types Grid */
+        .cluster-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .cluster-type {
+            background: linear-gradient(135deg, rgba(50, 108, 229, 0.1), rgba(66, 133, 244, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(50, 108, 229, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .cluster-type:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(50, 108, 229, 0.3);
+        }
+
+        .cluster-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .cluster-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0d47a1;
+            margin-bottom: 10px;
+        }
+
+        .cluster-desc {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Performance Metrics */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .metric-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-level {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .cluster-types {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="service-icon">☸️</span>
+            <div class="service-title">Kubernetes Engine</div>
+            <div class="service-subtitle">Managed Kubernetes Service</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🏗️ Fundamentals</div>
+            <div class="nav-item active" data-section="overview">
+                <span class="nav-icon">📋</span>
+                Overview & Architecture
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="cluster-types">
+                <span class="nav-icon">🔧</span>
+                Cluster Types & Modes
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="node-pools">
+                <span class="nav-icon">👥</span>
+                Node Pools & Scaling
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🚀 Workloads & Deployments</div>
+            <div class="nav-item" data-section="deployments">
+                <span class="nav-icon">📦</span>
+                Deployments & Rollouts
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="services">
+                <span class="nav-icon">🔗</span>
+                Services & Networking
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="ingress">
+                <span class="nav-icon">🌐</span>
+                Ingress & Load Balancing
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">⚙️ Management & Operations</div>
+            <div class="nav-item" data-section="autoscaling">
+                <span class="nav-icon">📈</span>
+                HPA & Cluster Autoscaling
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="security">
+                <span class="nav-icon">🔒</span>
+                Security & RBAC
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="monitoring">
+                <span class="nav-icon">📊</span>
+                Monitoring & Logging
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔧 Advanced Features</div>
+            <div class="nav-item" data-section="anthos">
+                <span class="nav-icon">🌍</span>
+                Anthos & Multi-Cloud
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="istio">
+                <span class="nav-icon">🕸️</span>
+                Istio Service Mesh
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="gpu-workloads">
+                <span class="nav-icon">🎮</span>
+                GPU Workloads
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">💰 Cost & Optimization</div>
+            <div class="nav-item" data-section="cost-optimization">
+                <span class="nav-icon">💰</span>
+                Cost Optimization
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="spot-pods">
+                <span class="nav-icon">🎯</span>
+                Spot Pods & Preemptibles
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overview" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">☸️</span>
+                <h2 class="section-title">Kubernetes Engine Overview</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Google Kubernetes Engine (GKE) is a managed, production-ready environment for deploying,
+                    managing, and scaling containerized applications using Google infrastructure. It provides
+                    the latest stable version of Kubernetes with automatic updates and monitoring.
+                </p>
+
+                <div class="performance-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">99.9%</div>
+                        <div class="metric-label">SLA</div>
+                        <div class="metric-desc">High availability guarantee</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Autopilot</div>
+                        <div class="metric-label">Mode</div>
+                        <div class="metric-desc">Fully managed clusters</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">28</div>
+                        <div class="metric-label">Regions</div>
+                        <div class="metric-desc">Global deployment options</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Zero</div>
+                        <div class="metric-label">Downtime</div>
+                        <div class="metric-desc">Automatic upgrades</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">☸️ Key Capabilities</div>
+                    <ul>
+                        <li><strong>Autopilot Mode:</strong> Fully managed Kubernetes with no infrastructure management
+                        </li>
+                        <li><strong>Standard Mode:</strong> Full control over cluster configuration and node pools</li>
+                        <li><strong>Regional Clusters:</strong> High availability across multiple zones</li>
+                        <li><strong>Auto-scaling:</strong> Automatic scaling of nodes and pods based on demand</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cluster Types Section -->
+        <div id="cluster-types" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🔧</span>
+                <h2 class="section-title">Cluster Types & Operating Modes</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    GKE offers different cluster types and operating modes to match your operational needs,
+                    from fully managed Autopilot clusters to customizable Standard clusters.
+                </p>
+
+                <div class="cluster-types">
+                    <div class="cluster-type">
+                        <span class="cluster-icon">🚀</span>
+                        <div class="cluster-name">Autopilot Mode</div>
+                        <div class="cluster-desc">Fully managed Kubernetes with automatic node provisioning and
+                            optimization</div>
+                    </div>
+                    <div class="cluster-type">
+                        <span class="cluster-icon">⚙️</span>
+                        <div class="cluster-name">Standard Mode</div>
+                        <div class="cluster-desc">Full control over cluster configuration, node pools, and
+                            infrastructure</div>
+                    </div>
+                    <div class="cluster-type">
+                        <span class="cluster-icon">🌍</span>
+                        <div class="cluster-name">Regional Clusters</div>
+                        <div class="cluster-desc">Control plane replicated across multiple zones for high availability
+                        </div>
+                    </div>
+                    <div class="cluster-type">
+                        <span class="cluster-icon">🔒</span>
+                        <div class="cluster-name">Private Clusters</div>
+                        <div class="cluster-desc">Nodes have only private IPs, enhanced security and network isolation
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-title">Create Different Cluster Types</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'cluster-bash')">Bash</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="cluster-bash" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Create Autopilot cluster (fully managed)</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content">gcloud
+                                    container clusters create-auto my-autopilot-cluster \</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content">
+                                    --project=my-project</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"><span
+                                        class="comment"># Create Standard regional cluster</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content">gcloud
+                                    container clusters create my-standard-cluster \</span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content">
+                                    --node-locations=us-central1-a,us-central1-b,us-central1-c \</span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content">
+                                    --num-nodes=3 \</span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content">
+                                    --enable-autoscaling \</span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content">
+                                    --min-nodes=1 \</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content">
+                                    --max-nodes=10 \</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content">
+                                    --enable-ip-alias \</span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content">
+                                    --enable-private-nodes \</span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content">
+                                    --master-ipv4-cidr=172.16.0.32/28</span></div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"><span
+                                        class="comment"># Create private cluster</span></span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content">gcloud
+                                    container clusters create my-private-cluster \</span></div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content">
+                                    --enable-private-nodes \</span></div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content">
+                                    --enable-ip-alias \</span></div>
+                            <div class="line"><span class="line-number">23</span><span class="line-content">
+                                    --master-ipv4-cidr=172.16.0.0/28 \</span></div>
+                            <div class="line"><span class="line-number">24</span><span class="line-content">
+                                    --enable-master-authorized-networks \</span></div>
+                            <div class="line"><span class="line-number">25</span><span class="line-content">
+                                    --master-authorized-networks=10.0.0.0/8</span></div>
+                            <div class="line"><span class="line-number">26</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">27</span><span class="line-content"><span
+                                        class="comment"># Create cluster with GPU node pool</span></span></div>
+                            <div class="line"><span class="line-number">28</span><span class="line-content">gcloud
+                                    container clusters create my-gpu-cluster \</span></div>
+                            <div class="line"><span class="line-number">29</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">30</span><span class="line-content">
+                                    --node-locations=us-central1-a \</span></div>
+                            <div class="line"><span class="line-number">31</span><span class="line-content">
+                                    --accelerator=type=nvidia-tesla-k80,count=1 \</span></div>
+                            <div class="line"><span class="line-number">32</span><span class="line-content">
+                                    --machine-type=n1-standard-4 \</span></div>
+                            <div class="line"><span class="line-number">33</span><span class="line-content">
+                                    --num-nodes=1</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- When to Use GKE Section -->
+        <div id="when-to-use-gke" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">When to Use GKE</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    GKE (Google Kubernetes Engine) is ideal for containerized applications that require orchestration,
+                    scalability, and advanced deployment patterns. Choose GKE when you need enterprise-grade container
+                    management with Google's infrastructure.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">✅ Perfect For</div>
+                    <ul>
+                        <li><strong>Microservices Architecture:</strong> Complex applications with multiple services
+                        </li>
+                        <li><strong>Cloud-Native Applications:</strong> Modern apps built with containers</li>
+                        <li><strong>CI/CD Pipelines:</strong> Automated deployment and scaling workflows</li>
+                        <li><strong>Hybrid/Multi-Cloud:</strong> Consistent deployments across environments</li>
+                        <li><strong>AI/ML Workloads:</strong> GPU-accelerated training and inference</li>
+                        <li><strong>Enterprise Applications:</strong> High availability and advanced networking needs
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="comparison-table">
+                    <h3>🆚 GKE vs Other GCP Compute Services</h3>
+                    <table class="service-comparison">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Best For</th>
+                                <th>Management Level</th>
+                                <th>Scaling</th>
+                                <th>Cost Model</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>GKE</strong></td>
+                                <td>Container orchestration</td>
+                                <td>CaaS - Managed Kubernetes</td>
+                                <td>Auto-scaling pods & nodes</td>
+                                <td>Per-cluster + resources</td>
+                                <td>Microservices, cloud-native apps</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Compute Engine</strong></td>
+                                <td>Full infrastructure control</td>
+                                <td>IaaS - Complete control</td>
+                                <td>Manual/Auto-scaling groups</td>
+                                <td>Per-second billing</td>
+                                <td>Custom VMs, legacy apps, HPC</td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td><strong>Cloud Run</strong></td>
+                                <td>Serverless containers</td>
+                                <td>FaaS - Function as a Service</td>
+                                <td>Auto-scaling to zero</td>
+                                <td>Per-request + CPU/memory</td>
+                                <td>APIs, web services, event-driven</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud Functions</strong></td>
+                                <td>Event-driven functions</td>
+                                <td>FaaS - Function as a Service</td>
+                                <td>Auto-scaling to zero</td>
+                                <td>Per-invocation</td>
+                                <td>Glue code, integrations, automation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>App Engine</strong></td>
+                                <td>Web applications</td>
+                                <td>PaaS - Application platform</td>
+                                <td>Auto-scaling</td>
+                                <td>Per-instance + resources</td>
+                                <td>Web apps, mobile backends</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="decision-tree">
+                    <h3>🧭 Service Selection Decision Tree</h3>
+                    <div class="decision-flow">
+                        <div class="decision-node root">
+                            <div class="decision-question">Containerized?</div>
+                        </div>
+                        <div class="decision-branches">
+                            <div class="branch">
+                                <div class="branch-label">No → Traditional</div>
+                                <div class="branch-options">
+                                    <div class="option">Compute Engine</div>
+                                    <div class="option">App Engine</div>
+                                </div>
+                            </div>
+                            <div class="branch">
+                                <div class="branch-label">Yes → Scale & Complexity?</div>
+                                <div class="branch-options">
+                                    <div class="option">Cloud Run (Simple)</div>
+                                    <div class="option highlight">GKE (Complex)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-title">Migration Scenarios: When to Choose GKE</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active"
+                            onclick="switchTab(this, 'migration-microservices')">Microservices Migration</button>
+                        <button class="code-tab" onclick="switchTab(this, 'migration-hybrid')">Hybrid Cloud
+                            Setup</button>
+                        <button class="code-tab" onclick="switchTab(this, 'migration-ai')">AI/ML Platform</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+
+                    <div id="migration-microservices" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Microservices Migration to GKE</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="comment"># Use case: Breaking down monolithic app into
+                                        microservices</span></span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"><span
+                                        class="comment"># Why GKE over Cloud Run:</span></span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"><span
+                                        class="comment"># - Complex service mesh with Istio</span></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"><span
+                                        class="comment"># - Advanced networking and load balancing</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"><span
+                                        class="comment"># - Persistent volumes and stateful services</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"><span
+                                        class="comment"># - Service discovery and configuration management</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content">gcloud
+                                    container clusters create microservices-cluster \</span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content">
+                                    --node-locations=us-central1-a,us-central1-b,us-central1-c \</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content">
+                                    --enable-ip-alias \</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content">
+                                    --enable-autoscaling --min-nodes=3 --max-nodes=50 \</span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content">
+                                    --enable-cloud-monitoring \</span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content">
+                                    --enable-cloud-logging</span></div>
+                        </div>
+                    </div>
+
+                    <div id="migration-hybrid" class="code-content">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Hybrid Cloud with Anthos on GKE</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="comment"># Use case: Consistent deployments across GCP and
+                                        on-premises</span></span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"><span
+                                        class="comment"># Why GKE over Compute Engine:</span></span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"><span
+                                        class="comment"># - Unified management with Anthos</span></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"><span
+                                        class="comment"># - Consistent Kubernetes API across environments</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"><span
+                                        class="comment"># - Service mesh and policy management</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"><span
+                                        class="comment"># - Automated deployments and GitOps</span></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content">gcloud
+                                    container hub memberships register on-prem-cluster \</span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content">
+                                    --context=on-prem-context \</span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content">
+                                    --enable-workload-identity \</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content">
+                                    --has-private-issuer</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"><span
+                                        class="comment"># Enable Anthos Service Mesh</span></span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content">gcloud
+                                    container hub mesh enable --project=my-project</span></div>
+                        </div>
+                    </div>
+
+                    <div id="migration-ai" class="code-content">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># AI/ML Platform on GKE</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="comment"># Use case: GPU-accelerated ML training with
+                                        Kubeflow</span></span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"><span
+                                        class="comment"># Why GKE over Cloud ML Engine:</span></span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"><span
+                                        class="comment"># - Full control over ML pipeline orchestration</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"><span
+                                        class="comment"># - Custom GPU configurations and scaling</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"><span
+                                        class="comment"># - Integration with Kubeflow and MLflow</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"><span
+                                        class="comment"># - Hybrid deployments (edge + cloud)</span></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content">gcloud
+                                    container node-pools create gpu-pool \</span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content">
+                                    --cluster=ml-cluster \</span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content">
+                                    --machine-type=n1-standard-8 \</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content">
+                                    --accelerator=type=nvidia-tesla-v100,count=1 \</span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content">
+                                    --enable-autoscaling --min-nodes=0 --max-nodes=10</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box warning">
+                    <div class="highlight-title">⚠️ When NOT to Use GKE</div>
+                    <ul>
+                        <li><strong>Simple Applications:</strong> Use Cloud Run for single containers</li>
+                        <li><strong>Traditional VMs:</strong> Use Compute Engine for non-containerized apps</li>
+                        <li><strong>Event-Driven:</strong> Use Cloud Functions for serverless functions</li>
+                        <li><strong>Learning Kubernetes:</strong> Start with simpler services first</li>
+                        <li><strong>Cost-Sensitive:</strong> Consider Cloud Run for variable traffic</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Node Pools Section -->
+        <div id="node-pools" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">👥</span>
+                <h2 class="section-title">Node Pools & Cluster Scaling</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Node pools allow you to create groups of nodes with specific configurations within your cluster.
+                    This enables workload isolation, cost optimization, and specialized hardware allocation.
+                </p>
+
+                <div class="k8s-architecture">
+                    <div class="architecture-title">☸️ Kubernetes Architecture: Cluster → Node Pool → Nodes → Pods</div>
+                    <div class="architecture-diagram">
+                        <div class="architecture-stage stage-cluster">
+                            <div>☸️ Cluster</div>
+                            <div style="font-size: 8px;">GKE</div>
+                        </div>
+                        <div class="architecture-stage stage-nodepool">
+                            <div>👥 Node Pool</div>
+                            <div style="font-size: 8px;">Group</div>
+                        </div>
+                        <div class="architecture-stage stage-nodes">
+                            <div>🖥️ Nodes</div>
+                            <div style="font-size: 8px;">VMs</div>
+                        </div>
+                        <div class="architecture-stage stage-pods">
+                            <div>📦 Pods</div>
+                            <div style="font-size: 8px;">Containers</div>
+                        </div>
+                        <div class="architecture-stage stage-services">
+                            <div>🔗 Services</div>
+                            <div style="font-size: 8px;">Load Balancer</div>
+                        </div>
+
+                        <!-- Connection lines -->
+                        <div class="connection-line line1"></div>
+                        <div class="connection-line line2"></div>
+                        <div class="connection-line line3"></div>
+                        <div class="connection-line line4"></div>
+
+                        <div class="architecture-label">Container Orchestration Flow</div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-title">Node Pool Management</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'nodepool-bash')">Bash</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="nodepool-bash" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Create a new node pool</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content">gcloud
+                                    container node-pools create gpu-pool \</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content">
+                                    --cluster=my-cluster \</span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content">
+                                    --machine-type=n1-standard-4 \</span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content">
+                                    --accelerator=type=nvidia-tesla-k80,count=1 \</span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content">
+                                    --num-nodes=1 \</span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content">
+                                    --enable-autoscaling \</span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content">
+                                    --min-nodes=0 \</span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content">
+                                    --max-nodes=5</span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"><span
+                                        class="comment"># Create spot/preemptible node pool (cost savings)</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content">gcloud
+                                    container node-pools create spot-pool \</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content">
+                                    --cluster=my-cluster \</span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content">
+                                    --machine-type=n1-standard-2 \</span></div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content">
+                                    --num-nodes=3 \</span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content">
+                                    --spot</span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"><span
+                                        class="comment"># Upgrade node pool</span></span></div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content">gcloud
+                                    container node-pools update my-pool \</span></div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content">
+                                    --cluster=my-cluster \</span></div>
+                            <div class="line"><span class="line-number">23</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">24</span><span class="line-content">
+                                    --machine-type=n1-standard-4</span></div>
+                            <div class="line"><span class="line-number">25</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">26</span><span class="line-content"><span
+                                        class="comment"># Scale node pool</span></span></div>
+                            <div class="line"><span class="line-number">27</span><span class="line-content">gcloud
+                                    container clusters update my-cluster \</span></div>
+                            <div class="line"><span class="line-number">28</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">29</span><span class="line-content">
+                                    --node-pool=my-pool \</span></div>
+                            <div class="line"><span class="line-number">30</span><span class="line-content">
+                                    --enable-autoscaling \</span></div>
+                            <div class="line"><span class="line-number">31</span><span class="line-content">
+                                    --min-nodes=1 \</span></div>
+                            <div class="line"><span class="line-number">32</span><span class="line-content">
+                                    --max-nodes=10</span></div>
+                            <div class="line"><span class="line-number">33</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">34</span><span class="line-content"><span
+                                        class="comment"># List node pools</span></span></div>
+                            <div class="line"><span class="line-number">35</span><span class="line-content">kubectl get
+                                    nodes --show-labels</span></div>
+                            <div class="line"><span class="line-number">36</span><span class="line-content">gcloud
+                                    container node-pools list --cluster=my-cluster --region=us-central1</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">👥 Node Pool Strategies</div>
+                    <ul>
+                        <li><strong>Workload Isolation:</strong> Separate pools for different applications</li>
+                        <li><strong>Cost Optimization:</strong> Spot instances for non-critical workloads</li>
+                        <li><strong>Hardware Specialization:</strong> GPU pools for ML workloads</li>
+                        <li><strong>Regional Distribution:</strong> Multi-zone pools for high availability</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployments Section -->
+        <div id="deployments" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📦</span>
+                <h2 class="section-title">Deployments & Application Management</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Deployments provide declarative updates for Pods and ReplicaSets. They ensure that the
+                    specified number of Pod replicas are running and handle rolling updates seamlessly.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Deployment Configuration</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'deployment-yaml')">YAML</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="deployment-yaml" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> apps/v1</span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="keyword">kind:</span> Deployment</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-app-deployment</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"> <span
+                                        class="keyword">labels:</span></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"> <span
+                                        class="keyword">app:</span> my-app</span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"> <span
+                                        class="keyword">replicas:</span> <span class="number">3</span></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"> <span
+                                        class="keyword">selector:</span></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"> <span
+                                        class="keyword">matchLabels:</span></span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"> <span
+                                        class="keyword">app:</span> my-app</span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"> <span
+                                        class="keyword">template:</span></span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content"> <span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"> <span
+                                        class="keyword">labels:</span></span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"> <span
+                                        class="keyword">app:</span> my-app</span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content"> <span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"> <span
+                                        class="keyword">containers:</span></span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"> - <span
+                                        class="keyword">name:</span> my-app-container</span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"> <span
+                                        class="keyword">image:</span> gcr.io/my-project/my-app:v1.0.0</span></div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"> <span
+                                        class="keyword">ports:</span></span></div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content"> - <span
+                                        class="keyword">containerPort:</span> <span class="number">8080</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content"> <span
+                                        class="keyword">env:</span></span></div>
+                            <div class="line"><span class="line-number">23</span><span class="line-content"> - <span
+                                        class="keyword">name:</span> PORT</span></div>
+                            <div class="line"><span class="line-number">24</span><span class="line-content"> <span
+                                        class="keyword">value:</span> <span class="string">"8080"</span></span></div>
+                            <div class="line"><span class="line-number">25</span><span class="line-content"> <span
+                                        class="keyword">resources:</span></span></div>
+                            <div class="line"><span class="line-number">26</span><span class="line-content"> <span
+                                        class="keyword">requests:</span></span></div>
+                            <div class="line"><span class="line-number">27</span><span class="line-content"> <span
+                                        class="keyword">memory:</span> <span class="string">"128Mi"</span></span></div>
+                            <div class="line"><span class="line-number">28</span><span class="line-content"> <span
+                                        class="keyword">cpu:</span> <span class="string">"100m"</span></span></div>
+                            <div class="line"><span class="line-number">29</span><span class="line-content"> <span
+                                        class="keyword">limits:</span></span></div>
+                            <div class="line"><span class="line-number">30</span><span class="line-content"> <span
+                                        class="keyword">memory:</span> <span class="string">"256Mi"</span></span></div>
+                            <div class="line"><span class="line-number">31</span><span class="line-content"> <span
+                                        class="keyword">cpu:</span> <span class="string">"200m"</span></span></div>
+                            <div class="line"><span class="line-number">32</span><span class="line-content"> <span
+                                        class="keyword">livenessProbe:</span></span></div>
+                            <div class="line"><span class="line-number">33</span><span class="line-content"> <span
+                                        class="keyword">httpGet:</span></span></div>
+                            <div class="line"><span class="line-number">34</span><span class="line-content"> <span
+                                        class="keyword">path:</span> /health</span></div>
+                            <div class="line"><span class="line-number">35</span><span class="line-content"> <span
+                                        class="keyword">port:</span> <span class="number">8080</span></span></div>
+                            <div class="line"><span class="line-number">36</span><span class="line-content"> <span
+                                        class="keyword">initialDelaySeconds:</span> <span
+                                        class="number">30</span></span></div>
+                            <div class="line"><span class="line-number">37</span><span class="line-content"> <span
+                                        class="keyword">periodSeconds:</span> <span class="number">10</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">38</span><span class="line-content"> <span
+                                        class="keyword">readinessProbe:</span></span></div>
+                            <div class="line"><span class="line-number">39</span><span class="line-content"> <span
+                                        class="keyword">httpGet:</span></span></div>
+                            <div class="line"><span class="line-number">40</span><span class="line-content"> <span
+                                        class="keyword">path:</span> /ready</span></div>
+                            <div class="line"><span class="line-number">41</span><span class="line-content"> <span
+                                        class="keyword">port:</span> <span class="number">8080</span></span></div>
+                            <div class="line"><span class="line-number">42</span><span class="line-content"> <span
+                                        class="keyword">initialDelaySeconds:</span> <span class="number">5</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">43</span><span class="line-content"> <span
+                                        class="keyword">periodSeconds:</span> <span class="number">5</span></span></div>
+                            <div class="line"><span class="line-number">44</span><span class="line-content"> <span
+                                        class="keyword">strategy:</span></span></div>
+                            <div class="line"><span class="line-number">45</span><span class="line-content"> <span
+                                        class="keyword">type:</span> RollingUpdate</span></div>
+                            <div class="line"><span class="line-number">46</span><span class="line-content"> <span
+                                        class="keyword">rollingUpdate:</span></span></div>
+                            <div class="line"><span class="line-number">47</span><span class="line-content"> <span
+                                        class="keyword">maxUnavailable:</span> <span class="number">1</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">48</span><span class="line-content"> <span
+                                        class="keyword">maxSurge:</span> <span class="number">1</span></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-title">Deployment Commands</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'deployment-bash')">Bash</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="deployment-bash" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Create deployment</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content">kubectl apply
+                                    -f deployment.yaml</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"><span
+                                        class="comment"># Check deployment status</span></span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content">kubectl get
+                                    deployments</span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content">kubectl get
+                                    pods</span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content">kubectl
+                                    describe deployment my-app-deployment</span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"><span
+                                        class="comment"># Scale deployment</span></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content">kubectl
+                                    scale deployment my-app-deployment --replicas=5</span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"><span
+                                        class="comment"># Rolling update</span></span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content">kubectl set
+                                    image deployment/my-app-deployment
+                                    my-app-container=gcr.io/my-project/my-app:v1.1.0</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"><span
+                                        class="comment"># Check rollout status</span></span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content">kubectl
+                                    rollout status deployment/my-app-deployment</span></div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"><span
+                                        class="comment"># Rollback deployment</span></span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content">kubectl
+                                    rollout undo deployment/my-app-deployment</span></div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content"><span
+                                        class="comment"># View deployment history</span></span></div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content">kubectl
+                                    rollout history deployment/my-app-deployment</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Section -->
+        <div id="services" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🔗</span>
+                <h2 class="section-title">Services & Networking</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Services in Kubernetes provide stable network endpoints for pods, enabling reliable communication
+                    between different parts of your application. GKE supports multiple service types for different use
+                    cases.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Service Types Configuration</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'service-yaml')">YAML</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="service-yaml" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># ClusterIP Service (internal communication)</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> v1</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"><span
+                                        class="keyword">kind:</span> Service</span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-app-service</span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"> <span
+                                        class="keyword">selector:</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"> <span
+                                        class="keyword">app:</span> my-app</span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"> <span
+                                        class="keyword">ports:</span></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"> - <span
+                                        class="keyword">port:</span> <span class="number">80</span></span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"> <span
+                                        class="keyword">targetPort:</span> <span class="number">8080</span></span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"> <span
+                                        class="keyword">type:</span> ClusterIP</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"><span
+                                        class="comment"># LoadBalancer Service (external access)</span></span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> v1</span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content"><span
+                                        class="keyword">kind:</span> Service</span></div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-external-service</span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"> <span
+                                        class="keyword">annotations:</span></span></div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"> <span
+                                        class="keyword">cloud.google.com/load-balancer-type:</span> <span
+                                        class="string">"External"</span></span></div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content"> <span
+                                        class="keyword">selector:</span></span></div>
+                            <div class="line"><span class="line-number">23</span><span class="line-content"> <span
+                                        class="keyword">app:</span> my-app</span></div>
+                            <div class="line"><span class="line-number">24</span><span class="line-content"> <span
+                                        class="keyword">ports:</span></span></div>
+                            <div class="line"><span class="line-number">25</span><span class="line-content"> - <span
+                                        class="keyword">port:</span> <span class="number">80</span></span></div>
+                            <div class="line"><span class="line-number">26</span><span class="line-content"> <span
+                                        class="keyword">targetPort:</span> <span class="number">8080</span></span></div>
+                            <div class="line"><span class="line-number">27</span><span class="line-content"> <span
+                                        class="keyword">type:</span> LoadBalancer</span></div>
+                            <div class="line"><span class="line-number">28</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">29</span><span class="line-content"><span
+                                        class="comment"># NodePort Service (direct node access)</span></span></div>
+                            <div class="line"><span class="line-number">30</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> v1</span></div>
+                            <div class="line"><span class="line-number">31</span><span class="line-content"><span
+                                        class="keyword">kind:</span> Service</span></div>
+                            <div class="line"><span class="line-number">32</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">33</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-nodeport-service</span></div>
+                            <div class="line"><span class="line-number">34</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">35</span><span class="line-content"> <span
+                                        class="keyword">selector:</span></span></div>
+                            <div class="line"><span class="line-number">36</span><span class="line-content"> <span
+                                        class="keyword">app:</span> my-app</span></div>
+                            <div class="line"><span class="line-number">37</span><span class="line-content"> <span
+                                        class="keyword">ports:</span></span></div>
+                            <div class="line"><span class="line-number">38</span><span class="line-content"> - <span
+                                        class="keyword">port:</span> <span class="number">80</span></span></div>
+                            <div class="line"><span class="line-number">39</span><span class="line-content"> <span
+                                        class="keyword">targetPort:</span> <span class="number">8080</span></span></div>
+                            <div class="line"><span class="line-number">40</span><span class="line-content"> <span
+                                        class="keyword">nodePort:</span> <span class="number">30080</span></span></div>
+                            <div class="line"><span class="line-number">41</span><span class="line-content"> <span
+                                        class="keyword">type:</span> NodePort</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-title">Network Policies</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'network-yaml')">YAML</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="network-yaml" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> networking.k8s.io/v1</span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="keyword">kind:</span> NetworkPolicy</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"> <span
+                                        class="keyword">name:</span> allow-frontend-to-backend</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"> <span
+                                        class="keyword">namespace:</span> default</span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"> <span
+                                        class="keyword">podSelector:</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"> <span
+                                        class="keyword">matchLabels:</span></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"> <span
+                                        class="keyword">app:</span> backend</span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"> <span
+                                        class="keyword">policyTypes:</span></span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"> -
+                                    Ingress</span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"> <span
+                                        class="keyword">ingress:</span></span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content"> - <span
+                                        class="keyword">from:</span></span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"> - <span
+                                        class="keyword">podSelector:</span></span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"> <span
+                                        class="keyword">matchLabels:</span></span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content"> <span
+                                        class="keyword">app:</span> frontend</span></div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"> <span
+                                        class="keyword">ports:</span></span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"> - <span
+                                        class="keyword">protocol:</span> TCP</span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"> <span
+                                        class="keyword">port:</span> <span class="number">8080</span></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingress Section -->
+        <div id="ingress" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🌐</span>
+                <h2 class="section-title">Ingress & Load Balancing</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Ingress provides external access to services within a cluster, typically via HTTP/HTTPS.
+                    GKE supports Google Cloud Load Balancers for advanced traffic management and SSL termination.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Ingress Configuration</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'ingress-yaml')">YAML</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="ingress-yaml" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> networking.k8s.io/v1</span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="keyword">kind:</span> Ingress</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-app-ingress</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"> <span
+                                        class="keyword">annotations:</span></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"> <span
+                                        class="keyword">kubernetes.io/ingress.class:</span> <span
+                                        class="string">"gce"</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"> <span
+                                        class="keyword">kubernetes.io/ingress.global-static-ip-name:</span> <span
+                                        class="string">"my-app-ip"</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"> <span
+                                        class="keyword">cert-manager.io/cluster-issuer:</span> <span
+                                        class="string">"letsencrypt-prod"</span></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"> <span
+                                        class="keyword">tls:</span></span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"> - <span
+                                        class="keyword">hosts:</span></span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"> -
+                                    my-app.example.com</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content"> <span
+                                        class="keyword">secretName:</span> my-app-tls</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"> <span
+                                        class="keyword">rules:</span></span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"> - <span
+                                        class="keyword">host:</span> my-app.example.com</span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content"> <span
+                                        class="keyword">http:</span></span></div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"> <span
+                                        class="keyword">paths:</span></span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"> - <span
+                                        class="keyword">path:</span> /api</span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"> <span
+                                        class="keyword">pathType:</span> Prefix</span></div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"> <span
+                                        class="keyword">backend:</span></span></div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content"> <span
+                                        class="keyword">service:</span></span></div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content"> <span
+                                        class="keyword">name:</span> api-service</span></div>
+                            <div class="line"><span class="line-number">23</span><span class="line-content"> <span
+                                        class="keyword">port:</span></span></div>
+                            <div class="line"><span class="line-number">24</span><span class="line-content"> <span
+                                        class="keyword">number:</span> <span class="number">80</span></span></div>
+                            <div class="line"><span class="line-number">25</span><span class="line-content"> - <span
+                                        class="keyword">path:</span> /</span></div>
+                            <div class="line"><span class="line-number">26</span><span class="line-content"> <span
+                                        class="keyword">pathType:</span> Prefix</span></div>
+                            <div class="line"><span class="line-number">27</span><span class="line-content"> <span
+                                        class="keyword">backend:</span></span></div>
+                            <div class="line"><span class="line-number">28</span><span class="line-content"> <span
+                                        class="keyword">service:</span></span></div>
+                            <div class="line"><span class="line-number">29</span><span class="line-content"> <span
+                                        class="keyword">name:</span> frontend-service</span></div>
+                            <div class="line"><span class="line-number">30</span><span class="line-content"> <span
+                                        class="keyword">port:</span></span></div>
+                            <div class="line"><span class="line-number">31</span><span class="line-content"> <span
+                                        class="keyword">number:</span> <span class="number">80</span></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Autoscaling Section -->
+        <div id="autoscaling" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📈</span>
+                <h2 class="section-title">HPA & Cluster Autoscaling</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Horizontal Pod Autoscaling (HPA) automatically scales the number of pods based on CPU utilization
+                    or custom metrics. Cluster autoscaling adjusts the number of nodes in your cluster automatically.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Horizontal Pod Autoscaler</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'hpa-yaml')">YAML</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="hpa-yaml" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> autoscaling/v2</span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="keyword">kind:</span> HorizontalPodAutoscaler</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-app-hpa</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"> <span
+                                        class="keyword">scaleTargetRef:</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"> <span
+                                        class="keyword">apiVersion:</span> apps/v1</span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"> <span
+                                        class="keyword">kind:</span> Deployment</span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-app-deployment</span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"> <span
+                                        class="keyword">minReplicas:</span> <span class="number">1</span></span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"> <span
+                                        class="keyword">maxReplicas:</span> <span class="number">10</span></span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"> <span
+                                        class="keyword">metrics:</span></span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content"> - <span
+                                        class="keyword">type:</span> Resource</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"> <span
+                                        class="keyword">resource:</span></span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"> <span
+                                        class="keyword">name:</span> cpu</span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content"> <span
+                                        class="keyword">target:</span></span></div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"> <span
+                                        class="keyword">type:</span> Utilization</span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"> <span
+                                        class="keyword">averageUtilization:</span> <span class="number">70</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"> - <span
+                                        class="keyword">type:</span> Resource</span></div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"> <span
+                                        class="keyword">resource:</span></span></div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content"> <span
+                                        class="keyword">name:</span> memory</span></div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content"> <span
+                                        class="keyword">target:</span></span></div>
+                            <div class="line"><span class="line-number">23</span><span class="line-content"> <span
+                                        class="keyword">type:</span> Utilization</span></div>
+                            <div class="line"><span class="line-number">24</span><span class="line-content"> <span
+                                        class="keyword">averageUtilization:</span> <span class="number">80</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-title">Cluster Autoscaling</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'cluster-auto-bash')">Bash</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="cluster-auto-bash" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Enable cluster autoscaling</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content">gcloud
+                                    container clusters update my-cluster \</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content">
+                                    --enable-autoscaling \</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content">
+                                    --min-nodes=1 \</span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content">
+                                    --max-nodes=10 \</span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content">
+                                    --node-locations=us-central1-a,us-central1-b,us-central1-c</span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"><span
+                                        class="comment"># Check autoscaling status</span></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content">kubectl get
+                                    hpa</span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content">gcloud
+                                    container clusters describe my-cluster --region=us-central1
+                                    --format="value(autoscaling.enabled)"</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Section -->
+        <div id="security" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🔒</span>
+                <h2 class="section-title">Security & RBAC</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Role-Based Access Control (RBAC) provides fine-grained authorization for Kubernetes resources.
+                    GKE integrates with Google Cloud IAM for comprehensive security management.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">RBAC Configuration</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'rbac-yaml')">YAML</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="rbac-yaml" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Service Account</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> v1</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"><span
+                                        class="keyword">kind:</span> ServiceAccount</span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-app-sa</span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"> <span
+                                        class="keyword">namespace:</span> default</span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"><span
+                                        class="comment"># Role</span></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> rbac.authorization.k8s.io/v1</span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"><span
+                                        class="keyword">kind:</span> Role</span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"> <span
+                                        class="keyword">name:</span> pod-reader</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content"> <span
+                                        class="keyword">namespace:</span> default</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"><span
+                                        class="keyword">rules:</span></span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content">- <span
+                                        class="keyword">apiGroups:</span> [<span class="string">""</span>]</span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content"> <span
+                                        class="keyword">resources:</span> [<span class="string">"pods"</span>]</span>
+                            </div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"> <span
+                                        class="keyword">verbs:</span> [<span class="string">"get"</span>, <span
+                                        class="string">"watch"</span>, <span class="string">"list"</span>]</span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"><span
+                                        class="comment"># RoleBinding</span></span></div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> rbac.authorization.k8s.io/v1</span></div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content"><span
+                                        class="keyword">kind:</span> RoleBinding</span></div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">23</span><span class="line-content"> <span
+                                        class="keyword">name:</span> read-pods</span></div>
+                            <div class="line"><span class="line-number">24</span><span class="line-content"> <span
+                                        class="keyword">namespace:</span> default</span></div>
+                            <div class="line"><span class="line-number">25</span><span class="line-content"><span
+                                        class="keyword">subjects:</span></span></div>
+                            <div class="line"><span class="line-number">26</span><span class="line-content">- <span
+                                        class="keyword">kind:</span> ServiceAccount</span></div>
+                            <div class="line"><span class="line-number">27</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-app-sa</span></div>
+                            <div class="line"><span class="line-number">28</span><span class="line-content"> <span
+                                        class="keyword">namespace:</span> default</span></div>
+                            <div class="line"><span class="line-number">29</span><span class="line-content"><span
+                                        class="keyword">roleRef:</span></span></div>
+                            <div class="line"><span class="line-number">30</span><span class="line-content"> <span
+                                        class="keyword">kind:</span> Role</span></div>
+                            <div class="line"><span class="line-number">31</span><span class="line-content"> <span
+                                        class="keyword">apiGroup:</span> rbac.authorization.k8s.io</span></div>
+                            <div class="line"><span class="line-number">32</span><span class="line-content"> <span
+                                        class="keyword">name:</span> pod-reader</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitoring Section -->
+        <div id="monitoring" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📊</span>
+                <h2 class="section-title">Monitoring & Logging</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    GKE integrates with Google Cloud Monitoring and Logging for comprehensive observability.
+                    Cloud Monitoring provides metrics, dashboards, and alerting for your clusters and applications.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Monitoring Setup</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'monitoring-bash')">Bash</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="monitoring-bash" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Enable Cloud Monitoring on cluster</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content">gcloud
+                                    container clusters update my-cluster \</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content">
+                                    --enable-cloud-monitoring</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"><span
+                                        class="comment"># View cluster metrics</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content">kubectl top
+                                    nodes</span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content">kubectl top
+                                    pods</span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"><span
+                                        class="comment"># Check logs</span></span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content">kubectl logs
+                                    deployment/my-app-deployment</span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content">kubectl logs
+                                    -f deployment/my-app-deployment</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anthos Section -->
+        <div id="anthos" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🌍</span>
+                <h2 class="section-title">Anthos & Multi-Cloud</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Anthos provides unified management across multiple Kubernetes clusters and cloud environments.
+                    It enables consistent application deployment and operations across hybrid and multi-cloud setups.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Anthos Configuration</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'anthos-bash')">Bash</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="anthos-bash" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Register cluster with Anthos</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content">gcloud
+                                    container hub memberships register my-cluster \</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content">
+                                    --gke-cluster=us-central1/my-cluster \</span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content">
+                                    --enable-workload-identity</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"><span
+                                        class="comment"># Enable Anthos Service Mesh</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content">gcloud
+                                    container hub mesh enable --project=my-project</span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"><span
+                                        class="comment"># Deploy application across clusters</span></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content">kubectl
+                                    apply -f app-config.yaml --context=gke_my-project_us-central1_my-cluster</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Istio Section -->
+        <div id="istio" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🕸️</span>
+                <h2 class="section-title">Istio Service Mesh</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Istio is a service mesh that provides traffic management, security, and observability for
+                    microservices.
+                    GKE integrates Istio for advanced service-to-service communication and policy enforcement.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Istio Gateway & VirtualService</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'istio-yaml')">YAML</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="istio-yaml" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> networking.istio.io/v1beta1</span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="keyword">kind:</span> Gateway</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-gateway</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"> <span
+                                        class="keyword">namespace:</span> istio-system</span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"> <span
+                                        class="keyword">selector:</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"> <span
+                                        class="keyword">istio:</span> ingressgateway</span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"> <span
+                                        class="keyword">servers:</span></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"> - <span
+                                        class="keyword">port:</span></span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"> <span
+                                        class="keyword">number:</span> <span class="number">80</span></span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"> <span
+                                        class="keyword">name:</span> http</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content"> <span
+                                        class="keyword">protocol:</span> HTTP</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"> <span
+                                        class="keyword">hosts:</span></span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"> - <span
+                                        class="string">"*"</span></span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content"></span>
+                            </div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> networking.istio.io/v1beta1</span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"><span
+                                        class="keyword">kind:</span> VirtualService</span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"> <span
+                                        class="keyword">name:</span> my-app</span></div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content"> <span
+                                        class="keyword">hosts:</span></span></div>
+                            <div class="line"><span class="line-number">23</span><span class="line-content"> - <span
+                                        class="string">"*"</span></span></div>
+                            <div class="line"><span class="line-number">24</span><span class="line-content"> <span
+                                        class="keyword">gateways:</span></span></div>
+                            <div class="line"><span class="line-number">25</span><span class="line-content"> -
+                                    my-gateway</span></div>
+                            <div class="line"><span class="line-number">26</span><span class="line-content"> <span
+                                        class="keyword">http:</span></span></div>
+                            <div class="line"><span class="line-number">27</span><span class="line-content"> - <span
+                                        class="keyword">match:</span></span></div>
+                            <div class="line"><span class="line-number">28</span><span class="line-content"> - <span
+                                        class="keyword">uri:</span></span></div>
+                            <div class="line"><span class="line-number">29</span><span class="line-content"> <span
+                                        class="keyword">prefix:</span> <span class="string">"/"</span></span></div>
+                            <div class="line"><span class="line-number">30</span><span class="line-content"> <span
+                                        class="keyword">route:</span></span></div>
+                            <div class="line"><span class="line-number">31</span><span class="line-content"> - <span
+                                        class="keyword">destination:</span></span></div>
+                            <div class="line"><span class="line-number">32</span><span class="line-content"> <span
+                                        class="keyword">host:</span> my-app.default.svc.cluster.local</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPU Workloads Section -->
+        <div id="gpu-workloads" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🎮</span>
+                <h2 class="section-title">GPU Workloads</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    GKE supports GPU workloads for machine learning, scientific computing, and other GPU-accelerated
+                    applications.
+                    You can attach NVIDIA GPUs to your nodes and run CUDA-based workloads.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">GPU Pod Configuration</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'gpu-yaml')">YAML</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="gpu-yaml" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> apps/v1</span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="keyword">kind:</span> Deployment</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"> <span
+                                        class="keyword">name:</span> gpu-training-job</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"> <span
+                                        class="keyword">replicas:</span> <span class="number">1</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"> <span
+                                        class="keyword">template:</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"> <span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"> <span
+                                        class="keyword">labels:</span></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"> <span
+                                        class="keyword">app:</span> gpu-trainer</span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"> <span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"> <span
+                                        class="keyword">nodeSelector:</span></span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content"> <span
+                                        class="keyword">cloud.google.com/gke-accelerator:</span> nvidia-tesla-k80</span>
+                            </div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"> <span
+                                        class="keyword">containers:</span></span></div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"> - <span
+                                        class="keyword">name:</span> trainer</span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content"> <span
+                                        class="keyword">image:</span> gcr.io/my-project/tensorflow-gpu:latest</span>
+                            </div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"> <span
+                                        class="keyword">resources:</span></span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"> <span
+                                        class="keyword">limits:</span></span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"> <span
+                                        class="keyword">nvidia.com/gpu:</span> <span class="number">1</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"> <span
+                                        class="keyword">command:</span> [<span class="string">"python"</span>, <span
+                                        class="string">"/app/train.py"</span>]</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Optimization Section -->
+        <div id="cost-optimization" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">💰</span>
+                <h2 class="section-title">Cost Optimization</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Optimize your GKE costs through intelligent resource allocation, spot instances, and automated
+                    scaling.
+                    GKE provides various tools and best practices for cost-effective container orchestration.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Cost Optimization Strategies</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'cost-bash')">Bash</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="cost-bash" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="comment"># Use committed use discounts</span></span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content">gcloud
+                                    compute commitments create my-commitment \</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content">
+                                    --resources=vcpu=8,memory=32GB \</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content">
+                                    --plan=12-month</span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"><span
+                                        class="comment"># Right-size your workloads</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content">kubectl
+                                    describe pod my-pod | grep -A 10 "Resources"</span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"><span
+                                        class="comment"># Use node auto-provisioning</span></span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content">gcloud
+                                    container clusters update my-cluster \</span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content">
+                                    --region=us-central1 \</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content">
+                                    --enable-autoprovisioning \</span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content">
+                                    --autoprovisioning-scopes=https://www.googleapis.com/auth/cloud-platform</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spot Pods Section -->
+        <div id="spot-pods" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">Spot Pods & Preemptibles</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Spot Pods run on preemptible VM instances that can be terminated with short notice.
+                    They offer significant cost savings (up to 91% off) for fault-tolerant workloads.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Spot Pod Configuration</div>
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchCodeTab(this, 'spot-yaml')">YAML</button>
+                    </div>
+                    <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div id="spot-yaml" class="code-content active">
+                        <div class="code-block">
+                            <div class="line"><span class="line-number">1</span><span class="line-content"><span
+                                        class="keyword">apiVersion:</span> apps/v1</span></div>
+                            <div class="line"><span class="line-number">2</span><span class="line-content"><span
+                                        class="keyword">kind:</span> Deployment</span></div>
+                            <div class="line"><span class="line-number">3</span><span class="line-content"><span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">4</span><span class="line-content"> <span
+                                        class="keyword">name:</span> spot-batch-job</span></div>
+                            <div class="line"><span class="line-number">5</span><span class="line-content"> <span
+                                        class="keyword">annotations:</span></span></div>
+                            <div class="line"><span class="line-number">6</span><span class="line-content"> <span
+                                        class="keyword">cluster-autoscaler.kubernetes.io/safe-to-evict:</span> <span
+                                        class="string">"true"</span></span></div>
+                            <div class="line"><span class="line-number">7</span><span class="line-content"><span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">8</span><span class="line-content"> <span
+                                        class="keyword">replicas:</span> <span class="number">3</span></span></div>
+                            <div class="line"><span class="line-number">9</span><span class="line-content"> <span
+                                        class="keyword">template:</span></span></div>
+                            <div class="line"><span class="line-number">10</span><span class="line-content"> <span
+                                        class="keyword">metadata:</span></span></div>
+                            <div class="line"><span class="line-number">11</span><span class="line-content"> <span
+                                        class="keyword">labels:</span></span></div>
+                            <div class="line"><span class="line-number">12</span><span class="line-content"> <span
+                                        class="keyword">app:</span> batch-processor</span></div>
+                            <div class="line"><span class="line-number">13</span><span class="line-content"> <span
+                                        class="keyword">annotations:</span></span></div>
+                            <div class="line"><span class="line-number">14</span><span class="line-content"> <span
+                                        class="keyword">gke-spot/true:</span> <span class="string">"true"</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">15</span><span class="line-content"> <span
+                                        class="keyword">spec:</span></span></div>
+                            <div class="line"><span class="line-number">16</span><span class="line-content"> <span
+                                        class="keyword">nodeSelector:</span></span></div>
+                            <div class="line"><span class="line-number">17</span><span class="line-content"> <span
+                                        class="keyword">gke-spot:</span> <span class="string">"true"</span></span></div>
+                            <div class="line"><span class="line-number">18</span><span class="line-content"> <span
+                                        class="keyword">tolerations:</span></span></div>
+                            <div class="line"><span class="line-number">19</span><span class="line-content"> - <span
+                                        class="keyword">key:</span> <span class="string">"gke-spot"</span></span></div>
+                            <div class="line"><span class="line-number">20</span><span class="line-content"> <span
+                                        class="keyword">operator:</span> <span class="string">"Equal"</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">21</span><span class="line-content"> <span
+                                        class="keyword">value:</span> <span class="string">"true"</span></span></div>
+                            <div class="line"><span class="line-number">22</span><span class="line-content"> <span
+                                        class="keyword">effect:</span> <span class="string">"NoSchedule"</span></span>
+                            </div>
+                            <div class="line"><span class="line-number">23</span><span class="line-content"> <span
+                                        class="keyword">containers:</span></span></div>
+                            <div class="line"><span class="line-number">24</span><span class="line-content"> - <span
+                                        class="keyword">name:</span> processor</span></div>
+                            <div class="line"><span class="line-number">25</span><span class="line-content"> <span
+                                        class="keyword">image:</span> gcr.io/my-project/batch-processor:latest</span>
+                            </div>
+                            <div class="line"><span class="line-number">26</span><span class="line-content"> <span
+                                        class="keyword">resources:</span></span></div>
+                            <div class="line"><span class="line-number">27</span><span class="line-content"> <span
+                                        class="keyword">requests:</span></span></div>
+                            <div class="line"><span class="line-number">28</span><span class="line-content"> <span
+                                        class="keyword">memory:</span> <span class="string">"1Gi"</span></span></div>
+                            <div class="line"><span class="line-number">29</span><span class="line-content"> <span
+                                        class="keyword">cpu:</span> <span class="string">"500m"</span></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.content-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                        section.classList.remove('visible');
+                    });
+
+                    // Show selected section
+                    const sectionId = this.dataset.section;
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        setTimeout(() => {
+                            targetSection.classList.add('visible');
+                        }, 100);
+
+                        // Smooth scroll to section
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Show first section by default
+            const firstSection = document.getElementById('overview');
+            if (firstSection) {
+                firstSection.style.display = 'block';
+                setTimeout(() => {
+                    firstSection.classList.add('visible');
+                }, 100);
+            }
+
+            // Intersection Observer for animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        // Code tab switching functionality
+        function switchCodeTab(button, tabId) {
+            const container = button.closest('.code-container');
+            const tabs = container.querySelectorAll('.code-tab');
+            const contents = container.querySelectorAll('.code-content');
+
+            // Remove active class from all tabs and contents
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            button.classList.add('active');
+            const targetContent = container.querySelector(`#${tabId}`);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const container = button.closest('.code-container');
+            const activeContent = container.querySelector('.code-content.active');
+            if (!activeContent) return;
+
+            const codeBlock = activeContent.querySelector('.code-block');
+            if (!codeBlock) return;
+
+            // Extract text content from code lines
+            const lines = codeBlock.querySelectorAll('.line-content');
+            const codeText = Array.from(lines).map(line => {
+                // Remove HTML tags and get plain text
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = line.innerHTML;
+                return tempDiv.textContent || tempDiv.innerText || '';
+            }).join('\n');
+
+            navigator.clipboard.writeText(codeText).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#34a853';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#4285f4';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy code:', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = codeText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#34a853';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#4285f4';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

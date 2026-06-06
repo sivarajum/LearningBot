@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP Services Explained - Interactive Educational Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            to {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            height: 800px;
+        }
+
+        .services-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .explanation-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow-y: auto;
+        }
+
+        .service-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .service-card:hover::before {
+            left: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-card.active {
+            animation: cardPulse 2s ease-in-out infinite;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+
+        @keyframes cardPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 8px 30px rgba(76, 175, 80, 0.4);
+            }
+        }
+
+        .service-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+            text-align: center;
+        }
+
+        .service-name {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .service-tagline {
+            font-size: 14px;
+            text-align: center;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .explanation-panel h2 {
+            color: #1976d2;
+            margin-bottom: 20px;
+            font-size: 28px;
+            border-bottom: 3px solid #1976d2;
+            padding-bottom: 10px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .explanation-panel h3 {
+            color: #424242;
+            margin: 25px 0 15px 0;
+            font-size: 20px;
+            animation: slideIn 0.5s ease-out 0.1s both;
+        }
+
+        .explanation-panel p {
+            line-height: 1.7;
+            margin-bottom: 18px;
+            color: #555;
+            animation: slideIn 0.5s ease-out 0.2s both;
+        }
+
+        .feature-section {
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.1), rgba(66, 165, 245, 0.1));
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #1976d2;
+            animation: slideIn 0.5s ease-out 0.3s both;
+        }
+
+        .feature-section h4 {
+            color: #1976d2;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(25, 118, 210, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-example {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+            overflow-x: auto;
+            animation: slideIn 0.5s ease-out 0.4s both;
+        }
+
+        .code-example .comment {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .code-example .keyword {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .code-example .string {
+            color: #28a745;
+        }
+
+        .workflow-demo {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1));
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+            animation: slideIn 0.5s ease-out 0.5s both;
+        }
+
+        .workflow-demo h4 {
+            color: #2E7D32;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: stepSlide 0.5s ease-out forwards;
+        }
+
+        .workflow-step:nth-child(1) {
+            animation-delay: 0.6s;
+        }
+
+        .workflow-step:nth-child(2) {
+            animation-delay: 0.8s;
+        }
+
+        .workflow-step:nth-child(3) {
+            animation-delay: 1.0s;
+        }
+
+        .workflow-step:nth-child(4) {
+            animation-delay: 1.2s;
+        }
+
+        @keyframes stepSlide {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content strong {
+            color: #2E7D32;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+        }
+
+        .progress-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            display: none;
+            z-index: 100;
+        }
+
+        .progress-indicator.show {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .services-panel,
+            .explanation-panel {
+                flex: none;
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 GCP Services Explained - Interactive Learning</h1>
+            <p class="subtitle">Click on any service to learn how it works, its features, and real-world applications!
+            </p>
+        </div>
+
+        <div class="main-content">
+            <!-- Services Selection Panel -->
+            <div class="services-panel">
+                <h2 style="color: white; margin-bottom: 25px; text-align: center;">🛠️ GCP Services</h2>
+
+                <div class="service-card" onclick="explainService('dataproc')">
+                    <span class="service-icon">🔥</span>
+                    <div class="service-name">Dataproc</div>
+                    <div class="service-tagline">Managed Spark & Hadoop</div>
+                </div>
+
+                <div class="service-card" onclick="explainService('bigquery')">
+                    <span class="service-icon">📊</span>
+                    <div class="service-name">BigQuery</div>
+                    <div class="service-tagline">Data Warehouse & Analytics</div>
+                </div>
+
+                <div class="service-card" onclick="explainService('cloud-storage')">
+                    <span class="service-icon">☁️</span>
+                    <div class="service-name">Cloud Storage</div>
+                    <div class="service-tagline">Object Storage & Data Lake</div>
+                </div>
+
+                <div class="service-card" onclick="explainService('vertex-ai')">
+                    <span class="service-icon">🤖</span>
+                    <div class="service-name">Vertex AI</div>
+                    <div class="service-tagline">ML Platform & AutoML</div>
+                </div>
+
+                <div class="service-card" onclick="explainService('cloud-run')">
+                    <span class="service-icon">🚀</span>
+                    <div class="service-name">Cloud Run</div>
+                    <div class="service-tagline">Serverless Containers</div>
+                </div>
+
+                <div class="service-card" onclick="explainService('dataflow')">
+                    <span class="service-icon">🌊</span>
+                    <div class="service-name">Dataflow</div>
+                    <div class="service-tagline">Stream & Batch Processing</div>
+                </div>
+
+                <div class="service-card" onclick="explainService('cloud-functions')">
+                    <span class="service-icon">⚡</span>
+                    <div class="service-name">Cloud Functions</div>
+                    <div class="service-tagline">Event-Driven Functions</div>
+                </div>
+            </div>
+
+            <!-- Explanation Panel -->
+            <div class="explanation-panel" id="explanationPanel">
+                <h2>📚 Service Explanation</h2>
+                <p style="text-align: center; font-style: italic; color: #666;">
+                    Click on any GCP service card to learn about it in detail!
+                </p>
+                <div style="text-align: center; margin-top: 40px;">
+                    <div style="font-size: 48px; opacity: 0.3;">🔍</div>
+                    <p style="margin-top: 20px; color: #666;">Select a service to begin learning</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-indicator" id="progressIndicator">
+            <span id="progressText">Learning Progress</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="control-btn" onclick="startTutorial()">🎓 Start Tutorial</button>
+            <button class="control-btn" onclick="resetLearning()">🔄 Reset</button>
+            <button class="control-btn" onclick="showAllServices()">📋 Show All</button>
+        </div>
+    </div>
+
+    <script>
+        let currentService = null;
+        let tutorialStep = 0;
+        let tutorialActive = false;
+        const services = ['dataproc', 'bigquery', 'cloud-storage', 'vertex-ai', 'cloud-run', 'dataflow', 'cloud-functions'];
+
+        const serviceData = {
+            dataproc: {
+                title: "🔥 Google Cloud Dataproc",
+                subtitle: "Managed Apache Spark & Hadoop Service",
+                whatIs: "Cloud Dataproc is a fast, easy-to-use, fully managed cloud service for running Apache Spark and Apache Hadoop clusters in a simpler, more cost-efficient way.",
+                howItWorks: "Dataproc provisions Apache Spark and Hadoop clusters in minutes instead of hours or days. It automatically configures the cluster, handles maintenance, and scales resources as needed.",
+                features: [
+                    "⚡ Fast cluster provisioning (90 seconds)",
+                    "💰 Cost-effective (pay only for what you use)",
+                    "🔧 Pre-configured with Spark, Hadoop, Hive, Pig",
+                    "📈 Auto-scaling based on workload",
+                    "🔗 Integration with BigQuery, Cloud Storage",
+                    "🛡️ Enterprise security & compliance"
+                ],
+                workflow: [
+                    { step: 1, title: "Create Cluster", desc: "Specify cluster size, region, and configuration" },
+                    { step: 2, title: "Submit Jobs", desc: "Run Spark, Hadoop, or Hive jobs via API or CLI" },
+                    { step: 3, title: "Auto-Scale", desc: "Cluster automatically scales based on workload" },
+                    { step: 4, title: "Process Data", desc: "Analyze data from BigQuery or Cloud Storage" }
+                ],
+                codeExample: `# Create a Dataproc cluster
+gcloud dataproc clusters create my-cluster \\
+  --region=us-central1 \\
+  --master-machine-type=n1-standard-4 \\
+  --worker-machine-type=n1-standard-2 \\
+  --num-workers=2
+
+# Submit a Spark job
+gcloud dataproc jobs submit spark \\
+  --cluster=my-cluster \\
+  --class=org.apache.spark.examples.SparkPi \\
+  --jars=file:///usr/lib/spark/examples/jars/spark-examples.jar \\
+  -- 100`
+            },
+            bigquery: {
+                title: "📊 Google BigQuery",
+                subtitle: "Serverless Data Warehouse & Analytics",
+                whatIs: "BigQuery is a fully managed, serverless data warehouse that enables scalable analysis over petabytes of data. It uses SQL and can analyze data from multiple sources.",
+                howItWorks: "BigQuery uses a columnar storage format and a massively parallel processing architecture. It automatically scales compute resources and uses machine learning to optimize query performance.",
+                features: [
+                    "⚡ Petabyte-scale analytics in seconds",
+                    "🔍 Standard SQL queries",
+                    "🤖 ML integration with BigQuery ML",
+                    "📊 Real-time analytics capabilities",
+                    "🔄 Streaming data ingestion",
+                    "🌐 Multi-cloud data analysis",
+                    "🛡️ Built-in security & encryption"
+                ],
+                workflow: [
+                    { step: 1, title: "Load Data", desc: "Import data from Cloud Storage, files, or streaming" },
+                    { step: 2, title: "Create Tables", desc: "Define schemas or use auto-detection" },
+                    { step: 3, title: "Run Queries", desc: "Execute SQL queries with sub-second latency" },
+                    { step: 4, title: "Analyze Results", desc: "Visualize and export query results" }
+                ],
+                codeExample: `# Create a dataset
+bq mk my_dataset
+
+# Load data from Cloud Storage
+bq load --source_format=CSV my_dataset.my_table \\
+  gs://my-bucket/data.csv \\
+  column1:STRING,column2:INTEGER
+
+# Run a query
+SELECT
+  column1,
+  COUNT(*) as count
+FROM my_dataset.my_table
+GROUP BY column1
+ORDER BY count DESC
+LIMIT 10;`
+            },
+            'cloud-storage': {
+                title: "☁️ Google Cloud Storage",
+                subtitle: "Object Storage for Data Lake & Backup",
+                whatIs: "Cloud Storage is a unified object storage service for developers and enterprises. It offers industry-leading scalability, data availability, security, and performance.",
+                howItWorks: "Data is stored as objects in buckets. Each object has a unique key and metadata. Cloud Storage automatically replicates data across multiple regions for durability.",
+                features: [
+                    "♾️ Virtually unlimited storage capacity",
+                    "🌍 Global edge network for fast access",
+                    "🔒 Enterprise-grade security & encryption",
+                    "🏷️ Object versioning & lifecycle management",
+                    "📊 Usage analytics & monitoring",
+                    "🔄 Multi-regional & regional storage classes",
+                    "⚡ Transfer service for large migrations"
+                ],
+                workflow: [
+                    { step: 1, title: "Create Bucket", desc: "Choose storage class and region" },
+                    { step: 2, title: "Upload Objects", desc: "Store files, images, backups, etc." },
+                    { step: 3, title: "Set Permissions", desc: "Configure access control and sharing" },
+                    { step: 4, title: "Access Data", desc: "Retrieve objects via API, CLI, or console" }
+                ],
+                codeExample: `# Create a bucket
+gsutil mb -p my-project -c regional -l us-central1 gs://my-bucket/
+
+# Upload files
+gsutil cp my-file.txt gs://my-bucket/
+
+# Set public access
+gsutil iam ch allUsers:objectViewer gs://my-bucket
+
+# Download files
+gsutil cp gs://my-bucket/my-file.txt .`
+            },
+            'vertex-ai': {
+                title: "🤖 Google Cloud Vertex AI",
+                subtitle: "Unified ML Platform & AutoML",
+                whatIs: "Vertex AI is a unified machine learning platform that brings together all of Google's ML capabilities into a single, easy-to-use service for building, deploying, and scaling ML models.",
+                howItWorks: "Vertex AI provides AutoML for users without ML expertise and custom training for advanced users. It handles the entire ML lifecycle from data preparation to model deployment.",
+                features: [
+                    "🎯 AutoML for tabular, image, text, and video data",
+                    "🔧 Custom training with TensorFlow, PyTorch, scikit-learn",
+                    "📊 Model monitoring & explainability",
+                    "🚀 One-click deployment to production",
+                    "🔄 MLOps pipeline automation",
+                    "📈 Experiment tracking & hyperparameter tuning",
+                    "🌐 Edge deployment capabilities"
+                ],
+                workflow: [
+                    { step: 1, title: "Prepare Data", desc: "Upload and prepare training data" },
+                    { step: 2, title: "Train Model", desc: "Use AutoML or custom training" },
+                    { step: 3, title: "Evaluate Model", desc: "Check performance metrics and bias" },
+                    { step: 4, title: "Deploy Model", desc: "Deploy to endpoints for predictions" }
+                ],
+                codeExample: `from google.cloud import aiplatform
+
+# Initialize Vertex AI
+aiplatform.init(project="my-project", location="us-central1")
+
+# Create dataset
+dataset = aiplatform.TabularDataset.create(
+    display_name="my-dataset",
+    gcs_source="gs://my-bucket/data.csv"
+)
+
+# Train AutoML model
+job = aiplatform.AutoMLTabularTrainingJob(
+    display_name="my-automl-job",
+    optimization_prediction_type="regression"
+)
+
+model = job.run(
+    dataset=dataset,
+    target_column="target",
+    training_fraction_split=0.8,
+    validation_fraction_split=0.1,
+    test_fraction_split=0.1
+)
+
+# Deploy model
+endpoint = model.deploy(machine_type="n1-standard-4")`
+            },
+            'cloud-run': {
+                title: "🚀 Google Cloud Run",
+                subtitle: "Serverless Container Platform",
+                whatIs: "Cloud Run is a managed compute platform that enables you to run stateless containers that are invocable via HTTP requests. It's a serverless offering that scales automatically.",
+                howItWorks: "Cloud Run runs containers in Google's serverless infrastructure. It automatically scales from zero to handle traffic and scales back to zero when not in use, charging only for actual usage.",
+                features: [
+                    "⚡ Instant scaling from 0 to N containers",
+                    "💰 Pay-per-use pricing (only when running)",
+                    "🐳 Any language, any library, any binary",
+                    "🔗 Custom domains & HTTPS support",
+                    "🔐 Built-in authentication & authorization",
+                    "📊 Request logging & monitoring",
+                    "🌐 Multi-region deployment"
+                ],
+                workflow: [
+                    { step: 1, title: "Build Container", desc: "Create container image with your application" },
+                    { step: 2, title: "Deploy Service", desc: "Push image to Cloud Run" },
+                    { step: 3, title: "Configure Scaling", desc: "Set concurrency and resource limits" },
+                    { step: 4, title: "Handle Requests", desc: "Service automatically scales with traffic" }
+                ],
+                codeExample: `# Build container
+docker build -t my-app .
+
+# Deploy to Cloud Run
+gcloud run deploy my-service \\
+  --image=my-app \\
+  --platform=managed \\
+  --region=us-central1 \\
+  --allow-unauthenticated
+
+# Set environment variables
+gcloud run services update my-service \\
+  --set-env-vars DATABASE_URL=... \\
+  --region=us-central1`
+            },
+            dataflow: {
+                title: "🌊 Google Cloud Dataflow",
+                subtitle: "Unified Stream & Batch Processing",
+                whatIs: "Dataflow is a unified programming model and managed service for developing and executing a wide variety of data processing patterns including ETL, batch processing, and continuous computation.",
+                howItWorks: "Dataflow uses Apache Beam under the hood and provides a unified model for both batch and streaming data processing. It automatically optimizes and scales your pipelines.",
+                features: [
+                    "🔄 Unified batch & streaming processing",
+                    "📊 Auto-scaling based on throughput",
+                    "⏰ Exactly-once processing semantics",
+                    "🔧 Apache Beam SDK support",
+                    "📈 Real-time monitoring & debugging",
+                    "🔗 Integration with Pub/Sub, BigQuery, Cloud Storage",
+                    "🌍 Global data processing"
+                ],
+                workflow: [
+                    { step: 1, title: "Design Pipeline", desc: "Create Apache Beam pipeline in Java/Python" },
+                    { step: 2, title: "Define Transforms", desc: "Set up data sources, transformations, sinks" },
+                    { step: 3, title: "Run Pipeline", desc: "Execute on Dataflow service" },
+                    { step: 4, title: "Monitor & Scale", desc: "Watch performance and auto-scaling" }
+                ],
+                codeExample: `import apache_beam as beam
+from apache_beam.options.pipeline_options import PipelineOptions
+
+# Define pipeline options
+options = PipelineOptions(
+    project='my-project',
+    region='us-central1',
+    runner='DataflowRunner'
+)
+
+# Create pipeline
+with beam.Pipeline(options=options) as p:
+    # Read from Pub/Sub
+    messages = p | 'Read from Pub/Sub' >> beam.io.ReadFromPubSub(
+        subscription='projects/my-project/subscriptions/my-sub'
+    )
+
+    # Transform data
+    transformed = messages | 'Transform' >> beam.Map(
+        lambda msg: transform_function(msg)
+    )
+
+    # Write to BigQuery
+    transformed | 'Write to BigQuery' >> beam.io.WriteToBigQuery(
+        table='my-project:my_dataset.my_table',
+        schema='field1:STRING,field2:INTEGER'
+    )`
+            },
+            'cloud-functions': {
+                title: "⚡ Google Cloud Functions",
+                subtitle: "Event-Driven Serverless Functions",
+                whatIs: "Cloud Functions is a serverless execution environment for building and connecting cloud services. Write simple, single-purpose functions that are attached to events emitted from your cloud infrastructure.",
+                howItWorks: "Functions are triggered by events from various sources (HTTP, Cloud Storage, Pub/Sub, etc.). They run in a fully managed environment and scale automatically based on the event rate.",
+                features: [
+                    "⚡ Sub-second cold start times",
+                    "💰 Pay only for execution time",
+                    "🔧 Support for Node.js, Python, Go, Java",
+                    "🎯 Event-driven architecture",
+                    "🔄 Automatic scaling",
+                    "🔗 Integration with 60+ Google services",
+                    "📊 Built-in monitoring & logging"
+                ],
+                workflow: [
+                    { step: 1, title: "Write Function", desc: "Create function code in supported language" },
+                    { step: 2, title: "Define Trigger", desc: "Choose event source (HTTP, Storage, etc.)" },
+                    { step: 3, title: "Deploy Function", desc: "Upload code and configure resources" },
+                    { step: 4, title: "Handle Events", desc: "Function executes when triggered" }
+                ],
+                codeExample: `// Node.js Cloud Function
+const functions = require('@google-cloud/functions-framework');
+
+functions.http('helloWorld', (req, res) => {
+  const name = req.query.name || 'World';
+  res.send(\`Hello \${name}!\`);
+});
+
+// Python Cloud Function
+def hello_world(request):
+    name = request.args.get('name', 'World')
+    return f'Hello {name}!'
+
+# Deployment
+gcloud functions deploy helloWorld \\
+  --runtime=nodejs16 \\
+  --trigger-http \\
+  --allow-unauthenticated`
+            }
+        };
+
+        function explainService(serviceName) {
+            currentService = serviceName;
+            const data = serviceData[serviceName];
+
+            // Update active card
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Generate explanation content
+            const explanationPanel = document.getElementById('explanationPanel');
+            explanationPanel.innerHTML = `
+                <h2>${data.title}</h2>
+                <p style="font-size: 18px; color: #666; font-style: italic; margin-bottom: 25px;">${data.subtitle}</p>
+
+                <h3>❓ What is ${serviceName.replace('-', ' ').toUpperCase()}?</h3>
+                <p>${data.whatIs}</p>
+
+                <h3>⚙️ How Does It Work?</h3>
+                <p>${data.howItWorks}</p>
+
+                <div class="feature-section">
+                    <h4>🚀 Key Features</h4>
+                    <div class="feature-list">
+                        ${data.features.map(feature => `
+                            <div class="feature-item">${feature}</div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="workflow-demo">
+                    <h4>📋 How It Works - Step by Step</h4>
+                    <div class="workflow-steps">
+                        ${data.workflow.map(step => `
+                            <div class="workflow-step">
+                                <div class="step-number">${step.step}</div>
+                                <div class="step-content">
+                                    <strong>${step.title}:</strong> ${step.desc}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <h3>💻 Code Example</h3>
+                <div class="code-example">${data.codeExample.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')}</div>
+            `;
+
+            // Update progress
+            updateProgress();
+        }
+
+        function startTutorial() {
+            tutorialActive = true;
+            tutorialStep = 0;
+            document.getElementById('progressIndicator').classList.add('show');
+            nextTutorialStep();
+        }
+
+        function nextTutorialStep() {
+            if (!tutorialActive || tutorialStep >= services.length) {
+                tutorialActive = false;
+                document.getElementById('progressText').textContent = 'Tutorial Complete!';
+                return;
+            }
+
+            explainService(services[tutorialStep]);
+            tutorialStep++;
+
+            // Auto-advance after 8 seconds
+            setTimeout(nextTutorialStep, 8000);
+        }
+
+        function resetLearning() {
+            tutorialActive = false;
+            tutorialStep = 0;
+            currentService = null;
+
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.classList.remove('active');
+            });
+
+            document.getElementById('explanationPanel').innerHTML = `
+                <h2>📚 Service Explanation</h2>
+                <p style="text-align: center; font-style: italic; color: #666;">
+                    Click on any GCP service card to learn about it in detail!
+                </p>
+                <div style="text-align: center; margin-top: 40px;">
+                    <div style="font-size: 48px; opacity: 0.3;">🔍</div>
+                    <p style="margin-top: 20px; color: #666;">Select a service to begin learning</p>
+                </div>
+            `;
+
+            document.getElementById('progressIndicator').classList.remove('show');
+        }
+
+        function showAllServices() {
+            const explanationPanel = document.getElementById('explanationPanel');
+            explanationPanel.innerHTML = `
+                <h2>🛠️ All GCP Services Overview</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                    ${Object.entries(serviceData).map(([key, data]) => `
+                        <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); padding: 20px; border-radius: 12px; border-left: 4px solid #667eea;">
+                            <h3 style="color: #667eea; margin-bottom: 10px;">${data.title.split(' - ')[0]}</h3>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 15px;">${data.subtitle}</p>
+                            <button onclick="explainService('${key}')" style="background: #667eea; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer;">Learn More</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function updateProgress() {
+            if (!tutorialActive) return;
+
+            const progress = (tutorialStep / services.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Step ${tutorialStep} of ${services.length}`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                switch (e.key.toLowerCase()) {
+                    case 't':
+                        startTutorial();
+                        break;
+                    case 'r':
+                        resetLearning();
+                        break;
+                    case 's':
+                        showAllServices();
+                        break;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

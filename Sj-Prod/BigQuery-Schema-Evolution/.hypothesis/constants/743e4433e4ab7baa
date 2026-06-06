@@ -1,0 +1,4 @@
+# file: /Users/sivarajumalladi/Documents/GitHub/LearningBot/POCs/BigQuery-Schema-Evolution/src/migration/models.py
+# hypothesis_version: 6.151.5
+
+['BACKWARD', 'FORWARD', 'FULL', 'add_nullable_column', 'column_name', 'column_type', 'deprecate_column', 'migration_type', 'rename_via_view', 'utf-8', 'version']

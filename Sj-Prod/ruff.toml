@@ -1,0 +1,17 @@
+# Shared ruff config for all POCs. Discovered by ruff when run from any sub-POC dir.
+line-length = 120
+target-version = "py311"
+
+[lint]
+# Default rule set (E, F, W). Keep it pragmatic for a portfolio, not pedantic.
+extend-select = ["I"]  # import sorting
+
+[lint.per-file-ignores]
+# Streamlit/CLI entrypoints insert the project root on sys.path before importing
+# local modules — E402 (import not at top) is intentional and unavoidable there.
+"**/ui.py" = ["E402"]
+"**/main.py" = ["E402"]
+# Test modules deliberately re-import symbols inside individual test methods for
+# locality/readability; F811 (redefinition) and F401 (unused in some paths) are noise here.
+"**/tests/**" = ["F811", "F401", "E402"]
+"**/test_*.py" = ["F811", "F401", "E402"]

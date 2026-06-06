@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP Beginner Learning Path - Start Your Cloud Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #2196f3, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from {
+                text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+                filter: brightness(1);
+            }
+
+            to {
+                text-shadow: 3px 3px 12px rgba(255, 255, 255, 0.6);
+                filter: brightness(1.1);
+            }
+        }
+
+        .header .subtitle {
+            font-size: 1.4em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .header .description {
+            font-size: 1.1em;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #2196f3;
+            border-radius: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #2196f3;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #2196f3;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .path-overview {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .path-overview h2 {
+            color: #2196f3;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .path-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(156, 39, 176, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(33, 150, 243, 0.2);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #2196f3;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .stat-description {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .learning-modules {
+            display: grid;
+            gap: 30px;
+        }
+
+        .module {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2196f3, #9c27b0, #ff9800);
+        }
+
+        .module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .module-icon {
+            font-size: 40px;
+            margin-right: 20px;
+            opacity: 0.8;
+        }
+
+        .module-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2196f3;
+            margin: 0;
+        }
+
+        .module-meta {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .module-duration {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .module-level {
+            background: #4caf50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .module-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .module-objectives {
+            margin-bottom: 20px;
+        }
+
+        .objectives-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .objective-item {
+            padding: 8px 0;
+            border-left: 3px solid #2196f3;
+            padding-left: 15px;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .module-resources {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .resource-link {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(33, 150, 243, 0.05));
+            border: 1px solid rgba(33, 150, 243, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-decoration: none;
+            color: #2196f3;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-link:hover {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.2), rgba(33, 150, 243, 0.1));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+        }
+
+        .resource-icon {
+            font-size: 20px;
+        }
+
+        .resource-text {
+            font-weight: bold;
+        }
+
+        .progress-tracker {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            min-width: 200px;
+            z-index: 100;
+        }
+
+        .progress-title {
+            font-weight: bold;
+            color: #2196f3;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .progress-item:hover {
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .progress-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .progress-item.completed .progress-status {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .progress-item.current .progress-status {
+            background: #2196f3;
+            border-color: #2196f3;
+            color: white;
+        }
+
+        .progress-text {
+            flex: 1;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
+            animation: floatShape 20s ease-in-out infinite;
+        }
+
+        .bg-shape:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+
+        .bg-shape:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            right: 15%;
+            top: 60%;
+            animation-delay: 5s;
+        }
+
+        .bg-shape:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            left: 70%;
+            bottom: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes floatShape {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg) scale(1);
+            }
+
+            33% {
+                transform: translateY(-30px) rotate(120deg) scale(1.1);
+            }
+
+            66% {
+                transform: translateY(20px) rotate(240deg) scale(0.9);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .path-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .module-resources {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-tracker {
+                display: none;
+            }
+
+            .home-button {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 20px;
+                align-self: flex-start;
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+    </div>
+
+    <div class="home-button" onclick="goHome()">
+        <span class="home-icon">🏠</span>
+        <span>Back to Hub</span>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌱 GCP Beginner Path</h1>
+            <p class="subtitle">Start Your Cloud Journey - From Zero to Hero</p>
+            <p class="description">
+                A comprehensive 8-week learning journey designed for beginners. Master Google Cloud Platform
+                fundamentals through hands-on projects, interactive tutorials, and real-world scenarios.
+            </p>
+        </div>
+
+        <!-- Path Overview -->
+        <div class="path-overview fade-in">
+            <h2>🗺️ Your Learning Journey</h2>
+            <div class="path-stats">
+                <div class="stat-card">
+                    <span class="stat-number">8</span>
+                    <div class="stat-label">Weeks</div>
+                    <div class="stat-description">Structured learning timeline</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">15</span>
+                    <div class="stat-label">Modules</div>
+                    <div class="stat-description">Comprehensive coverage</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">25+</span>
+                    <div class="stat-label">Hands-on Labs</div>
+                    <div class="stat-description">Practical experience</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">3</span>
+                    <div class="stat-label">Projects</div>
+                    <div class="stat-description">Real-world applications</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; color: #555; line-height: 1.6;">
+                <p><strong>What you'll achieve:</strong> By the end of this path, you'll have a solid foundation in GCP,
+                    be able to deploy applications to the cloud, understand core services, and have practical experience
+                    with real-world scenarios.</p>
+            </div>
+        </div>
+
+        <!-- Learning Modules -->
+        <div class="learning-modules">
+            <!-- Week 1: Getting Started -->
+            <div class="module fade-in">
+                <div class="module-header">
+                    <span class="module-icon">🚀</span>
+                    <div class="module-title">Week 1: Getting Started with GCP</div>
+                    <div class="module-meta">
+                        <div class="module-duration">5 hours</div>
+                        <div class="module-level">Beginner</div>
+                    </div>
+                </div>
+
+                <div class="module-description">
+                    Learn the basics of Google Cloud Platform, set up your account, and understand the core concepts
+                    that form the foundation of cloud computing.
+                </div>
+
+                <div class="module-objectives">
+                    <div class="objectives-title">🎯 Learning Objectives</div>
+                    <ul class="objectives-list">
+                        <li class="objective-item">Create and configure a GCP account</li>
+                        <li class="objective-item">Understand GCP resource hierarchy (Organization → Project →
+                            Resources)</li>
+                        <li class="objective-item">Navigate the GCP Console and Cloud Shell</li>
+                        <li class="objective-item">Learn basic gcloud CLI commands</li>
+                        <li class="objective-item">Understand GCP billing and cost management basics</li>
+                    </ul>
+                </div>
+
+                <div class="module-resources">
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('getting-started')">
+                        <span class="resource-icon">📚</span>
+                        <div class="resource-text">GCP Fundamentals Guide</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('cloud-shell')">
+                        <span class="resource-icon">💻</span>
+                        <div class="resource-text">Cloud Shell Tutorial</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('billing')">
+                        <span class="resource-icon">💰</span>
+                        <div class="resource-text">Billing & Cost Basics</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Week 2: Compute Services -->
+            <div class="module fade-in">
+                <div class="module-header">
+                    <span class="module-icon">🖥️</span>
+                    <div class="module-title">Week 2: Compute Engine - Virtual Machines</div>
+                    <div class="module-meta">
+                        <div class="module-duration">8 hours</div>
+                        <div class="module-level">Beginner</div>
+                    </div>
+                </div>
+
+                <div class="module-description">
+                    Dive into Compute Engine, Google's Infrastructure as a Service offering. Learn to create,
+                    configure, and manage virtual machines in the cloud.
+                </div>
+
+                <div class="module-objectives">
+                    <div class="objectives-title">🎯 Learning Objectives</div>
+                    <ul class="objectives-list">
+                        <li class="objective-item">Understand VM instance types and machine families</li>
+                        <li class="objective-item">Create and configure VM instances</li>
+                        <li class="objective-item">Connect to VMs using SSH and RDP</li>
+                        <li class="objective-item">Understand regions, zones, and global infrastructure</li>
+                        <li class="objective-item">Work with persistent disks and storage</li>
+                    </ul>
+                </div>
+
+                <div class="module-resources">
+                    <a href="compute-engine-advanced.html" class="resource-link">
+                        <span class="resource-icon">🖥️</span>
+                        <div class="resource-text">Compute Engine Guide</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('vm-lab')">
+                        <span class="resource-icon">🔧</span>
+                        <div class="resource-text">VM Creation Lab</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('storage-lab')">
+                        <span class="resource-icon">💽</span>
+                        <div class="resource-text">Storage Basics Lab</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Week 3: Storage Solutions -->
+            <div class="module fade-in">
+                <div class="module-header">
+                    <span class="module-icon">☁️</span>
+                    <div class="module-title">Week 3: Cloud Storage - Object Storage</div>
+                    <div class="module-meta">
+                        <div class="module-duration">6 hours</div>
+                        <div class="module-level">Beginner</div>
+                    </div>
+                </div>
+
+                <div class="module-description">
+                    Master Cloud Storage, Google's unified object storage service. Learn to store, manage,
+                    and serve data at scale with global availability.
+                </div>
+
+                <div class="module-objectives">
+                    <div class="objectives-title">🎯 Learning Objectives</div>
+                    <ul class="objectives-list">
+                        <li class="objective-item">Understand object storage vs block storage</li>
+                        <li class="objective-item">Create and manage Cloud Storage buckets</li>
+                        <li class="objective-item">Work with different storage classes</li>
+                        <li class="objective-item">Implement access control and security</li>
+                        <li class="objective-item">Use gsutil and client libraries</li>
+                    </ul>
+                </div>
+
+                <div class="module-resources">
+                    <a href="cloud-storage-advanced.html" class="resource-link">
+                        <span class="resource-icon">☁️</span>
+                        <div class="resource-text">Cloud Storage Guide</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('storage-lab')">
+                        <span class="resource-icon">📦</span>
+                        <div class="resource-text">Bucket Management Lab</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('transfer-lab')">
+                        <span class="resource-icon">📤</span>
+                        <div class="resource-text">Data Transfer Lab</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Week 4: Serverless Computing -->
+            <div class="module fade-in">
+                <div class="module-header">
+                    <span class="module-icon">⚡</span>
+                    <div class="module-title">Week 4: Serverless with Cloud Functions</div>
+                    <div class="module-meta">
+                        <div class="module-duration">7 hours</div>
+                        <div class="module-level">Beginner</div>
+                    </div>
+                </div>
+
+                <div class="module-description">
+                    Discover the power of serverless computing with Cloud Functions. Write and deploy
+                    event-driven functions without managing servers.
+                </div>
+
+                <div class="module-objectives">
+                    <div class="objectives-title">🎯 Learning Objectives</div>
+                    <ul class="objectives-list">
+                        <li class="objective-item">Understand serverless computing concepts</li>
+                        <li class="objective-item">Write and deploy Cloud Functions</li>
+                        <li class="objective-item">Work with triggers and events</li>
+                        <li class="objective-item">Implement function monitoring and logging</li>
+                        <li class="objective-item">Handle function dependencies and packages</li>
+                    </ul>
+                </div>
+
+                <div class="module-resources">
+                    <a href="cloud-functions-advanced.html" class="resource-link">
+                        <span class="resource-icon">⚡</span>
+                        <div class="resource-text">Cloud Functions Guide</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('functions-lab')">
+                        <span class="resource-icon">🚀</span>
+                        <div class="resource-text">Function Deployment Lab</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('triggers-lab')">
+                        <span class="resource-icon">🎯</span>
+                        <div class="resource-text">Event Triggers Lab</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Week 5: Containers & Orchestration -->
+            <div class="module fade-in">
+                <div class="module-header">
+                    <span class="module-icon">🚢</span>
+                    <div class="module-title">Week 5: Kubernetes Engine - Container Orchestration</div>
+                    <div class="module-meta">
+                        <div class="module-duration">10 hours</div>
+                        <div class="module-level">Intermediate</div>
+                    </div>
+                </div>
+
+                <div class="module-description">
+                    Learn container orchestration with Google Kubernetes Engine (GKE). Deploy, manage,
+                    and scale containerized applications.
+                </div>
+
+                <div class="module-objectives">
+                    <div class="objectives-title">🎯 Learning Objectives</div>
+                    <ul class="objectives-list">
+                        <li class="objective-item">Understand containerization and Kubernetes</li>
+                        <li class="objective-item">Create and manage GKE clusters</li>
+                        <li class="objective-item">Deploy applications with pods and services</li>
+                        <li class="objective-item">Work with deployments and scaling</li>
+                        <li class="objective-item">Implement monitoring and logging</li>
+                    </ul>
+                </div>
+
+                <div class="module-resources">
+                    <a href="kubernetes-engine-advanced.html" class="resource-link">
+                        <span class="resource-icon">🚢</span>
+                        <div class="resource-text">GKE Guide</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('k8s-lab')">
+                        <span class="resource-icon">⚓</span>
+                        <div class="resource-text">Cluster Management Lab</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('deployment-lab')">
+                        <span class="resource-icon">📦</span>
+                        <div class="resource-text">Application Deployment Lab</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Week 6: Data Analytics -->
+            <div class="module fade-in">
+                <div class="module-header">
+                    <span class="module-icon">📊</span>
+                    <div class="module-title">Week 6: BigQuery - Data Warehousing</div>
+                    <div class="module-meta">
+                        <div class="module-duration">8 hours</div>
+                        <div class="module-level">Intermediate</div>
+                    </div>
+                </div>
+
+                <div class="module-description">
+                    Master BigQuery, Google's serverless data warehouse. Learn to analyze massive datasets
+                    using SQL and machine learning.
+                </div>
+
+                <div class="module-objectives">
+                    <div class="objectives-title">🎯 Learning Objectives</div>
+                    <ul class="objectives-list">
+                        <li class="objective-item">Understand data warehousing concepts</li>
+                        <li class="objective-item">Write complex SQL queries in BigQuery</li>
+                        <li class="objective-item">Load and export data</li>
+                        <li class="objective-item">Implement access control and security</li>
+                        <li class="objective-item">Use BigQuery ML for predictive analytics</li>
+                    </ul>
+                </div>
+
+                <div class="module-resources">
+                    <a href="bigquery-advanced.html" class="resource-link">
+                        <span class="resource-icon">📊</span>
+                        <div class="resource-text">BigQuery Guide</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('sql-lab')">
+                        <span class="resource-icon">🔍</span>
+                        <div class="resource-text">SQL Query Lab</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('ml-lab')">
+                        <span class="resource-icon">🤖</span>
+                        <div class="resource-text">BigQuery ML Lab</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Week 7: Networking & Security -->
+            <div class="module fade-in">
+                <div class="module-header">
+                    <span class="module-icon">🔒</span>
+                    <div class="module-title">Week 7: VPC Network & IAM Security</div>
+                    <div class="module-meta">
+                        <div class="module-duration">9 hours</div>
+                        <div class="module-level">Intermediate</div>
+                    </div>
+                </div>
+
+                <div class="module-description">
+                    Learn network design and security with Virtual Private Cloud and Identity & Access Management.
+                    Secure your cloud infrastructure.
+                </div>
+
+                <div class="module-objectives">
+                    <div class="objectives-title">🎯 Learning Objectives</div>
+                    <ul class="objectives-list">
+                        <li class="objective-item">Design and implement VPC networks</li>
+                        <li class="objective-item">Configure subnets, routes, and firewalls</li>
+                        <li class="objective-item">Implement IAM roles and policies</li>
+                        <li class="objective-item">Manage service accounts and keys</li>
+                        <li class="objective-item">Apply security best practices</li>
+                    </ul>
+                </div>
+
+                <div class="module-resources">
+                    <a href="vpc-network-advanced.html" class="resource-link">
+                        <span class="resource-icon">🌐</span>
+                        <div class="resource-text">VPC Network Guide</div>
+                    </a>
+                    <a href="iam-advanced.html" class="resource-link">
+                        <span class="resource-icon">🔑</span>
+                        <div class="resource-text">IAM Security Guide</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('network-lab')">
+                        <span class="resource-icon">🔧</span>
+                        <div class="resource-text">Network Configuration Lab</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Week 8: Capstone Project -->
+            <div class="module fade-in">
+                <div class="module-header">
+                    <span class="module-icon">🏆</span>
+                    <div class="module-title">Week 8: Capstone Project - Full-Stack Cloud Application</div>
+                    <div class="module-meta">
+                        <div class="module-duration">12 hours</div>
+                        <div class="module-level">Intermediate</div>
+                    </div>
+                </div>
+
+                <div class="module-description">
+                    Apply everything you've learned by building a complete cloud-native application.
+                    Combine compute, storage, databases, and serverless functions.
+                </div>
+
+                <div class="module-objectives">
+                    <div class="objectives-title">🎯 Project Objectives</div>
+                    <ul class="objectives-list">
+                        <li class="objective-item">Design a complete cloud architecture</li>
+                        <li class="objective-item">Implement a full-stack application</li>
+                        <li class="objective-item">Integrate multiple GCP services</li>
+                        <li class="objective-item">Implement monitoring and logging</li>
+                        <li class="objective-item">Deploy and manage the application</li>
+                    </ul>
+                </div>
+
+                <div class="module-resources">
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('project-guide')">
+                        <span class="resource-icon">📋</span>
+                        <div class="resource-text">Project Guidelines</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link"
+                        onclick="openServicePage('architecture-review')">
+                        <span class="resource-icon">🏗️</span>
+                        <div class="resource-text">Architecture Review</div>
+                    </a>
+                    <a href="gcp-learning-hub.html" class="resource-link" onclick="openServicePage('deployment-guide')">
+                        <span class="resource-icon">🚀</span>
+                        <div class="resource-text">Deployment Guide</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Tracker -->
+    <div class="progress-tracker">
+        <div class="progress-title">📈 Your Progress</div>
+        <div class="progress-item current">
+            <div class="progress-status">1</div>
+            <div class="progress-text">Getting Started</div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-status">2</div>
+            <div class="progress-text">Compute Engine</div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-status">3</div>
+            <div class="progress-text">Cloud Storage</div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-status">4</div>
+            <div class="progress-text">Cloud Functions</div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-status">5</div>
+            <div class="progress-text">Kubernetes Engine</div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-status">6</div>
+            <div class="progress-text">BigQuery</div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-status">7</div>
+            <div class="progress-text">Networking & Security</div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-status">8</div>
+            <div class="progress-text">Capstone Project</div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functions
+        function goHome() {
+            window.location.href = 'gcp-learning-hub.html';
+        }
+
+        function openServicePage(serviceName) {
+            // For now, show a message about planned content
+            alert(`🚧 ${serviceName.replace('-', ' ').toUpperCase()} learning module is coming soon!\n\nThis will include:\n• Interactive tutorials\n• Hands-on labs\n• Video walkthroughs\n• Practice exercises\n\nCheck back soon for the complete learning experience!`);
+        }
+
+        // Intersection Observer for animations
+        document.addEventListener('DOMContentLoaded', function () {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+
+</html>

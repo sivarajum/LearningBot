@@ -1,0 +1,501 @@
+customer_id,name,email,country,signup_date,tier
+CUST-00001,Jennifer Brown,callahaneric@example.org,United States,2020-06-21,bronze
+CUST-00002,Juan Dunlap,dcarlson@example.net,Australia,2020-07-26,bronze
+CUST-00003,Gina Carter,maldonadoamanda@example.com,Brazil,2018-10-18,bronze
+CUST-00004,Jonathan White,shawnmckay@example.net,Netherlands,2020-05-27,bronze
+CUST-00005,Christina Brooks,harrellkenneth@example.net,India,2024-06-18,bronze
+CUST-00006,Linda Burns,amberosborne@example.net,Australia,2020-02-19,bronze
+CUST-00007,David Bradley,hickmannatasha@example.com,United States,2022-10-01,bronze
+CUST-00008,Kim Martinez,millertodd@example.org,Canada,2019-02-08,bronze
+CUST-00009,Lisa Brandt,karroyo@example.com,United Kingdom,2020-10-15,bronze
+CUST-00010,Jessica Holmes,jenniferross@example.net,Canada,2022-09-25,bronze
+CUST-00011,Crystal Robinson,wrightcaleb@example.org,Canada,2022-12-21,silver
+CUST-00012,Shannon Jones,zimmermanbrian@example.org,United States,2018-07-27,silver
+CUST-00013,Timothy Duncan,joshuawashington@example.net,United Kingdom,2019-01-18,gold
+CUST-00014,Brent Jordan,esanchez@example.com,India,2022-07-23,bronze
+CUST-00015,Nicholas Nunez,Rodney,India,2018-08-29,bronze
+CUST-00016,Connor West,brownjessica@example.org,France,2020-12-22,gold
+CUST-00017,Angela Morton,dwhite@example.org,Japan,2022-09-29,silver
+CUST-00018,Tammy Allison,williamsyvette@example.org,United States,2023-06-17,bronze
+CUST-00019,Carmen Smith,richardolson@example.com,Australia,2024-06-30,silver
+CUST-00020,Michael Cross,ybaker@example.com,Japan,2018-08-23,bronze
+CUST-00021,Lauren Daniels,smoore@example.org,United Kingdom,2019-10-07,bronze
+CUST-00022,Kim Brown,brian97@example.net,Germany,2018-10-08,bronze
+CUST-00023,Cynthia Wilson,yorkcasey@example.org,Germany,2022-07-12,bronze
+CUST-00024,Kevin Mills,bethwilliams@example.org,India,2024-06-29,bronze
+CUST-00025,Michael Evans,james53@example.com,France,2024-07-18,bronze
+CUST-00026,Kristine Garcia,sarah10@example.com,France,2020-04-16,silver
+CUST-00027,Sherry Wood,williamanderson@example.com,Brazil,2022-06-10,bronze
+CUST-00028,Victoria Valdez,samueldaniels@example.com,United States,2021-07-19,gold
+CUST-00029,Shawn Baker,contrerasangela@example.net,Canada,2023-02-21,silver
+CUST-00030,Michelle Harris,newtoneric@example.com,United Kingdom,2018-10-28,bronze
+CUST-00031,Sandra Williams,william40@example.org,Australia,2021-11-30,silver
+CUST-00032,Michael Hoffman,kellie42@example.net,France,2021-03-13,bronze
+CUST-00033,Sandra Aguilar,jonesnicole@example.org,Japan,2024-11-10,gold
+CUST-00034,Rebecca Valencia,russellwilliams@example.com,Canada,2018-02-02,silver
+CUST-00035,Stacey Russell,jason31@example.com,Japan,2019-07-05,bronze
+CUST-00036,Rita Keith,sarayoung@example.org,Australia,2019-09-29,bronze
+CUST-00037,Sharon Cochran,whitesandra@example.com,Japan,2020-04-13,silver
+CUST-00038,Courtney Velasquez,erik16@example.org,United States,2023-06-25,bronze
+CUST-00039,Matthew Ross,ybailey@example.org,United States,2019-01-14,silver
+CUST-00040,Meghan Anthony,michelle45@example.net,France,2018-01-15,bronze
+CUST-00041,Victoria Johnson,sheila14@example.org,India,2019-10-24,silver
+CUST-00042,William Wilson,yreed@example.com,United Kingdom,2024-04-16,bronze
+CUST-00043,Renee Mcdaniel,jonathanfletcher@example.org,Japan,2024-02-13,bronze
+CUST-00044,Lisa Alvarado,michaeljones@example.net,Australia,2019-08-30,bronze
+CUST-00045,Erika Terry,cortezkevin@example.com,Germany,2018-06-13,silver
+CUST-00046,Stephanie Gilbert,jamesortega@example.com,India,2019-02-26,bronze
+CUST-00047,Richard Lawson,richard04@example.com,Germany,2024-12-17,silver
+CUST-00048,Steven Flynn,steven73@example.net,India,2019-10-28,gold
+CUST-00049,Frances Cardenas,donnacampbell@example.net,India,2018-04-12,bronze
+CUST-00050,Angel Riggs,emilywalker@example.org,Canada,2020-10-13,bronze
+CUST-00051,Michael Snyder,gibsonolivia@example.net,Germany,2022-04-16,silver
+CUST-00052,Colleen Brock,dylanwatts@example.org,France,2020-03-28,silver
+CUST-00053,Robert Contreras,pwilliams@example.org,India,2020-07-21,bronze
+CUST-00054,Jessica Meadows,stephanie79@example.net,France,2021-09-06,bronze
+CUST-00055,Paul Larsen,vmerritt@example.com,Japan,2021-12-09,silver
+CUST-00056,Jeremiah Reeves,katie87@example.net,France,2021-09-18,gold
+CUST-00057,Chris Reyes,josephflores@example.net,United States,2020-01-02,bronze
+CUST-00058,John Brown,jasminebrown@example.com,Australia,2019-03-21,bronze
+CUST-00059,Alicia Gilmore,xprice@example.net,India,2022-11-23,silver
+CUST-00060,Sarah Ashley,wwoods@example.com,India,2024-06-19,bronze
+CUST-00061,Stephanie Freeman,vmedina@example.net,Germany,2018-01-07,bronze
+CUST-00062,Rebecca Ramsey,ryan06@example.com,Australia,2022-01-31,bronze
+CUST-00063,James Elliott,ncalhoun@example.net,France,2024-12-27,bronze
+CUST-00064,David Murphy,millerroy@example.com,India,2023-09-09,bronze
+CUST-00065,Trevor Fisher,wmurphy@example.com,India,2021-04-26,bronze
+CUST-00066,Mrs. Marie Harrington DDS,ruizkaitlyn@example.org,Japan,2019-12-14,silver
+CUST-00067,Cynthia Wells,herringjames@example.org,Netherlands,2018-01-02,bronze
+CUST-00068,Jacob Obrien,elliottjeffery@example.net,Brazil,2024-10-20,silver
+CUST-00069,Alexander Collins,stricklandfrank@example.com,United Kingdom,2020-05-25,bronze
+CUST-00070,Michael Burton,tsanders@example.org,Netherlands,2018-12-14,bronze
+CUST-00071,Barbara Riggs,terrykevin@example.net,Germany,2021-10-04,bronze
+CUST-00072,Matthew Smith,reedross@example.com,United States,2021-06-25,bronze
+CUST-00073,Madison Poole,gshort@example.com,Canada,2018-07-09,bronze
+CUST-00074,Robert Medina,ryangross@example.net,Germany,2023-02-09,bronze
+CUST-00075,Samuel Rivas,umarshall@example.net,United States,2022-04-22,bronze
+CUST-00076,Mary Rogers,ramirezshannon@example.com,Japan,2019-03-13,silver
+CUST-00077,Robert Peterson,lrosales@example.com,Canada,2023-03-18,bronze
+CUST-00078,Jason Peters,angela83@example.org,Japan,2023-02-13,bronze
+CUST-00079,Alan Phillips,hannahbrewer@example.com,Brazil,2024-04-08,bronze
+CUST-00080,Kara Schmidt,tholt@example.net,India,2024-11-14,silver
+CUST-00081,Jesse Parker,jbarajas@example.com,Brazil,2024-02-23,bronze
+CUST-00082,Tiffany Vaughn,davidlee@example.org,France,2023-01-18,bronze
+CUST-00083,Paige Carlson,javierwashington@example.net,Brazil,2023-11-06,bronze
+CUST-00084,Adrian Ferguson,wallkenneth@example.com,Australia,2018-11-14,silver
+CUST-00085,Beth Oneill,brandon08@example.com,United Kingdom,2021-08-02,silver
+CUST-00086,John Peterson,agarcia@example.net,Germany,2020-08-05,bronze
+CUST-00087,Jennifer Jones,kingmichelle@example.org,Brazil,2018-09-21,bronze
+CUST-00088,David Grant,hernandezlisa@example.com,India,2022-08-31,bronze
+CUST-00089,Lisa Rowe,Robert,Netherlands,2024-07-20,gold
+CUST-00090,Wanda Torres,chayes@example.com,France,2022-04-08,bronze
+CUST-00091,Deborah Miller,lynchjody@example.org,India,2022-05-17,silver
+CUST-00092,Michael Harrison,glennjones@example.org,Netherlands,2024-01-14,silver
+CUST-00093,Andrea Hall,halljasmine@example.net,Brazil,2020-06-22,bronze
+CUST-00094,Danny Hernandez,kristin93@example.com,India,2018-04-29,bronze
+CUST-00095,Linda Holloway,margaret10@example.org,Netherlands,2019-11-08,silver
+CUST-00096,Dillon Fernandez,scott74@example.net,Netherlands,2023-12-28,bronze
+CUST-00097,Lindsey Johnson,cmiller@example.com,Brazil,2018-04-22,bronze
+CUST-00098,Alicia Hubbard,suzannehuff@example.net,Germany,2020-01-15,bronze
+CUST-00099,Sydney White,barbara27@example.net,India,2023-02-06,bronze
+CUST-00100,Jason Morris,fwalters@example.org,France,2021-02-13,silver
+CUST-00101,Matthew Morales DDS,hodgemark@example.net,United States,2018-12-02,bronze
+CUST-00102,Raymond Hancock,gibsonleonard@example.com,United States,2021-12-04,bronze
+CUST-00103,Joseph Dean,sandovalamy@example.com,United States,2018-05-08,gold
+CUST-00104,Joshua Pennington,wgarrett@example.org,Canada,2024-12-19,bronze
+CUST-00105,Mark Lloyd,fgilmore@example.org,France,2024-04-29,gold
+CUST-00106,Willie Durham,lancesmith@example.com,Canada,2022-02-19,bronze
+CUST-00107,Dr. Jordan Hill PhD,pvalentine@example.org,United States,2019-11-02,gold
+CUST-00108,Thomas Romero,jsanchez@example.org,India,2021-07-01,bronze
+CUST-00109,Richard Adams,michellehill@example.com,Netherlands,2022-06-13,gold
+CUST-00110,Mary Grimes,campbellkenneth@example.net,Netherlands,2020-09-21,bronze
+CUST-00111,Kimberly Gibson,wryan@example.com,United States,2019-05-11,silver
+CUST-00112,Reginald Williams,molly39@example.com,Canada,2021-11-23,bronze
+CUST-00113,Roberta Hughes,Julie,India,2023-09-04,silver
+CUST-00114,Evelyn Garcia,tylerjohnson@example.net,Brazil,2023-07-01,bronze
+CUST-00115,Jennifer Pena,dgarcia@example.org,France,2019-09-19,bronze
+CUST-00116,Michael Santos,charlesharrington@example.com,Brazil,2024-11-27,silver
+CUST-00117,Stacy Freeman,melissa86@example.com,France,2023-03-20,bronze
+CUST-00118,Yolanda Francis,williamsonjimmy@example.net,Canada,2021-08-13,silver
+CUST-00119,Ashlee Jackson,wgood@example.net,Brazil,2021-02-16,silver
+CUST-00120,James Thomas,rebecca05@example.org,United States,2024-05-23,silver
+CUST-00121,Bob Pitts,yknight@example.org,Germany,2023-07-18,silver
+CUST-00122,David Scott,tyleraguilar@example.org,Netherlands,2021-12-24,silver
+CUST-00123,Brooke Alexander,nolansteven@example.com,Germany,2021-02-05,bronze
+CUST-00124,Ryan Gonzalez,vanessa46@example.net,Japan,2018-12-17,bronze
+CUST-00125,Ian Phillips,gcastaneda@example.org,Brazil,2020-09-11,silver
+CUST-00126,Melissa Garner,andrew64@example.org,Germany,2023-01-10,silver
+CUST-00127,Crystal Pham,lozanojulie@example.com,Netherlands,2022-07-15,silver
+CUST-00128,Patricia Becker,danaoliver@example.net,India,2022-02-20,bronze
+CUST-00129,Richard Johnson,courtneyberger@example.net,France,2024-03-04,bronze
+CUST-00130,Casey Anderson,jessica14@example.com,Germany,2021-06-09,bronze
+CUST-00131,Terry Coffey,alyssa42@example.com,United Kingdom,2021-07-16,bronze
+CUST-00132,Brenda Levy,julie51@example.com,Netherlands,2020-02-24,bronze
+CUST-00133,Richard Smith,zcoffey@example.net,Germany,2023-11-19,bronze
+CUST-00134,James Little,gibsonemily@example.net,United States,2021-04-28,bronze
+CUST-00135,Terri Murphy,daniel37@example.org,United States,2023-12-28,bronze
+CUST-00136,Elizabeth Ortiz,deborahreid@example.com,Brazil,2024-03-16,bronze
+CUST-00137,David Medina,brandonjohnson@example.com,Brazil,2019-02-25,silver
+CUST-00138,Kimberly Matthews,qchavez@example.net,United States,2023-05-15,bronze
+CUST-00139,Teresa Ramirez,nicolepena@example.com,Canada,2020-10-31,gold
+CUST-00140,Michael Stephens,jeff73@example.com,United States,2022-06-30,bronze
+CUST-00141,Samantha Davis,bruce43@example.org,France,2019-09-14,bronze
+CUST-00142,Gavin Zhang,darleneharper@example.org,India,2018-12-15,gold
+CUST-00143,Robin Hall,caseyhubbard@example.org,Japan,2024-10-19,bronze
+CUST-00144,Brianna Anderson,kristinacarlson@example.com,Netherlands,2022-04-08,bronze
+CUST-00145,Richard Young,lauren10@example.org,Netherlands,2022-10-23,bronze
+CUST-00146,Kelly Reese,alfred40@example.org,Germany,2019-02-11,gold
+CUST-00147,Jodi Walker,xwest@example.net,United Kingdom,2020-12-19,silver
+CUST-00148,Susan Hopkins,Christina,Brazil,2024-03-10,bronze
+CUST-00149,Jessica Rodriguez,stephen00@example.com,France,2024-08-29,bronze
+CUST-00150,Ana Hill,fjones@example.com,Germany,2021-03-04,silver
+CUST-00151,Larry Garcia,oscar98@example.com,Germany,2020-12-19,silver
+CUST-00152,Cindy Hayes,farrelldebra@example.net,United Kingdom,2022-10-08,bronze
+CUST-00153,Brandon Simmons,robertwilcox@example.com,United Kingdom,2020-12-24,silver
+CUST-00154,Bradley Reynolds,nicholas27@example.org,France,2021-06-13,bronze
+CUST-00155,Kristina Santiago,lisa80@example.net,India,2022-12-04,bronze
+CUST-00156,Michelle Schmitt,qgomez@example.com,Canada,2021-01-20,bronze
+CUST-00157,John Boone,michael98@example.org,Australia,2024-09-15,bronze
+CUST-00158,Renee Bruce,megan51@example.com,Netherlands,2024-10-08,bronze
+CUST-00159,Christopher Park,lynchdiane@example.net,France,2024-08-01,gold
+CUST-00160,Kylie Morales,sandra50@example.org,Brazil,2024-06-18,bronze
+CUST-00161,Cindy Barnes,joycebonilla@example.org,United Kingdom,2023-10-27,silver
+CUST-00162,Sophia Moore,eric45@example.net,Canada,2024-07-25,bronze
+CUST-00163,Lawrence Perry,craigjoseph@example.net,Canada,2023-04-10,bronze
+CUST-00164,Michael Watkins,kariwilson@example.com,France,2019-10-21,bronze
+CUST-00165,Eric Clark,brandon69@example.org,Brazil,2022-06-29,silver
+CUST-00166,Paul Thompson,kathrynroberts@example.org,India,2018-12-27,bronze
+CUST-00167,Kathryn Whitaker,Omar,Japan,2023-10-09,silver
+CUST-00168,Blake Edwards,charles06@example.org,Australia,2023-03-08,bronze
+CUST-00169,Brian Smith,tberry@example.net,United States,2024-12-25,silver
+CUST-00170,Anita Richard,george97@example.net,France,2020-04-13,bronze
+CUST-00171,Eric Morgan,ryanmorales@example.org,United States,2022-11-30,silver
+CUST-00172,Jordan Bullock,kimberly18@example.net,France,2024-10-29,silver
+CUST-00173,Craig Morrison,michael23@example.org,Germany,2024-03-06,bronze
+CUST-00174,Justin Riley,thompsonkendra@example.com,United Kingdom,2019-04-10,bronze
+CUST-00175,Jeremy Turner,michelle52@example.com,France,2023-08-04,gold
+CUST-00176,Jesse Brown,brittany58@example.org,Germany,2022-08-29,silver
+CUST-00177,Julie Spencer,chase19@example.net,Netherlands,2023-02-14,bronze
+CUST-00178,Larry Mason,colelisa@example.net,Canada,2023-09-13,silver
+CUST-00179,Mrs. Maria Williams,hayeslisa@example.com,Australia,2021-02-05,silver
+CUST-00180,Kelly Bishop MD,Jasmine,France,2023-09-11,bronze
+CUST-00181,Maria Jones,paul59@example.org,United Kingdom,2024-08-01,bronze
+CUST-00182,Mary Escobar,grantpaul@example.com,Japan,2023-01-04,bronze
+CUST-00183,Emily Douglas,mathewaguilar@example.org,Germany,2024-02-04,bronze
+CUST-00184,James Conner,tanderson@example.org,India,2020-09-05,bronze
+CUST-00185,Susan Davis DDS,elizabethcalderon@example.net,India,2018-06-28,bronze
+CUST-00186,Ralph Lee,andrew42@example.org,United Kingdom,2022-05-01,gold
+CUST-00187,Kimberly Rodgers,ericphillips@example.org,Netherlands,2023-07-22,gold
+CUST-00188,James Martin,stanleynancy@example.net,Brazil,2021-09-21,silver
+CUST-00189,Cynthia Wallace,jenniferwilliams@example.com,United Kingdom,2019-02-13,bronze
+CUST-00190,Vincent Mueller,karen73@example.net,Canada,2022-08-07,silver
+CUST-00191,Douglas Reyes,michealvalentine@example.com,Netherlands,2023-04-08,silver
+CUST-00192,David Davidson,mburch@example.net,Japan,2022-06-17,silver
+CUST-00193,Phillip Nelson,angela18@example.org,Brazil,2022-04-06,gold
+CUST-00194,Stacey Arias,mariahdavis@example.org,France,2024-01-26,bronze
+CUST-00195,Zachary Brooks,gbrown@example.com,Canada,2020-07-20,silver
+CUST-00196,Raven Taylor,florescory@example.net,United States,2019-02-16,bronze
+CUST-00197,Luis Bullock,samantha72@example.net,Australia,2018-07-08,bronze
+CUST-00198,Lisa Henderson,scottmary@example.net,India,2022-03-16,bronze
+CUST-00199,Riley Bryant,john10@example.org,United Kingdom,2024-05-07,silver
+CUST-00200,Jose Allen,copelandvincent@example.net,Germany,2018-11-20,silver
+CUST-00201,Jason Beck,kellysmith@example.com,Brazil,2023-08-01,gold
+CUST-00202,Rachel Romero,millsmichael@example.net,Brazil,2020-11-06,bronze
+CUST-00203,James Burgess,myerstheodore@example.net,Brazil,2021-03-24,silver
+CUST-00204,Ashley Perkins,kristina53@example.net,India,2021-11-16,gold
+CUST-00205,Carrie Maxwell,dennis58@example.com,India,2020-10-21,bronze
+CUST-00206,Chad Baldwin,epollard@example.net,Australia,2023-06-03,bronze
+CUST-00207,Stacey Stewart,mjohnson@example.org,United States,2024-06-12,bronze
+CUST-00208,Matthew Mitchell,zachary87@example.com,United States,2022-06-10,bronze
+CUST-00209,Jessica Ross,glennmartin@example.org,France,2024-10-19,silver
+CUST-00210,Kathleen Jimenez,ykline@example.com,Germany,2020-07-31,silver
+CUST-00211,Samantha Gardner,laurie61@example.com,United Kingdom,2024-12-18,bronze
+CUST-00212,Mitchell Jackson,curtis54@example.com,France,2019-02-02,gold
+CUST-00213,Heather Bolton,cbell@example.net,United Kingdom,2022-12-11,bronze
+CUST-00214,Heidi Owen,danielle01@example.net,India,2019-01-05,gold
+CUST-00215,Jessica Martinez,stephaniethomas@example.net,Australia,2019-12-21,bronze
+CUST-00216,Amanda Hernandez,kimberlydiaz@example.com,United Kingdom,2023-12-15,bronze
+CUST-00217,Laura Moreno,xrush@example.com,France,2020-11-18,gold
+CUST-00218,Allison Lopez,redwards@example.org,Canada,2021-10-19,silver
+CUST-00219,Michele Lewis,hmcintyre@example.com,India,2019-07-31,silver
+CUST-00220,Benjamin Thompson,heather73@example.org,United States,2024-04-01,bronze
+CUST-00221,Victoria Contreras,zosborn@example.net,France,2020-12-19,bronze
+CUST-00222,Michelle Ho,piercekelly@example.com,Australia,2024-07-22,bronze
+CUST-00223,Dr. Cynthia Snyder,laurahicks@example.org,Netherlands,2019-03-20,silver
+CUST-00224,Stephen Jones,angela57@example.net,Canada,2024-04-18,bronze
+CUST-00225,Patricia Morrow,ukey@example.com,India,2023-03-17,gold
+CUST-00226,Michael Cooper,martinezlogan@example.org,France,2019-04-23,bronze
+CUST-00227,Amy Martinez,katrinaanderson@example.net,Japan,2023-07-11,bronze
+CUST-00228,Travis Stone,kevinmartin@example.net,Japan,2019-07-10,bronze
+CUST-00229,Denise Weber,meghan43@example.net,India,2022-09-13,bronze
+CUST-00230,Matthew Le,shawgary@example.net,France,2019-02-10,silver
+CUST-00231,Travis Wise,megan90@example.org,Brazil,2018-05-15,silver
+CUST-00232,Kathleen Burton,debra96@example.net,Australia,2020-08-25,silver
+CUST-00233,Melinda Evans,dawn47@example.org,United States,2024-02-09,gold
+CUST-00234,Mr. Lawrence Edwards,barkereric@example.com,Brazil,2022-06-19,bronze
+CUST-00235,Kayla Rodriguez,jessica56@example.org,Netherlands,2019-01-11,silver
+CUST-00236,Anthony Dougherty,stevenadams@example.org,United Kingdom,2018-03-29,bronze
+CUST-00237,Michelle Lee,kwright@example.com,Japan,2024-05-01,bronze
+CUST-00238,Kathleen Davis,tyronerobertson@example.com,Germany,2020-04-28,bronze
+CUST-00239,Amber Campbell,pwagner@example.org,Netherlands,2021-09-07,silver
+CUST-00240,Stephen Luna,amitchell@example.org,United Kingdom,2018-01-12,bronze
+CUST-00241,Chloe Tran,zdiaz@example.org,United States,2024-01-22,bronze
+CUST-00242,William Becker,hughesshannon@example.net,Germany,2019-06-24,bronze
+CUST-00243,Gina Mcmillan,andersoncolin@example.com,United States,2024-08-08,bronze
+CUST-00244,Andrew Reeves,jameshicks@example.net,Canada,2019-06-04,silver
+CUST-00245,Brenda Velazquez,jstone@example.net,Netherlands,2023-05-05,bronze
+CUST-00246,Ronald Patel,francisco94@example.net,Netherlands,2019-03-23,bronze
+CUST-00247,Veronica Silva,thomas05@example.com,Japan,2018-06-27,silver
+CUST-00248,Paula Lane,carlsonjoseph@example.net,United States,2021-05-20,bronze
+CUST-00249,Patricia James,silvageorge@example.net,Canada,2023-05-16,silver
+CUST-00250,Jeremy Barnes,anthonyvaughan@example.org,Canada,2023-07-02,silver
+CUST-00251,Tami Salas,avaughn@example.net,France,2021-08-12,silver
+CUST-00252,Matthew Fox,thorntonapril@example.net,Netherlands,2024-07-25,bronze
+CUST-00253,Megan Dillon,sue78@example.com,India,2023-12-14,bronze
+CUST-00254,Courtney Dudley,chelsea33@example.com,Japan,2019-02-11,silver
+CUST-00255,Justin Michael,kellie37@example.com,India,2020-05-30,bronze
+CUST-00256,Jennifer Reed,keith98@example.com,Canada,2021-10-20,silver
+CUST-00257,Thomas Douglas,kellyroberts@example.net,Australia,2021-07-04,bronze
+CUST-00258,Melissa Taylor,ilewis@example.com,Canada,2019-09-18,silver
+CUST-00259,David Garcia,johnsantiago@example.net,Australia,2018-12-16,bronze
+CUST-00260,Vanessa Moore,jennifer12@example.org,Japan,2019-06-17,bronze
+CUST-00261,Matthew Velez,mwoods@example.com,Australia,2024-04-19,bronze
+CUST-00262,Taylor Gentry,pearsonjesse@example.net,France,2022-09-29,silver
+CUST-00263,Jennifer Simpson DVM,robertmonroe@example.org,Japan,2024-09-25,bronze
+CUST-00264,Tanya Rogers,nancy04@example.net,Canada,2020-05-21,bronze
+CUST-00265,Todd Rosales MD,ihays@example.net,France,2021-12-05,silver
+CUST-00266,David Lopez,lisarivera@example.net,Japan,2024-06-09,bronze
+CUST-00267,Margaret Sullivan,krystal93@example.org,United States,2024-12-21,silver
+CUST-00268,Cathy Taylor,frobertson@example.com,France,2024-10-30,gold
+CUST-00269,Paul Finley,shari04@example.com,France,2018-04-29,bronze
+CUST-00270,Melissa Brown,brandi90@example.com,United Kingdom,2021-10-23,bronze
+CUST-00271,Stephanie Padilla,marshallerik@example.net,United States,2024-05-08,silver
+CUST-00272,Tyler Mendoza,hannah45@example.net,India,2019-01-11,silver
+CUST-00273,Joshua Ruiz,madkins@example.com,Australia,2023-02-02,bronze
+CUST-00274,Angela Griffin,kathleenbecker@example.net,United Kingdom,2024-05-13,bronze
+CUST-00275,Stephanie Harris,christian91@example.org,Canada,2019-10-07,silver
+CUST-00276,Daniel Aguilar,franklinbond@example.com,Netherlands,2021-01-19,bronze
+CUST-00277,Jose Bryant,nolansean@example.org,Japan,2022-12-16,bronze
+CUST-00278,Jennifer Velasquez,hansenemily@example.com,Netherlands,2019-04-12,bronze
+CUST-00279,Kimberly Brown,bethwilliams@example.com,Germany,2023-06-17,bronze
+CUST-00280,Randy Cannon,andersenthomas@example.com,Germany,2022-06-07,gold
+CUST-00281,Susan Bennett,ybrooks@example.com,France,2021-05-19,gold
+CUST-00282,Kimberly Valdez,Felicia,India,2021-03-31,bronze
+CUST-00283,William Davenport,david86@example.net,Germany,2019-12-21,bronze
+CUST-00284,Kim Morrow,goodsteven@example.net,Australia,2023-08-12,bronze
+CUST-00285,Molly Rodriguez,stevenmoore@example.org,India,2018-10-23,bronze
+CUST-00286,Brian Johnson,bmendez@example.org,Australia,2018-03-18,bronze
+CUST-00287,Daniel Shields,sanchezbradley@example.com,India,2024-06-16,bronze
+CUST-00288,Monique Flores,taylorvictoria@example.org,Australia,2021-03-31,bronze
+CUST-00289,Donald Hawkins,joel28@example.org,Australia,2019-12-05,silver
+CUST-00290,Gregory Schneider,conniesimmons@example.com,India,2018-12-27,bronze
+CUST-00291,Chase Bennett,ufloyd@example.net,France,2024-08-09,bronze
+CUST-00292,Brianna Ford,oallen@example.com,Canada,2021-10-22,bronze
+CUST-00293,Jasmine Scott,harttammy@example.net,Germany,2023-09-22,silver
+CUST-00294,Sandra Williams,deborah75@example.org,United Kingdom,2021-12-02,bronze
+CUST-00295,Chelsea Gill,mnunez@example.org,United Kingdom,2020-08-25,bronze
+CUST-00296,Terry Lewis,timothybooth@example.com,Canada,2024-10-03,bronze
+CUST-00297,Melissa Padilla,suzannewilson@example.com,Brazil,2019-12-27,gold
+CUST-00298,Jamie Ferguson,jherman@example.com,Netherlands,2024-04-28,silver
+CUST-00299,Robert Bowen,kyle58@example.com,United Kingdom,2021-08-16,silver
+CUST-00300,Sean Figueroa,robin55@example.com,France,2022-12-07,bronze
+CUST-00301,Elizabeth Gonzalez,greensarah@example.net,Canada,2021-01-30,bronze
+CUST-00302,Terri Morgan,noahwhitaker@example.com,Australia,2021-06-25,bronze
+CUST-00303,Christopher Norton Jr.,plevy@example.net,Canada,2021-03-21,bronze
+CUST-00304,Kelly Combs,iwhite@example.net,Netherlands,2024-11-24,bronze
+CUST-00305,Ryan Hall,landryelizabeth@example.org,United States,2024-03-20,gold
+CUST-00306,Mark Peck,albertwagner@example.com,Germany,2023-01-17,gold
+CUST-00307,Jennifer Smith,bhopkins@example.org,United States,2021-08-09,silver
+CUST-00308,Megan Drake,amanda40@example.net,Australia,2023-01-20,bronze
+CUST-00309,Manuel King,danieldavis@example.org,Germany,2018-12-12,bronze
+CUST-00310,Judy Sanchez,joseph61@example.com,Netherlands,2022-11-29,gold
+CUST-00311,Shannon Malone,kevinclayton@example.org,India,2019-10-13,bronze
+CUST-00312,Adam Jackson,sullivannicholas@example.com,United States,2022-08-02,silver
+CUST-00313,Shannon Davis,pbruce@example.com,India,2021-10-02,bronze
+CUST-00314,Karen Williams,hallrachel@example.net,Netherlands,2021-03-09,bronze
+CUST-00315,Amanda Mcfarland,cohenjuan@example.net,United Kingdom,2019-09-08,bronze
+CUST-00316,Michelle Sanders,alexis39@example.org,India,2021-12-03,bronze
+CUST-00317,Jasmine Mosley,evansanne@example.net,France,2019-06-13,bronze
+CUST-00318,Haley Davis,patrick21@example.net,United Kingdom,2024-04-08,bronze
+CUST-00319,Jennifer Ayala,marypeterson@example.net,Japan,2023-11-27,bronze
+CUST-00320,Henry Pugh MD,walterskristen@example.com,Germany,2022-01-22,bronze
+CUST-00321,Michelle Miller,nmiller@example.com,Germany,2021-10-31,gold
+CUST-00322,Emily Rodriguez,normanbowers@example.org,Canada,2019-07-18,bronze
+CUST-00323,Brandon Jordan,hahnsean@example.com,Japan,2023-09-11,silver
+CUST-00324,Linda Mueller,fgarcia@example.com,Netherlands,2018-06-04,silver
+CUST-00325,Misty Hansen,asmith@example.com,United Kingdom,2019-06-21,bronze
+CUST-00326,Derrick Adams,ashleyjackson@example.com,Australia,2019-11-10,silver
+CUST-00327,Richard Ward,bryanhamilton@example.com,Brazil,2020-08-30,gold
+CUST-00328,Brian Torres,jennifersimpson@example.net,Brazil,2020-08-16,bronze
+CUST-00329,Erin Cook,ncook@example.com,Brazil,2020-03-05,bronze
+CUST-00330,Ernest Oconnell,kevinmorrison@example.net,Japan,2023-03-07,silver
+CUST-00331,Douglas Hartman,kelly79@example.org,Germany,2023-12-01,bronze
+CUST-00332,Catherine Saunders MD,daniel93@example.net,Brazil,2024-10-12,bronze
+CUST-00333,Sandra Jones,nhahn@example.com,Japan,2022-03-01,bronze
+CUST-00334,David Moore,ichambers@example.net,France,2019-05-26,bronze
+CUST-00335,Karen Morales DDS,emccormick@example.com,India,2023-01-15,gold
+CUST-00336,Robin Wheeler,ystephens@example.com,Brazil,2019-01-11,gold
+CUST-00337,Matthew Williams,rodriguezjohn@example.net,India,2021-12-02,gold
+CUST-00338,Brett Walker,vrasmussen@example.com,Canada,2023-08-19,bronze
+CUST-00339,Kathryn Cooper,seanmyers@example.net,Canada,2022-03-16,bronze
+CUST-00340,Todd Thomas,webbkenneth@example.org,France,2021-10-05,silver
+CUST-00341,Brent Bowen,matthew38@example.com,Brazil,2023-04-20,silver
+CUST-00342,Ashley Sweeney,tflores@example.org,United States,2023-01-12,silver
+CUST-00343,Christopher Moore,byrdfrank@example.net,Netherlands,2020-11-14,bronze
+CUST-00344,Charlotte Sandoval,omullen@example.com,Germany,2023-12-02,bronze
+CUST-00345,Jeffrey Smith,njohnson@example.org,Netherlands,2021-05-18,bronze
+CUST-00346,Rebecca Herrera,jamiegoodwin@example.org,Brazil,2023-02-16,bronze
+CUST-00347,Katherine Church,mark71@example.com,Netherlands,2024-09-10,bronze
+CUST-00348,Harold Ellis,candice96@example.net,United States,2020-09-17,silver
+CUST-00349,Leslie Powers,lisamccarthy@example.com,United Kingdom,2024-11-23,bronze
+CUST-00350,Charles Price,david41@example.org,Japan,2018-12-17,bronze
+CUST-00351,Melissa Brewer,baileyhenderson@example.com,Japan,2024-02-07,bronze
+CUST-00352,Ryan Harvey,angelaburns@example.org,India,2018-03-25,bronze
+CUST-00353,Kari Lee,Michelle,Canada,2022-03-10,bronze
+CUST-00354,Michael Perry PhD,gmaynard@example.net,Canada,2021-11-13,bronze
+CUST-00355,Connie Johnson,kjackson@example.org,United States,2024-07-11,silver
+CUST-00356,Patricia Simpson,amandajackson@example.com,United Kingdom,2021-12-14,bronze
+CUST-00357,Holly Carson,armstrongjoseph@example.net,United Kingdom,2023-03-19,gold
+CUST-00358,Ashley Greer PhD,wolfscott@example.org,Brazil,2019-07-07,bronze
+CUST-00359,Robert Gonzales,nancy07@example.com,Germany,2018-06-01,bronze
+CUST-00360,Heather Page,rowejoel@example.net,India,2018-06-21,bronze
+CUST-00361,Renee Hudson,imartin@example.org,Germany,2024-02-03,bronze
+CUST-00362,Kenneth Farley,candice25@example.net,Australia,2021-03-17,bronze
+CUST-00363,Wendy Camacho,taylorkaren@example.com,India,2021-01-24,bronze
+CUST-00364,Sandra Juarez,jacquelineanderson@example.org,United Kingdom,2022-12-07,silver
+CUST-00365,Jason Hayes,kburns@example.net,Japan,2023-07-26,silver
+CUST-00366,Jackie Clements,powellkara@example.net,Canada,2020-12-28,silver
+CUST-00367,Heather Brown,brandi17@example.net,Japan,2022-10-30,silver
+CUST-00368,Frank Campbell MD,brobinson@example.org,France,2021-04-18,bronze
+CUST-00369,Pamela Williams,ashleewashington@example.com,United Kingdom,2021-06-09,bronze
+CUST-00370,William Patterson,ksmith@example.com,Australia,2022-12-24,bronze
+CUST-00371,Isaac Miller,nicoleturner@example.com,United States,2024-11-23,gold
+CUST-00372,Cynthia Rios,brettgarrett@example.net,Japan,2018-11-04,silver
+CUST-00373,Kelly Wallace,smiththomas@example.org,Netherlands,2019-10-18,gold
+CUST-00374,Karen Perez,dominguezlisa@example.com,Australia,2022-11-30,bronze
+CUST-00375,Edwin Reyes,crosscurtis@example.com,Netherlands,2022-01-23,bronze
+CUST-00376,Alejandra Santos,darlenebyrd@example.org,Australia,2019-09-21,silver
+CUST-00377,Tamara Jensen,nbell@example.net,Japan,2022-12-24,silver
+CUST-00378,Bryce Blair,fheath@example.org,Germany,2022-02-12,bronze
+CUST-00379,Bradley Tran,sylvia52@example.org,Japan,2019-04-10,bronze
+CUST-00380,Katrina Adkins,kimberly04@example.org,France,2022-05-05,gold
+CUST-00381,Jonathan Wheeler,debbie37@example.com,Brazil,2023-01-02,bronze
+CUST-00382,Ryan Fisher,hatfieldsarah@example.org,Brazil,2020-03-30,bronze
+CUST-00383,Austin Baker,kathrynbest@example.org,Canada,2019-12-09,silver
+CUST-00384,Lori Mason,livingstonstacy@example.com,Japan,2021-08-02,silver
+CUST-00385,Kimberly Hernandez,zhenderson@example.org,United Kingdom,2024-01-30,bronze
+CUST-00386,Brittney Murphy,collinswilliam@example.org,Canada,2019-12-15,silver
+CUST-00387,Brandon Hamilton,collinssamuel@example.org,Brazil,2020-04-03,silver
+CUST-00388,Mary Thompson,dsalazar@example.com,Brazil,2018-04-18,bronze
+CUST-00389,Gregory Holmes PhD,zimmermanjacqueline@example.org,Canada,2024-03-09,bronze
+CUST-00390,Patricia Johnson,gary24@example.net,Brazil,2021-06-20,bronze
+CUST-00391,Laura Jones,enelson@example.com,Netherlands,2023-11-24,bronze
+CUST-00392,Carol Moore,ddixon@example.com,Canada,2018-10-30,bronze
+CUST-00393,Jordan Williams,shannonemily@example.org,United Kingdom,2023-01-18,bronze
+CUST-00394,Cassidy Horne,sanchezthomas@example.com,United Kingdom,2024-03-08,silver
+CUST-00395,Courtney Wright,tranrobin@example.net,Canada,2022-11-08,bronze
+CUST-00396,Michael Williams,joseph19@example.com,Australia,2023-10-24,bronze
+CUST-00397,John Campbell,lindajarvis@example.com,France,2020-07-12,bronze
+CUST-00398,Eddie Mueller,mark87@example.org,Japan,2018-11-20,bronze
+CUST-00399,Dr. Morgan Payne PhD,stevenvargas@example.com,Japan,2021-01-29,bronze
+CUST-00400,Makayla Steele,adamortiz@example.org,Netherlands,2019-01-18,bronze
+CUST-00401,Oscar Parker,tapiaaaron@example.net,Netherlands,2019-09-24,bronze
+CUST-00402,Valerie Thomas,alyssaallen@example.com,United States,2021-10-14,silver
+CUST-00403,Jacqueline Villegas,christopher38@example.com,Netherlands,2018-11-29,bronze
+CUST-00404,Angela Bradley,carpenterwilliam@example.net,India,2020-12-20,silver
+CUST-00405,Samuel Howe,ibates@example.org,Japan,2024-12-06,silver
+CUST-00406,Dillon Jones,vhaynes@example.com,Germany,2021-04-01,silver
+CUST-00407,Christopher Owens,derekcarrillo@example.org,United States,2022-07-22,bronze
+CUST-00408,John Phelps,wmartinez@example.org,Germany,2019-10-10,bronze
+CUST-00409,Amanda Huff,mooregina@example.net,Australia,2021-10-25,silver
+CUST-00410,Megan Green,eddie35@example.com,Australia,2021-11-15,gold
+CUST-00411,Krista Davis,anthonysullivan@example.com,Brazil,2023-10-11,bronze
+CUST-00412,Richard Walker,laradonald@example.org,Canada,2019-05-17,bronze
+CUST-00413,Angela Willis,madisonwatson@example.net,Netherlands,2018-07-27,bronze
+CUST-00414,Carl Stein,johnsoncaleb@example.net,United Kingdom,2022-09-09,bronze
+CUST-00415,Jessica Ramsey,david70@example.org,Germany,2021-09-03,gold
+CUST-00416,Daniel Lopez,rjohnson@example.com,Brazil,2019-10-15,bronze
+CUST-00417,Danielle Phillips,sean20@example.net,India,2021-06-17,bronze
+CUST-00418,James Barnes,eandrade@example.org,Netherlands,2023-09-02,bronze
+CUST-00419,Rachael Howard DDS,crystalpham@example.org,Netherlands,2021-12-16,bronze
+CUST-00420,Kathryn Price,Todd,Canada,2023-04-12,bronze
+CUST-00421,Paula Brown,anthonyharper@example.org,Australia,2022-11-01,bronze
+CUST-00422,Dr. Ariel Sandoval MD,xmoreno@example.net,Netherlands,2022-07-10,bronze
+CUST-00423,Rebecca Kelly,gallagherstacie@example.net,Canada,2024-04-20,bronze
+CUST-00424,Suzanne Johnson,gregorywatkins@example.net,France,2022-05-02,bronze
+CUST-00425,Sara Cochran,stacey92@example.net,Canada,2024-12-27,silver
+CUST-00426,Anthony Guzman,lweaver@example.com,Japan,2022-06-02,bronze
+CUST-00427,Carlos Love,foxaaron@example.net,Japan,2022-02-06,silver
+CUST-00428,Patricia Mathis,brian29@example.net,United Kingdom,2022-07-03,bronze
+CUST-00429,Eric Taylor,susan56@example.net,United Kingdom,2021-09-26,silver
+CUST-00430,Marie Thompson,jessicakim@example.net,Netherlands,2024-10-19,silver
+CUST-00431,Michael Anderson,jeffrey92@example.com,France,2021-07-28,bronze
+CUST-00432,Patricia Bradley,rushstacy@example.com,Japan,2024-08-28,bronze
+CUST-00433,Keith Zuniga,carriemccall@example.net,United States,2023-06-30,silver
+CUST-00434,Mrs. Stacey Davis,markmiller@example.com,India,2022-02-17,bronze
+CUST-00435,Hayley Buchanan,sean43@example.org,United States,2024-07-18,bronze
+CUST-00436,Stacey Snyder,williamssamuel@example.com,Netherlands,2024-09-10,bronze
+CUST-00437,Rachel Lane,ybell@example.org,Brazil,2024-06-23,bronze
+CUST-00438,Fernando Lynn,franciscojones@example.org,India,2019-11-30,bronze
+CUST-00439,Kimberly Villanueva,petersonpamela@example.org,Netherlands,2019-08-29,silver
+CUST-00440,Jessica Valdez,morgantricia@example.com,India,2019-03-27,bronze
+CUST-00441,Colton Terry,gmoore@example.com,Japan,2019-09-13,bronze
+CUST-00442,Kenneth Larsen,donna43@example.org,United States,2024-11-09,gold
+CUST-00443,Matthew Greene,briansmith@example.org,Brazil,2019-07-20,bronze
+CUST-00444,Bradley Anthony,collinclark@example.net,Brazil,2023-11-23,bronze
+CUST-00445,Martin Hughes,kristen77@example.net,France,2023-12-24,bronze
+CUST-00446,Jeremiah Baker,nicole52@example.com,France,2024-11-03,bronze
+CUST-00447,Rhonda Gutierrez,anne21@example.org,France,2024-04-04,bronze
+CUST-00448,Joseph Camacho,angelarandall@example.net,Brazil,2021-03-29,silver
+CUST-00449,James Nash,parmstrong@example.com,France,2021-07-22,bronze
+CUST-00450,Lisa Martinez,shawrachel@example.net,India,2021-03-24,bronze
+CUST-00451,Beth Henderson,kthompson@example.org,United Kingdom,2022-06-05,silver
+CUST-00452,Deanna Bartlett,oharris@example.org,Canada,2021-04-04,bronze
+CUST-00453,Donald Ellis,millerangela@example.net,Brazil,2021-11-19,gold
+CUST-00454,Ashley Hernandez,buchanancindy@example.net,Japan,2020-05-26,bronze
+CUST-00455,Sharon Beard,buckleyanna@example.org,Netherlands,2021-01-17,bronze
+CUST-00456,Kara Jackson,pbaker@example.com,Japan,2020-09-07,bronze
+CUST-00457,Amanda Preston,mthomas@example.net,India,2020-07-13,silver
+CUST-00458,Alicia Roth,hannah07@example.com,United Kingdom,2021-09-14,silver
+CUST-00459,William Ramos,larry71@example.org,United Kingdom,2018-01-22,gold
+CUST-00460,Jeremy Mcintyre,joseph69@example.net,Brazil,2022-07-25,silver
+CUST-00461,Samantha Robertson,wfigueroa@example.net,France,2023-05-10,silver
+CUST-00462,Samuel Suarez,cameronmckinney@example.com,Canada,2021-08-08,bronze
+CUST-00463,Danielle Bryant,thompsonnancy@example.org,United States,2024-06-09,bronze
+CUST-00464,Madison Martinez,janet45@example.com,United States,2019-12-19,bronze
+CUST-00465,Seth Matthews,allentracy@example.com,France,2022-06-15,silver
+CUST-00466,Anthony Nash,max41@example.com,Canada,2018-06-03,bronze
+CUST-00467,Matthew Palmer,mercedesholland@example.net,Japan,2021-10-04,bronze
+CUST-00468,Alejandra King,wellsdavid@example.org,Japan,2023-11-18,bronze
+CUST-00469,Judy Robinson,jennifer46@example.com,Australia,2023-04-02,bronze
+CUST-00470,Jorge Bates,erica96@example.net,United Kingdom,2019-10-28,silver
+CUST-00471,Brian Brown,anna99@example.com,Netherlands,2018-02-27,silver
+CUST-00472,Stephanie Evans,danielle44@example.net,India,2020-03-02,bronze
+CUST-00473,Rebekah Greene,zacharyallen@example.org,Canada,2022-10-18,bronze
+CUST-00474,Jason Price,erin07@example.com,Germany,2020-01-27,gold
+CUST-00475,Micheal Parks,aguilarwanda@example.org,France,2018-01-28,bronze
+CUST-00476,Sarah Pittman,qknox@example.com,United States,2021-09-12,bronze
+CUST-00477,Robert Hines,kellyruiz@example.net,United States,2020-12-07,silver
+CUST-00478,Henry Garner,staceylam@example.net,Japan,2019-04-30,bronze
+CUST-00479,Julie Wilson,robert55@example.com,France,2021-06-27,silver
+CUST-00480,Steve Mason,delacruzbrandy@example.net,United Kingdom,2022-02-14,silver
+CUST-00481,Brittany Gay,amoreno@example.org,Netherlands,2023-05-13,bronze
+CUST-00482,Mike Maxwell,robert97@example.org,Brazil,2022-03-11,bronze
+CUST-00483,Abigail Hill,lcook@example.com,Germany,2024-01-11,silver
+CUST-00484,Jeffrey Jordan,barbaramoore@example.org,Brazil,2024-09-06,silver
+CUST-00485,Curtis Watson,ysanford@example.org,Netherlands,2023-12-04,silver
+CUST-00486,Michael Sims,mcclainkatherine@example.net,Japan,2019-04-05,bronze
+CUST-00487,James Chapman,jeremywiley@example.com,Australia,2020-04-08,bronze
+CUST-00488,Joseph Warren,cameronwilliams@example.com,Netherlands,2023-11-02,bronze
+CUST-00489,Katherine Christensen MD,ibarron@example.com,United States,2023-06-26,bronze
+CUST-00490,Mrs. Alison Wagner,osmith@example.net,Netherlands,2023-02-01,bronze
+CUST-00491,Martin Wise,richardsondebra@example.org,France,2018-08-25,bronze
+CUST-00492,Alicia Norris,wheelerbrandon@example.org,Germany,2018-03-31,bronze
+CUST-00493,Michael Harris,hwallace@example.net,Canada,2024-06-26,bronze
+CUST-00494,Lisa Haynes,turnerdorothy@example.net,Canada,2024-01-26,gold
+CUST-00495,Autumn Wilson,grivas@example.net,United Kingdom,2023-04-18,bronze
+CUST-00496,Valerie Howard,jimenezchelsea@example.com,Brazil,2022-09-18,bronze
+CUST-00497,Daniel Fitzpatrick MD,cphillips@example.net,Japan,2022-03-27,bronze
+CUST-00498,Maureen Hernandez,smithchristopher@example.org,United Kingdom,2019-06-29,silver
+CUST-00499,David Hall,chancharles@example.net,Germany,2024-01-10,bronze
+CUST-00500,Sarah Ward,joseph01@example.org,Brazil,2018-01-15,silver

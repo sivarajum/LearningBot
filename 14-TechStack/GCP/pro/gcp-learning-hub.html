@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP Learning Hub - Interactive Educational Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 4em;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from {
+                text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+                filter: brightness(1);
+            }
+
+            to {
+                text-shadow: 3px 3px 12px rgba(255, 255, 255, 0.6);
+                filter: brightness(1.1);
+            }
+        }
+
+        .header .subtitle {
+            font-size: 1.4em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .header .description {
+            font-size: 1.1em;
+            opacity: 0.8;
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.6;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .platform-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .feature-description {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .service-category {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .service-category:hover::before {
+            left: 100%;
+        }
+
+        .service-category:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .category-icon {
+            font-size: 40px;
+            margin-right: 15px;
+            opacity: 0.8;
+        }
+
+        .category-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0;
+        }
+
+        .category-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .service-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .service-item {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .service-item:hover::before {
+            opacity: 1;
+        }
+
+        .service-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .service-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .service-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .service-tag {
+            font-size: 11px;
+            color: #666;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .learning-paths {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+        }
+
+        .learning-paths h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .path-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .learning-path {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #4CAF50;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .learning-path:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
+        }
+
+        .path-icon {
+            font-size: 35px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .path-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2E7D32;
+            margin-bottom: 10px;
+        }
+
+        .path-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .path-steps {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .path-step {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .stats-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat-item {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+            border-radius: 15px;
+            border: 2px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #F57C00;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .stat-description {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: floatShape 20s ease-in-out infinite;
+        }
+
+        .bg-shape:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+
+        .bg-shape:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            right: 15%;
+            top: 60%;
+            animation-delay: 5s;
+        }
+
+        .bg-shape:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            left: 70%;
+            bottom: 20%;
+            animation-delay: 10s;
+        }
+
+        .bg-shape:nth-child(4) {
+            width: 400px;
+            height: 400px;
+            left: 50%;
+            top: 10%;
+            animation-delay: 15s;
+        }
+
+        @keyframes floatShape {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg) scale(1);
+            }
+
+            33% {
+                transform: translateY(-30px) rotate(120deg) scale(1.1);
+            }
+
+            66% {
+                transform: translateY(20px) rotate(240deg) scale(0.9);
+            }
+        }
+
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: particleFloat 15s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) {
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 40%;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(3) {
+            left: 60%;
+            animation-delay: 4s;
+        }
+
+        .particle:nth-child(4) {
+            left: 80%;
+            animation-delay: 6s;
+        }
+
+        .particle:nth-child(5) {
+            left: 30%;
+            animation-delay: 8s;
+        }
+
+        .particle:nth-child(6) {
+            left: 70%;
+            animation-delay: 10s;
+        }
+
+        @keyframes particleFloat {
+
+            0%,
+            100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .service-list {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+
+            .path-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .scroll-indicator:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="bg-shape"></div>
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎓 GCP Learning Hub</h1>
+            <p class="subtitle">Master Google Cloud Platform - From Fundamentals to Enterprise Solutions</p>
+            <p class="description">
+                Comprehensive educational platform featuring interactive workflows, animated data flows, and hands-on
+                learning experiences.
+                Master GCP services through structured learning paths, real-world architectures, and production-ready
+                implementations.
+            </p>
+
+            <div class="platform-features">
+                <div class="feature-item">
+                    <span class="feature-icon">🎯</span>
+                    <div class="feature-title">Structured Learning</div>
+                    <div class="feature-description">
+                        4 comprehensive learning paths from beginner to enterprise architect,
+                        with progressive skill development and certification preparation.
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <div class="feature-title">Interactive Workflows</div>
+                    <div class="feature-description">
+                        8 detailed workflow patterns covering data pipelines, ML operations,
+                        CI/CD, security, and global distribution architectures.
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <span class="feature-icon">🏗️</span>
+                    <div class="feature-title">Real-World Projects</div>
+                    <div class="feature-description">
+                        6 complete project architectures demonstrating e-commerce platforms,
+                        IoT systems, ML pipelines, and microservices implementations.
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <div class="feature-title">Advanced Analytics</div>
+                    <div class="feature-description">
+                        Deep dive into BigQuery, Dataflow, Vertex AI, and analytics workflows
+                        with performance optimization and cost management strategies.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Paths -->
+        <div class="learning-paths">
+            <h2>🛣️ Learning Paths - Your GCP Journey</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 16px;">
+                Choose your learning journey based on your experience level and career goals.
+                Each path includes hands-on labs, real-world projects, and certification preparation.
+            </p>
+            <div class="path-grid">
+                <div class="learning-path" onclick="navigateToPath('beginner')">
+                    <span class="path-icon">🌱</span>
+                    <div class="path-title">Beginner Path</div>
+                    <div class="path-description">
+                        Perfect for newcomers to cloud computing. Learn GCP fundamentals, core services,
+                        and basic architectures. Build your first cloud applications and understand cloud concepts.
+                    </div>
+                    <div class="path-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Duration:</strong> 8-12 weeks<br>
+                        <strong>Prerequisites:</strong> Basic programming knowledge<br>
+                        <strong>Skills:</strong> Cloud fundamentals, basic services, simple deployments
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">GCP Basics</span>
+                        <span class="path-step">Core Services</span>
+                        <span class="path-step">Simple Architectures</span>
+                        <span class="path-step">First Deployment</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="navigateToPath('intermediate')">
+                    <span class="path-icon">🚀</span>
+                    <div class="path-title">Intermediate Path</div>
+                    <div class="path-description">
+                        Dive deeper into advanced GCP services, complex architectures, and performance optimization.
+                        Learn about data processing, machine learning, and scalable application design.
+                    </div>
+                    <div class="path-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Duration:</strong> 12-16 weeks<br>
+                        <strong>Prerequisites:</strong> Beginner path or equivalent experience<br>
+                        <strong>Skills:</strong> Advanced services, complex workflows, optimization
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Advanced Services</span>
+                        <span class="path-step">Complex Workflows</span>
+                        <span class="path-step">Performance Tuning</span>
+                        <span class="path-step">Monitoring & Logging</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="navigateToPath('advanced')">
+                    <span class="path-icon">🏆</span>
+                    <div class="path-title">Advanced Path</div>
+                    <div class="path-description">
+                        Master enterprise architectures, cutting-edge services, and production excellence.
+                        Focus on security, compliance, multi-cloud strategies, and leadership in cloud architecture.
+                    </div>
+                    <div class="path-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Duration:</strong> 16-24 weeks<br>
+                        <strong>Prerequisites:</strong> Intermediate path and professional experience<br>
+                        <strong>Skills:</strong> Enterprise architecture, security, compliance, leadership
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Enterprise Architecture</span>
+                        <span class="path-step">AI/ML Integration</span>
+                        <span class="path-step">Production Excellence</span>
+                        <span class="path-step">Cloud Leadership</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="navigateToPath('workflows')">
+                    <span class="path-icon">⚡</span>
+                    <div class="path-title">Workflow Focus</div>
+                    <div class="path-description">
+                        Specialize in specific workflow patterns and implementation scenarios.
+                        Master data pipelines, ML operations, DevOps, and specialized cloud architectures.
+                    </div>
+                    <div class="path-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Duration:</strong> 10-14 weeks<br>
+                        <strong>Prerequisites:</strong> Intermediate knowledge in target area<br>
+                        <strong>Skills:</strong> Specialized workflows, domain expertise, advanced patterns
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Data Pipelines</span>
+                        <span class="path-step">ML Workflows</span>
+                        <span class="path-step">Event-Driven Apps</span>
+                        <span class="path-step">Workflow Automation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Categories -->
+        <div class="services-grid">
+            <!-- Compute Category -->
+            <div class="service-category">
+                <div class="category-header">
+                    <span class="category-icon">💻</span>
+                    <h3 class="category-title">Compute Services</h3>
+                </div>
+                <div class="category-description">
+                    Virtual machines, containers, and serverless computing platforms for any workload.
+                    From simple VMs to complex containerized applications and event-driven functions.
+                </div>
+                <div class="category-features" style="margin: 15px 0; font-size: 13px; color: #666;">
+                    <strong>Use Cases:</strong> Web apps, batch processing, containerized apps, serverless functions<br>
+                    <strong>Key Benefits:</strong> Auto-scaling, managed infrastructure, global distribution
+                </div>
+                <div class="service-list">
+                    <div class="service-item" onclick="openServicePage('compute-engine')">
+                        <span class="service-icon">🖥️</span>
+                        <div class="service-name">Compute Engine</div>
+                        <span class="service-tag">VMs</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('kubernetes-engine')">
+                        <span class="service-icon">🚢</span>
+                        <div class="service-name">GKE</div>
+                        <span class="service-tag">Containers</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('cloud-run')">
+                        <span class="service-icon">🚀</span>
+                        <div class="service-name">Cloud Run</div>
+                        <span class="service-tag">Serverless</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('cloud-functions')">
+                        <span class="service-icon">⚡</span>
+                        <div class="service-name">Cloud Functions</div>
+                        <span class="service-tag">Functions</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data & Analytics -->
+            <div class="service-category">
+                <div class="category-header">
+                    <span class="category-icon">📊</span>
+                    <h3 class="category-title">Data & Analytics</h3>
+                </div>
+                <div class="category-description">
+                    Store, process, and analyze data at any scale with managed services.
+                    From data lakes to real-time analytics and machine learning insights.
+                </div>
+                <div class="category-features" style="margin: 15px 0; font-size: 13px; color: #666;">
+                    <strong>Use Cases:</strong> Data warehousing, real-time analytics, ML pipelines, data lakes<br>
+                    <strong>Key Benefits:</strong> Serverless scaling, integrated ML, real-time processing
+                </div>
+                <div class="service-list">
+                    <div class="service-item" onclick="openServicePage('bigquery')">
+                        <span class="service-icon">📊</span>
+                        <div class="service-name">BigQuery</div>
+                        <span class="service-tag">Data Warehouse</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('cloud-storage')">
+                        <span class="service-icon">☁️</span>
+                        <div class="service-name">Cloud Storage</div>
+                        <span class="service-tag">Object Storage</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('dataflow')">
+                        <span class="service-icon">🌊</span>
+                        <div class="service-name">Dataflow</div>
+                        <span class="service-tag">Stream Processing</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('dataproc')">
+                        <span class="service-icon">🔥</span>
+                        <div class="service-name">Dataproc</div>
+                        <span class="service-tag">Hadoop/Spark</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI & Machine Learning -->
+            <div class="service-category">
+                <div class="category-header">
+                    <span class="category-icon">🤖</span>
+                    <h3 class="category-title">AI & Machine Learning</h3>
+                </div>
+                <div class="category-description">
+                    Build, deploy, and scale AI applications with pre-trained models and AutoML.
+                    From computer vision to natural language processing and predictive analytics.
+                </div>
+                <div class="category-features" style="margin: 15px 0; font-size: 13px; color: #666;">
+                    <strong>Use Cases:</strong> Predictive analytics, computer vision, NLP, recommendation systems<br>
+                    <strong>Key Benefits:</strong> Pre-trained models, AutoML, Vertex AI unified platform
+                </div>
+                <div class="service-list">
+                    <div class="service-item" onclick="openServicePage('vertex-ai')">
+                        <span class="service-icon">🤖</span>
+                        <div class="service-name">Vertex AI</div>
+                        <span class="service-tag">ML Platform</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('ai-platform')">
+                        <span class="service-icon">🧠</span>
+                        <div class="service-name">AI Platform</div>
+                        <span class="service-tag">Unified AI</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('automl')">
+                        <span class="service-icon">🎯</span>
+                        <div class="service-name">AutoML</div>
+                        <span class="service-tag">No-Code ML</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('bigquery-ml')">
+                        <span class="service-icon">📈</span>
+                        <div class="service-name">BigQuery ML</div>
+                        <span class="service-tag">SQL ML</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Networking & Security -->
+            <div class="service-category">
+                <div class="category-header">
+                    <span class="category-icon">🔒</span>
+                    <h3 class="category-title">Networking & Security</h3>
+                </div>
+                <div class="category-description">
+                    Secure, scalable networking with global load balancing and edge services.
+                    Enterprise-grade security, compliance, and network management solutions.
+                </div>
+                <div class="category-features" style="margin: 15px 0; font-size: 13px; color: #666;">
+                    <strong>Use Cases:</strong> Global apps, hybrid cloud, DDoS protection, access control<br>
+                    <strong>Key Benefits:</strong> Global network, zero-trust security, compliance automation
+                </div>
+                <div class="service-list">
+                    <div class="service-item" onclick="openServicePage('vpc')">
+                        <span class="service-icon">🌐</span>
+                        <div class="service-name">VPC Network</div>
+                        <span class="service-tag">Virtual Network</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('load-balancing')">
+                        <span class="service-icon">⚖️</span>
+                        <div class="service-name">Load Balancing</div>
+                        <span class="service-tag">Traffic Distribution</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('cloud-armor')">
+                        <span class="service-icon">🛡️</span>
+                        <div class="service-name">Cloud Armor</div>
+                        <span class="service-tag">DDoS Protection</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('identity-access')">
+                        <span class="service-icon">🔑</span>
+                        <div class="service-name">IAM</div>
+                        <span class="service-tag">Access Control</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DevOps & Tools -->
+            <div class="service-category">
+                <div class="category-header">
+                    <span class="category-icon">🔧</span>
+                    <h3 class="category-title">DevOps & Tools</h3>
+                </div>
+                <div class="category-description">
+                    CI/CD pipelines, monitoring, logging, and developer productivity tools.
+                    Complete DevOps toolchain for modern application development and deployment.
+                </div>
+                <div class="category-features" style="margin: 15px 0; font-size: 13px; color: #666;">
+                    <strong>Use Cases:</strong> CI/CD pipelines, infrastructure as code, monitoring, logging<br>
+                    <strong>Key Benefits:</strong> Automated deployments, observability, developer productivity
+                </div>
+                <div class="service-list">
+                    <div class="service-item" onclick="openServicePage('cloud-build')">
+                        <span class="service-icon">🏗️</span>
+                        <div class="service-name">Cloud Build</div>
+                        <span class="service-tag">CI/CD</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('container-registry')">
+                        <span class="service-icon">📦</span>
+                        <div class="service-name">Container Registry</div>
+                        <span class="service-tag">Docker Images</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('cloud-monitoring')">
+                        <span class="service-icon">📊</span>
+                        <div class="service-name">Cloud Monitoring</div>
+                        <span class="service-tag">Observability</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('cloud-logging')">
+                        <span class="service-icon">📝</span>
+                        <div class="service-name">Cloud Logging</div>
+                        <span class="service-tag">Log Management</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Databases -->
+            <div class="service-category">
+                <div class="category-header">
+                    <span class="category-icon">💾</span>
+                    <h3 class="category-title">Databases</h3>
+                </div>
+                <div class="category-description">
+                    Managed relational and NoSQL databases with automatic scaling and backups.
+                    From traditional SQL databases to globally distributed NoSQL solutions.
+                </div>
+                <div class="category-features" style="margin: 15px 0; font-size: 13px; color: #666;">
+                    <strong>Use Cases:</strong> Web apps, mobile apps, analytics, IoT, global applications<br>
+                    <strong>Key Benefits:</strong> Auto-scaling, managed backups, global distribution, high availability
+                </div>
+                <div class="service-list">
+                    <div class="service-item" onclick="openServicePage('cloud-sql')">
+                        <span class="service-icon">🗄️</span>
+                        <div class="service-name">Cloud SQL</div>
+                        <span class="service-tag">MySQL/PostgreSQL</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('cloud-spanner')">
+                        <span class="service-icon">🌍</span>
+                        <div class="service-name">Spanner</div>
+                        <span class="service-tag">Global Database</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('firestore')">
+                        <span class="service-icon">🔥</span>
+                        <div class="service-name">Firestore</div>
+                        <span class="service-tag">NoSQL</span>
+                    </div>
+                    <div class="service-item" onclick="openServicePage('bigtable')">
+                        <span class="service-icon">📋</span>
+                        <div class="service-name">Bigtable</div>
+                        <span class="service-tag">Wide Column</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GCP Workflows & Architectures -->
+        <div class="learning-paths">
+            <h2>⚡ GCP Workflows & Architectures - Enterprise Implementation Patterns</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 16px;">
+                Master production-ready GCP implementations with detailed workflow patterns, best practices,
+                and enterprise-grade architectures for real-world scenarios.
+            </p>
+            <div class="path-grid">
+                <div class="learning-path" onclick="showWorkflowDemo('data-ingestion')">
+                    <span class="path-icon">📥</span>
+                    <div class="path-title">Data Ingestion Pipeline</div>
+                    <div class="path-description">
+                        Complete data ingestion and processing workflow with Pub/Sub, Dataflow, and BigQuery.
+                        Handle real-time streaming and batch data with automatic scaling and error handling.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Scale:</strong> Petabytes of data<br>
+                        <strong>Latency:</strong> Real-time to batch processing<br>
+                        <strong>Use Cases:</strong> IoT, clickstreams, log analytics
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Pub/Sub</span>
+                        <span class="path-step">Dataflow</span>
+                        <span class="path-step">Cloud Storage</span>
+                        <span class="path-step">BigQuery</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showWorkflowDemo('ml-pipeline')">
+                    <span class="path-icon">🧠</span>
+                    <div class="path-title">ML Training Pipeline</div>
+                    <div class="path-description">
+                        End-to-end ML pipeline from data preparation to model deployment with Vertex AI.
+                        Automated training, evaluation, A/B testing, and continuous model improvement.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Models:</strong> Classification, regression, recommendation<br>
+                        <strong>Automation:</strong> Scheduled retraining, model monitoring<br>
+                        <strong>Scale:</strong> Distributed training, GPU acceleration
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">BigQuery</span>
+                        <span class="path-step">Vertex AI</span>
+                        <span class="path-step">Cloud Storage</span>
+                        <span class="path-step">Cloud Functions</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showWorkflowDemo('ci-cd')">
+                    <span class="path-icon">🔄</span>
+                    <div class="path-title">CI/CD Pipeline</div>
+                    <div class="path-description">
+                        Automated deployment pipeline with Cloud Build, Container Registry, and Cloud Run.
+                        From code commit to production with testing, security scanning, and rollback capabilities.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Triggers:</strong> Git commits, scheduled builds<br>
+                        <strong>Testing:</strong> Unit tests, integration tests, security scans<br>
+                        <strong>Environments:</strong> Dev, staging, production
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Cloud Build</span>
+                        <span class="path-step">Container Registry</span>
+                        <span class="path-step">Cloud Run</span>
+                        <span class="path-step">Cloud Monitoring</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showWorkflowDemo('hybrid-cloud')">
+                    <span class="path-icon">🌐</span>
+                    <div class="path-title">Hybrid Cloud Setup</div>
+                    <div class="path-description">
+                        Connect on-premises infrastructure with GCP using VPN, Interconnect, and hybrid networking.
+                        Secure data transfer, unified management, and seamless application migration.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Connectivity:</strong> VPN, Dedicated Interconnect, Partner Interconnect<br>
+                        <strong>Security:</strong> Encrypted tunnels, firewall rules<br>
+                        <strong>Migration:</strong> Lift-and-shift, cloud-native transformation
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">VPN</span>
+                        <span class="path-step">Interconnect</span>
+                        <span class="path-step">VPC</span>
+                        <span class="path-step">Cloud Router</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showWorkflowDemo('security-workflow')">
+                    <span class="path-icon">🔒</span>
+                    <div class="path-title">Security & Compliance</div>
+                    <div class="path-description">
+                        Enterprise security framework with IAM, Cloud Armor, Security Command Center, and compliance
+                        monitoring.
+                        Zero-trust architecture, automated threat detection, and audit trails.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Compliance:</strong> SOC 2, HIPAA, PCI DSS, GDPR<br>
+                        <strong>Security:</strong> Zero-trust, least privilege, encryption<br>
+                        <strong>Monitoring:</strong> Real-time threat detection, automated response
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">IAM</span>
+                        <span class="path-step">Cloud Armor</span>
+                        <span class="path-step">Security Command Center</span>
+                        <span class="path-step">Cloud Audit Logs</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showWorkflowDemo('disaster-recovery')">
+                    <span class="path-icon">🛟</span>
+                    <div class="path-title">Disaster Recovery</div>
+                    <div class="path-description">
+                        Multi-region backup and recovery with Cloud Storage, BigQuery backup, and automated failover.
+                        RTO/RPO optimization, cross-region replication, and business continuity planning.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>RTO/RPO:</strong> Minutes to hours, seconds to minutes<br>
+                        <strong>Replication:</strong> Synchronous, asynchronous, cross-region<br>
+                        <strong>Testing:</strong> Regular DR drills, automated failover testing
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Cloud Storage</span>
+                        <span class="path-step">BigQuery</span>
+                        <span class="path-step">Cloud DNS</span>
+                        <span class="path-step">Load Balancing</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showWorkflowDemo('cost-optimization')">
+                    <span class="path-icon">💰</span>
+                    <div class="path-title">Cost Optimization</div>
+                    <div class="path-description">
+                        Monitor and optimize GCP costs with billing alerts, resource optimization, and automated
+                        scaling.
+                        Rightsizing, reserved instances, and spot VMs for maximum cost efficiency.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Optimization:</strong> Rightsizing, committed use discounts, spot instances<br>
+                        <strong>Monitoring:</strong> Real-time cost alerts, budget controls<br>
+                        <strong>Automation:</strong> Auto-scaling, scheduled shutdowns
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Cloud Billing</span>
+                        <span class="path-step">Cloud Monitoring</span>
+                        <span class="path-step">Compute Engine</span>
+                        <span class="path-step">BigQuery</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showWorkflowDemo('global-distribution')">
+                    <span class="path-icon">🌍</span>
+                    <div class="path-title">Global Distribution</div>
+                    <div class="path-description">
+                        Deploy applications globally with Cloud CDN, Load Balancing, and multi-region architectures.
+                        Edge caching, global load balancing, and optimal user experience worldwide.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Performance:</strong> Global CDN, edge locations, caching<br>
+                        <strong>Availability:</strong> Multi-region, auto-failover, load balancing<br>
+                        <strong>Compliance:</strong> Data residency, regional regulations
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Cloud CDN</span>
+                        <span class="path-step">Load Balancing</span>
+                        <span class="path-step">Cloud Storage</span>
+                        <span class="path-step">Cloud DNS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-section">
+            <h2 style="color: #F57C00; margin-bottom: 20px;">📈 Learning Platform Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">25+</span>
+                    <div class="stat-label">GCP Services Covered</div>
+                    <div class="stat-description">Comprehensive coverage across 6 service categories with detailed
+                        explanations and use cases</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">14</span>
+                    <div class="stat-label">Advanced Learning Pages</div>
+                    <div class="stat-description">Complete service guides with animated workflows, code examples, and
+                        best practices</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">8</span>
+                    <div class="stat-label">Workflow Architectures</div>
+                    <div class="stat-description">Enterprise-grade implementation patterns for data pipelines, ML,
+                        CI/CD, and security</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">6</span>
+                    <div class="stat-label">Real-World Projects</div>
+                    <div class="stat-description">Production-ready architectures demonstrating e-commerce, IoT, ML, and
+                        microservices</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">4</span>
+                    <div class="stat-label">Learning Paths</div>
+                    <div class="stat-description">Structured journeys from beginner fundamentals to enterprise
+                        architecture expertise</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <div class="stat-label">Interactive Elements</div>
+                    <div class="stat-description">Animated workflows, service navigation, project demos, and responsive
+                        design features</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Use Cases -->
+        <div class="learning-paths">
+            <h2>🚀 Real-World Project Examples - Production-Ready Architectures</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 16px;">
+                Complete end-to-end project architectures demonstrating GCP best practices, scalability patterns,
+                and enterprise-grade implementations across various industries and use cases.
+            </p>
+            <div class="path-grid">
+                <div class="learning-path" onclick="showProjectDemo('ecommerce')">
+                    <span class="path-icon">🛒</span>
+                    <div class="path-title">E-commerce Platform</div>
+                    <div class="path-description">
+                        Build a scalable online store with Cloud Run, Firestore, and Load Balancing.
+                        Handle millions of users with real-time inventory and payments.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Scale:</strong> 10M+ users, 100K+ concurrent sessions<br>
+                        <strong>Features:</strong> Real-time inventory, payment processing, recommendations<br>
+                        <strong>Availability:</strong> 99.9% uptime, global distribution
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Cloud Run</span>
+                        <span class="path-step">Firestore</span>
+                        <span class="path-step">Load Balancing</span>
+                        <span class="path-step">Cloud Storage</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showProjectDemo('data-pipeline')">
+                    <span class="path-icon">📊</span>
+                    <div class="path-title">Data Analytics Pipeline</div>
+                    <div class="path-description">
+                        Process streaming data with Dataflow, analyze with BigQuery, and visualize
+                        insights. From raw data to business intelligence in real-time.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Data Volume:</strong> 1TB+/day, streaming + batch processing<br>
+                        <strong>Analytics:</strong> Real-time dashboards, ML insights, predictive models<br>
+                        <strong>Performance:</strong> Sub-second query response, auto-scaling
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Dataflow</span>
+                        <span class="path-step">BigQuery</span>
+                        <span class="path-step">Cloud Storage</span>
+                        <span class="path-step">Vertex AI</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showProjectDemo('ml-platform')">
+                    <span class="path-icon">🤖</span>
+                    <div class="path-title">ML Prediction Service</div>
+                    <div class="path-description">
+                        Deploy machine learning models with Vertex AI, serve predictions via
+                        Cloud Functions, and monitor performance with automated retraining.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Models:</strong> Classification, regression, recommendation engines<br>
+                        <strong>Scale:</strong> 100K+ predictions/minute, auto-scaling endpoints<br>
+                        <strong>Monitoring:</strong> Model drift detection, automated retraining
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Vertex AI</span>
+                        <span class="path-step">Cloud Functions</span>
+                        <span class="path-step">Cloud Run</span>
+                        <span class="path-step">BigQuery</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showProjectDemo('microservices')">
+                    <span class="path-icon">🔧</span>
+                    <div class="path-title">Microservices Architecture</div>
+                    <div class="path-description">
+                        Design event-driven microservices with Cloud Run, Pub/Sub messaging,
+                        and Kubernetes Engine for complex distributed systems.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Services:</strong> 20+ microservices, event-driven architecture<br>
+                        <strong>Communication:</strong> Pub/Sub messaging, gRPC, REST APIs<br>
+                        <strong>Observability:</strong> Distributed tracing, centralized logging
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">GKE</span>
+                        <span class="path-step">Cloud Run</span>
+                        <span class="path-step">Pub/Sub</span>
+                        <span class="path-step">Load Balancing</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showProjectDemo('iot-platform')">
+                    <span class="path-icon">📱</span>
+                    <div class="path-title">IoT Data Platform</div>
+                    <div class="path-description">
+                        Collect IoT sensor data with Cloud IoT Core, process with Dataflow,
+                        store in BigQuery, and create real-time dashboards.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>Devices:</strong> 1M+ IoT sensors, edge computing nodes<br>
+                        <strong>Data Flow:</strong> Real-time ingestion, stream processing, analytics<br>
+                        <strong>Insights:</strong> Predictive maintenance, anomaly detection
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">IoT Core</span>
+                        <span class="path-step">Dataflow</span>
+                        <span class="path-step">BigQuery</span>
+                        <span class="path-step">Data Studio</span>
+                    </div>
+                </div>
+
+                <div class="learning-path" onclick="showProjectDemo('serverless-api')">
+                    <span class="path-icon">⚡</span>
+                    <div class="path-title">Serverless API Gateway</div>
+                    <div class="path-description">
+                        Build scalable APIs with Cloud Functions, API Gateway, and Firestore.
+                        Implement authentication, rate limiting, and monitoring.
+                    </div>
+                    <div class="workflow-details" style="margin: 15px 0; font-size: 13px; color: #555;">
+                        <strong>APIs:</strong> REST & GraphQL, 50+ endpoints, API versioning<br>
+                        <strong>Security:</strong> OAuth 2.0, JWT tokens, rate limiting<br>
+                        <strong>Performance:</strong> Sub-100ms response, auto-scaling
+                    </div>
+                    <div class="path-steps">
+                        <span class="path-step">Cloud Functions</span>
+                        <span class="path-step">API Gateway</span>
+                        <span class="path-step">Firestore</span>
+                        <span class="path-step">Cloud Monitoring</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Indicator -->
+    <div class="scroll-indicator pulse-animation" onclick="scrollToTop()">
+        ⬆️
+    </div>
+
+    <script>
+        // Service navigation
+        function openServicePage(serviceName) {
+            // Service pages that exist
+            const existingPages = {
+                'bigquery': 'bigquery-advanced.html',
+                'cloud-storage': 'cloud-storage-advanced.html',
+                'dataproc': 'dataproc-advanced.html',
+                'vertex-ai': 'vertex-ai-advanced.html',
+                'dataflow': 'dataflow-advanced.html',
+                'cloud-run': 'cloud-run-advanced.html',
+                'cloud-functions': 'cloud-functions-advanced.html',
+                'compute-engine': 'compute-engine-advanced.html',
+                'kubernetes-engine': 'kubernetes-engine-advanced.html',
+                'vpc': 'vpc-network-advanced.html',
+                'identity-access': 'iam-advanced.html',
+                'load-balancing': 'load-balancing-advanced.html',
+                'cloud-armor': 'cloud-armor-advanced.html',
+                'cloud-build': 'cloud-build-advanced.html'
+            };
+
+            // Service pages to be created
+            const plannedPages = {
+                'load-balancing': 'load-balancing-advanced.html',
+                'cloud-armor': 'cloud-armor-advanced.html',
+                'container-registry': 'container-registry-advanced.html',
+                'cloud-monitoring': 'cloud-monitoring-advanced.html',
+                'cloud-logging': 'cloud-logging-advanced.html',
+                'cloud-sql': 'cloud-sql-advanced.html',
+                'cloud-spanner': 'cloud-spanner-advanced.html',
+                'firestore': 'firestore-advanced.html',
+                'bigtable': 'bigtable-advanced.html',
+                'ai-platform': 'ai-platform-advanced.html',
+                'automl': 'automl-advanced.html',
+                'bigquery-ml': 'bigquery-ml-advanced.html'
+            };
+
+            if (existingPages[serviceName]) {
+                // Navigate to existing page
+                window.location.href = existingPages[serviceName];
+            } else if (plannedPages[serviceName]) {
+                // Show message for planned pages
+                alert(`🚧 ${serviceName.replace('-', ' ').toUpperCase()} advanced learning page is coming soon!\n\nCurrently available:\n• BigQuery Advanced\n• Cloud Storage Advanced\n• Dataproc Advanced\n• Vertex AI Advanced\n• Dataflow Advanced\n• Cloud Run Advanced\n• Cloud Functions Advanced\n• Compute Engine Advanced\n• Kubernetes Engine Advanced\n• VPC Network Advanced\n• IAM Advanced\n\nThese pages include animated data flows, detailed explanations, and code examples.`);
+            } else {
+                alert(`Service "${serviceName}" not recognized.`);
+            }
+        }
+
+        // Learning path navigation
+        function navigateToPath(pathType) {
+            const paths = {
+                'beginner': 'beginner-path.html',
+                'intermediate': 'intermediate-path.html',
+                'advanced': 'advanced-path.html',
+                'workflows': 'workflow-focus.html'
+            };
+
+            const pageName = paths[pathType];
+            if (pageName) {
+                // Check if the page exists (for now, only beginner path is implemented)
+                if (pathType === 'beginner') {
+                    window.location.href = pageName;
+                } else {
+                    alert(`🚧 ${pathType.charAt(0).toUpperCase() + pathType.slice(1)} learning path is coming soon!\n\nCurrently available:\n• Beginner Path - Complete 8-week journey\n\nThese paths include:\n• Structured learning modules\n• Hands-on labs and exercises\n• Progress tracking\n• Real-world projects\n• Certification preparation\n\nStay tuned for more learning paths!`);
+                }
+            }
+        }
+
+        // Project demo navigation
+        function showProjectDemo(projectType) {
+            const projects = {
+                'ecommerce': {
+                    title: '🛒 E-commerce Platform Architecture',
+                    description: 'A complete e-commerce solution handling millions of users',
+                    services: ['Cloud Run', 'Firestore', 'Load Balancing', 'Cloud Storage', 'Cloud Functions'],
+                    architecture: 'Users → Global Load Balancer → Cloud Run (Frontend) → Firestore (Products) → Cloud Functions (Payments) → Cloud Storage (Images)'
+                },
+                'data-pipeline': {
+                    title: '📊 Real-time Data Analytics Pipeline',
+                    description: 'Process streaming data and generate insights instantly',
+                    services: ['Dataflow', 'BigQuery', 'Cloud Storage', 'Pub/Sub', 'Vertex AI'],
+                    architecture: 'IoT Devices → Pub/Sub → Dataflow → BigQuery → Vertex AI → Dashboards'
+                },
+                'ml-platform': {
+                    title: '🤖 Machine Learning Prediction Service',
+                    description: 'Deploy and serve ML models at scale',
+                    services: ['Vertex AI', 'Cloud Functions', 'Cloud Run', 'BigQuery', 'Cloud Storage'],
+                    architecture: 'Client Apps → Cloud Functions → Vertex AI (Predictions) → BigQuery (Logging) → Cloud Run (Web UI)'
+                },
+                'microservices': {
+                    title: '🔧 Event-Driven Microservices',
+                    description: 'Scalable microservices with event-driven architecture',
+                    services: ['GKE', 'Cloud Run', 'Pub/Sub', 'Load Balancing', 'Cloud Monitoring'],
+                    architecture: 'API Gateway → Load Balancer → Microservices (GKE/Cloud Run) → Pub/Sub → Event Processing'
+                },
+                'iot-platform': {
+                    title: '📱 IoT Data Collection & Analytics',
+                    description: 'Collect and analyze IoT sensor data at scale',
+                    services: ['IoT Core', 'Dataflow', 'BigQuery', 'Cloud Storage', 'Data Studio'],
+                    architecture: 'IoT Sensors → IoT Core → Pub/Sub → Dataflow → BigQuery → Data Studio Dashboards'
+                },
+                'serverless-api': {
+                    title: '⚡ Serverless API with Authentication',
+                    description: 'Secure, scalable APIs with built-in monitoring',
+                    services: ['Cloud Functions', 'API Gateway', 'Firestore', 'Cloud Monitoring', 'IAM'],
+                    architecture: 'Client Apps → API Gateway → Cloud Functions → Firestore → Cloud Monitoring'
+                }
+            };
+
+            const project = projects[projectType];
+            if (project) {
+                alert(`🚀 ${project.title}\n\n${project.description}\n\n🔧 Services Used:\n${project.services.map(s => `• ${s}`).join('\n')}\n\n🏗️ Architecture Flow:\n${project.architecture}\n\n📋 This project demonstrates:\n• Service integration patterns\n• Scalability considerations\n• Security best practices\n• Cost optimization\n• Monitoring and observability\n\n🎯 Ready to build this? Start with the individual service guides and combine them step by step!`);
+            }
+        }
+
+        // Workflow demo navigation
+        function showWorkflowDemo(workflowType) {
+            const workflows = {
+                'data-ingestion': {
+                    title: '📥 Data Ingestion Pipeline Workflow',
+                    description: 'Complete data ingestion and processing workflow',
+                    services: ['Pub/Sub', 'Dataflow', 'Cloud Storage', 'BigQuery'],
+                    workflow: '1. Data Sources → Pub/Sub Topics\n2. Pub/Sub → Dataflow Streaming Pipeline\n3. Dataflow → Cloud Storage (Raw Data)\n4. Dataflow → BigQuery (Processed Data)\n5. BigQuery → Analytics & Reporting',
+                    benefits: ['Real-time processing', 'Scalable ingestion', 'Data quality validation', 'Automated partitioning']
+                },
+                'ml-pipeline': {
+                    title: '🧠 Machine Learning Training Pipeline',
+                    description: 'End-to-end ML model development and deployment',
+                    services: ['BigQuery', 'Vertex AI', 'Cloud Storage', 'Cloud Functions'],
+                    workflow: '1. Raw Data → BigQuery (Data Preparation)\n2. BigQuery → Vertex AI (Feature Engineering)\n3. Vertex AI → Model Training & Tuning\n4. Trained Model → Cloud Storage\n5. Cloud Functions → Automated Retraining',
+                    benefits: ['Automated ML pipeline', 'Model versioning', 'A/B testing', 'Continuous learning']
+                },
+                'ci-cd': {
+                    title: '🔄 CI/CD Deployment Pipeline',
+                    description: 'Automated software delivery and deployment',
+                    services: ['Cloud Build', 'Container Registry', 'Cloud Run', 'Cloud Monitoring'],
+                    workflow: '1. Code Commit → Cloud Build Trigger\n2. Cloud Build → Container Image Build\n3. Image → Container Registry\n4. Cloud Run → Rolling Deployment\n5. Cloud Monitoring → Performance Validation',
+                    benefits: ['Zero-downtime deployments', 'Automated testing', 'Rollback capability', 'Multi-environment support']
+                },
+                'hybrid-cloud': {
+                    title: '🌐 Hybrid Cloud Networking Setup',
+                    description: 'Connect on-premises and cloud infrastructure',
+                    services: ['VPN', 'Interconnect', 'VPC', 'Cloud Router'],
+                    workflow: '1. On-premises → VPN Gateway\n2. VPN → GCP VPC Network\n3. Interconnect → Dedicated Connection\n4. Cloud Router → Dynamic Routing\n5. VPC → Service Integration',
+                    benefits: ['Secure connectivity', 'Low latency', 'Bandwidth optimization', 'Cost-effective scaling']
+                },
+                'security-workflow': {
+                    title: '🔒 Enterprise Security Implementation',
+                    description: 'Comprehensive security and compliance framework',
+                    services: ['IAM', 'Cloud Armor', 'Security Command Center', 'Cloud Audit Logs'],
+                    workflow: '1. IAM → Role-based Access Control\n2. Cloud Armor → DDoS Protection\n3. Security Command Center → Threat Detection\n4. Cloud Audit Logs → Compliance Monitoring\n5. Automated → Security Response',
+                    benefits: ['Zero-trust security', 'Compliance automation', 'Threat intelligence', 'Incident response']
+                },
+                'disaster-recovery': {
+                    title: '🛟 Disaster Recovery & Business Continuity',
+                    description: 'Multi-region backup and recovery solutions',
+                    services: ['Cloud Storage', 'BigQuery', 'Cloud DNS', 'Load Balancing'],
+                    workflow: '1. Primary Region → Data Replication\n2. Cloud Storage → Cross-region Backup\n3. BigQuery → Dataset Replication\n4. Load Balancing → Traffic Failover\n5. Cloud DNS → Automatic Routing',
+                    benefits: ['RTO/RPO optimization', 'Automated failover', 'Data consistency', 'Business continuity']
+                },
+                'cost-optimization': {
+                    title: '💰 Cloud Cost Optimization Strategy',
+                    description: 'Monitor, analyze, and optimize GCP spending',
+                    services: ['Cloud Billing', 'Cloud Monitoring', 'Compute Engine', 'BigQuery'],
+                    workflow: '1. Cloud Billing → Cost Analysis\n2. Cloud Monitoring → Usage Metrics\n3. BigQuery → Cost Analytics\n4. Automated → Resource Optimization\n5. Alerts → Budget Notifications',
+                    benefits: ['Cost transparency', 'Automated optimization', 'Budget control', 'Resource efficiency']
+                },
+                'global-distribution': {
+                    title: '🌍 Global Application Distribution',
+                    description: 'Deploy applications with global reach and performance',
+                    services: ['Cloud CDN', 'Load Balancing', 'Cloud Storage', 'Cloud DNS'],
+                    workflow: '1. Application → Cloud Run/GKE\n2. Load Balancing → Global Distribution\n3. Cloud CDN → Content Caching\n4. Cloud Storage → Static Assets\n5. Cloud DNS → Global Resolution',
+                    benefits: ['Low latency worldwide', 'High availability', 'Scalable performance', 'Cost optimization']
+                }
+            };
+
+            const workflow = workflows[workflowType];
+            if (workflow) {
+                alert(`⚡ ${workflow.title}\n\n${workflow.description}\n\n🔧 Services Involved:\n${workflow.services.map(s => `• ${s}`).join('\n')}\n\n📋 Workflow Steps:\n${workflow.workflow}\n\n✅ Key Benefits:\n${workflow.benefits.map(b => `• ${b}`).join('\n')}\n\n🎯 This workflow demonstrates enterprise-grade GCP implementations with best practices for scalability, security, and cost optimization.`);
+            }
+        }
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', function () {
+            const header = document.querySelector('.header h1');
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+
+            header.style.transform = `translateY(${rate}px)`;
+        });
+
+        // Animate stats on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'countUp 2s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+
+        // Observe stat numbers
+        document.querySelectorAll('.stat-number').forEach(stat => {
+            observer.observe(stat);
+        });
+
+        // Add loading animation for service cards
+        document.addEventListener('DOMContentLoaded', function () {
+            const serviceCards = document.querySelectorAll('.service-category');
+            serviceCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+
+</html>

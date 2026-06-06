@@ -1,0 +1,796 @@
+{
+  "metadata": {
+    "generated_at": "2026-06-06T04:48:35.982265Z",
+    "framework_version": "1.0.0",
+    "dataset_name": "customers",
+    "framework": "Enterprise Data Quality Framework \u2014 POC-09"
+  },
+  "scorecard": {
+    "dataset_name": "customers",
+    "scored_at": "2026-06-06T04:48:35.982184Z",
+    "overall_score": 98.48,
+    "overall_grade": "A",
+    "grade_description": "Excellent \u2014 data is production-ready",
+    "total_rules": 10,
+    "passed_rules": 3,
+    "failed_rules": 7,
+    "row_count": 500,
+    "critical_issues": [
+      "customer_id_not_null (customer_id): Column 'customer_id' has 3 null/empty values out of 500 rows (99.4% complete).",
+      "customer_id_unique (customer_id): Column 'customer_id' uniqueness: 482 distinct values in 497 non-null rows (uniqueness rate: 97.0%). ",
+      "age_valid_range (age): Column 'age' range [0, 120]: 7 of 500 rows fail (98.6% pass).",
+      "status_allowed (status): Column 'status' allowed values ['active', 'inactive', 'pending']: 5 of 500 rows fail (99.0% pass)."
+    ],
+    "dimensions": {
+      "completeness": {
+        "dimension": "completeness",
+        "weight": 0.3,
+        "rule_count": 4,
+        "score": 97.85,
+        "weighted_contribution": 29.35,
+        "passed_rules": 1,
+        "failed_rules": 3,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "customer_id_not_null",
+          "email_not_null",
+          "first_name_not_null"
+        ]
+      },
+      "validity": {
+        "dimension": "validity",
+        "weight": 0.25,
+        "rule_count": 4,
+        "score": 98.9,
+        "weighted_contribution": 24.73,
+        "passed_rules": 1,
+        "failed_rules": 3,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "email_format",
+          "age_valid_range",
+          "status_allowed"
+        ]
+      },
+      "uniqueness": {
+        "dimension": "uniqueness",
+        "weight": 0.2,
+        "rule_count": 1,
+        "score": 97.0,
+        "weighted_contribution": 19.4,
+        "passed_rules": 0,
+        "failed_rules": 1,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "customer_id_unique"
+        ]
+      },
+      "consistency": {
+        "dimension": "consistency",
+        "weight": 0.15,
+        "rule_count": 0,
+        "score": 100.0,
+        "weighted_contribution": 15.0,
+        "passed_rules": 0,
+        "failed_rules": 0,
+        "grade": "A",
+        "grade_description": "No rules configured",
+        "failing_rules": []
+      },
+      "freshness": {
+        "dimension": "freshness",
+        "weight": 0.1,
+        "rule_count": 1,
+        "score": 100.0,
+        "weighted_contribution": 10.0,
+        "passed_rules": 1,
+        "failed_rules": 0,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": []
+      }
+    }
+  },
+  "profile": {
+    "dataset_name": "customers",
+    "profiled_at": "2026-06-06T04:48:35.971789Z",
+    "row_count": 500,
+    "column_count": 9,
+    "duplicate_rows": 0,
+    "duplicate_rate": 0.0,
+    "columns": [
+      {
+        "column": "customer_id",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 500,
+        "null_count": 3,
+        "null_rate": 0.006,
+        "distinct_count": 482,
+        "distinct_rate": 0.9698,
+        "min_value": 10,
+        "max_value": 10,
+        "mean_value": 10.0,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "CUST000048",
+            "count": 4
+          },
+          {
+            "value": "CUST000041",
+            "count": 2
+          },
+          {
+            "value": "CUST000009",
+            "count": 2
+          },
+          {
+            "value": "CUST000018",
+            "count": 2
+          },
+          {
+            "value": "CUST000016",
+            "count": 2
+          }
+        ],
+        "sample_values": [
+          "CUST000008",
+          "CUST000074",
+          "CUST000233",
+          "CUST000176",
+          "CUST000239"
+        ]
+      },
+      {
+        "column": "first_name",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 500,
+        "null_count": 11,
+        "null_rate": 0.022,
+        "distinct_count": 28,
+        "distinct_rate": 0.0573,
+        "min_value": 3,
+        "max_value": 8,
+        "mean_value": 5.57,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "Arjun",
+            "count": 25
+          },
+          {
+            "value": "Patricia",
+            "count": 22
+          },
+          {
+            "value": "William",
+            "count": 22
+          },
+          {
+            "value": "John",
+            "count": 22
+          },
+          {
+            "value": "Mary",
+            "count": 21
+          }
+        ],
+        "sample_values": [
+          "Wei",
+          "Arjun",
+          "Richard",
+          "Michael",
+          "Patricia"
+        ]
+      },
+      {
+        "column": "last_name",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 500,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 20,
+        "distinct_rate": 0.04,
+        "min_value": 5,
+        "max_value": 9,
+        "mean_value": 6.53,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "Jones",
+            "count": 34
+          },
+          {
+            "value": "Martinez",
+            "count": 33
+          },
+          {
+            "value": "Martin",
+            "count": 31
+          },
+          {
+            "value": "Wilson",
+            "count": 28
+          },
+          {
+            "value": "Anderson",
+            "count": 28
+          }
+        ],
+        "sample_values": [
+          "Taylor",
+          "Rodriguez",
+          "Jones",
+          "Davis",
+          "Moore"
+        ]
+      },
+      {
+        "column": "email",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 500,
+        "null_count": 29,
+        "null_rate": 0.058,
+        "distinct_count": 471,
+        "distinct_rate": 1.0,
+        "min_value": 5,
+        "max_value": 33,
+        "mean_value": 26.85,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "michael.hernandez100@hotmail.com",
+            "count": 1
+          },
+          {
+            "value": "patricia.hernandez756@yahoo.com",
+            "count": 1
+          },
+          {
+            "value": "david.jackson379@outlook.com",
+            "count": 1
+          },
+          {
+            "value": "william.davis789@outlook.com",
+            "count": 1
+          },
+          {
+            "value": "sofia.davis661@company.com",
+            "count": 1
+          }
+        ],
+        "sample_values": [
+          "susan.taylor516@hotmail.com",
+          "linda.martinez926@hotmail.com",
+          "james.moore998@gmail.com",
+          "robert.smith287@company.com",
+          "john.brown420@outlook.com"
+        ]
+      },
+      {
+        "column": "age",
+        "dtype": "int64",
+        "inferred_type": "numeric",
+        "total_count": 500,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 65,
+        "distinct_rate": 0.13,
+        "min_value": -10,
+        "max_value": 166,
+        "mean_value": 46.072,
+        "std_dev": 18.5221,
+        "median_value": 46.0,
+        "top_values": [
+          {
+            "value": "57",
+            "count": 14
+          },
+          {
+            "value": "63",
+            "count": 14
+          },
+          {
+            "value": "32",
+            "count": 14
+          },
+          {
+            "value": "51",
+            "count": 13
+          },
+          {
+            "value": "50",
+            "count": 13
+          }
+        ],
+        "sample_values": [
+          "23",
+          "20",
+          "53",
+          "51",
+          "63"
+        ]
+      },
+      {
+        "column": "status",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 500,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 7,
+        "distinct_rate": 0.014,
+        "min_value": 6,
+        "max_value": 9,
+        "mean_value": 7.06,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "pending",
+            "count": 196
+          },
+          {
+            "value": "inactive",
+            "count": 164
+          },
+          {
+            "value": "active",
+            "count": 135
+          },
+          {
+            "value": "Inactive",
+            "count": 2
+          },
+          {
+            "value": "SUSPENDED",
+            "count": 1
+          }
+        ],
+        "sample_values": [
+          "inactive",
+          "active",
+          "active",
+          "inactive",
+          "pending"
+        ]
+      },
+      {
+        "column": "signup_date",
+        "dtype": "object",
+        "inferred_type": "datetime",
+        "total_count": 500,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 404,
+        "distinct_rate": 0.808,
+        "min_value": "2023-05-20 00:00:00",
+        "max_value": "2026-06-07 00:00:00",
+        "mean_value": null,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "2024-10-25",
+            "count": 3
+          },
+          {
+            "value": "2023-11-24",
+            "count": 3
+          },
+          {
+            "value": "2025-11-14",
+            "count": 3
+          },
+          {
+            "value": "2023-05-27",
+            "count": 3
+          },
+          {
+            "value": "2023-09-19",
+            "count": 3
+          }
+        ],
+        "sample_values": [
+          "2024-08-17",
+          "2025-11-14",
+          "2024-11-05",
+          "2025-08-20",
+          "2024-11-03"
+        ]
+      },
+      {
+        "column": "phone",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 500,
+        "null_count": 37,
+        "null_rate": 0.074,
+        "distinct_count": 463,
+        "distinct_rate": 1.0,
+        "min_value": 15,
+        "max_value": 15,
+        "mean_value": 15.0,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "+1-206-877-3615",
+            "count": 1
+          },
+          {
+            "value": "+1-600-283-5724",
+            "count": 1
+          },
+          {
+            "value": "+1-542-344-9841",
+            "count": 1
+          },
+          {
+            "value": "+1-282-735-6500",
+            "count": 1
+          },
+          {
+            "value": "+1-341-995-7641",
+            "count": 1
+          }
+        ],
+        "sample_values": [
+          "+1-851-105-2492",
+          "+1-907-950-4978",
+          "+1-757-330-3441",
+          "+1-959-879-2600",
+          "+1-448-433-7161"
+        ]
+      },
+      {
+        "column": "country",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 500,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 8,
+        "distinct_rate": 0.016,
+        "min_value": 2,
+        "max_value": 2,
+        "mean_value": 2.0,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "CA",
+            "count": 70
+          },
+          {
+            "value": "AU",
+            "count": 68
+          },
+          {
+            "value": "SG",
+            "count": 67
+          },
+          {
+            "value": "GB",
+            "count": 65
+          },
+          {
+            "value": "US",
+            "count": 65
+          }
+        ],
+        "sample_values": [
+          "SG",
+          "US",
+          "GB",
+          "GB",
+          "SG"
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "dataset_name": "customers",
+    "validated_at": "2026-06-06T04:48:35.979060Z",
+    "row_count": 500,
+    "total_rules": 10,
+    "passed_rules": 3,
+    "failed_rules": 7,
+    "error_rules": 0,
+    "overall_passed": false,
+    "summary_by_dimension": {
+      "completeness": {
+        "total_rules": 4,
+        "passed": 1,
+        "failed": 3,
+        "avg_score": 0.9785
+      },
+      "validity": {
+        "total_rules": 4,
+        "passed": 1,
+        "failed": 3,
+        "avg_score": 0.989
+      },
+      "uniqueness": {
+        "total_rules": 1,
+        "passed": 0,
+        "failed": 1,
+        "avg_score": 0.97
+      },
+      "consistency": {
+        "total_rules": 0,
+        "passed": 0,
+        "failed": 0,
+        "avg_score": null
+      },
+      "freshness": {
+        "total_rules": 1,
+        "passed": 1,
+        "failed": 0,
+        "avg_score": 1.0
+      }
+    },
+    "rule_results": [
+      {
+        "rule_name": "customer_id_not_null",
+        "column": "customer_id",
+        "dimension": "completeness",
+        "severity": "error",
+        "passed": false,
+        "score": 0.994,
+        "failing_count": 3,
+        "total_count": 500,
+        "pass_rate": 0.994,
+        "details": "Column 'customer_id' has 3 null/empty values out of 500 rows (99.4% complete).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "customer_id_unique",
+        "column": "customer_id",
+        "dimension": "uniqueness",
+        "severity": "error",
+        "passed": false,
+        "score": 0.97,
+        "failing_count": 15,
+        "total_count": 500,
+        "pass_rate": 0.97,
+        "details": "Column 'customer_id' uniqueness: 482 distinct values in 497 non-null rows (uniqueness rate: 97.0%). 15 duplicate rows found.",
+        "failing_values": [
+          "CUST000041",
+          "CUST000008",
+          "CUST000002",
+          "CUST000048",
+          "CUST000018",
+          "CUST000016",
+          "CUST000015",
+          "CUST000009",
+          "CUST000048",
+          "CUST000007"
+        ]
+      },
+      {
+        "rule_name": "email_not_null",
+        "column": "email",
+        "dimension": "completeness",
+        "severity": "warning",
+        "passed": false,
+        "score": 0.942,
+        "failing_count": 29,
+        "total_count": 500,
+        "pass_rate": 0.942,
+        "details": "Column 'email' has 29 null/empty values out of 500 rows (94.2% complete).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "email_format",
+        "column": "email",
+        "dimension": "validity",
+        "severity": "warning",
+        "passed": false,
+        "score": 0.98,
+        "failing_count": 10,
+        "total_count": 500,
+        "pass_rate": 0.98,
+        "details": "Column 'email' regex '^[^@]+@[^@]+\\.[^@]+$': 10 of 500 rows fail (98.0% pass).",
+        "failing_values": [
+          "@yahoo.com",
+          "linda@",
+          "robert@",
+          "mary@",
+          "lindawilliams96",
+          "sofiamartin31",
+          "@company.com",
+          "priya@",
+          "joseph@",
+          "patricia@"
+        ]
+      },
+      {
+        "rule_name": "age_valid_range",
+        "column": "age",
+        "dimension": "validity",
+        "severity": "error",
+        "passed": false,
+        "score": 0.986,
+        "failing_count": 7,
+        "total_count": 500,
+        "pass_rate": 0.986,
+        "details": "Column 'age' range [0, 120]: 7 of 500 rows fail (98.6% pass).",
+        "failing_values": [
+          "166",
+          "-2",
+          "-10",
+          "129",
+          "138",
+          "-1",
+          "-8"
+        ]
+      },
+      {
+        "rule_name": "status_allowed",
+        "column": "status",
+        "dimension": "validity",
+        "severity": "error",
+        "passed": false,
+        "score": 0.99,
+        "failing_count": 5,
+        "total_count": 500,
+        "pass_rate": 0.99,
+        "details": "Column 'status' allowed values ['active', 'inactive', 'pending']: 5 of 500 rows fail (99.0% pass).",
+        "failing_values": [
+          "Inactive",
+          "Inactive",
+          "SUSPENDED",
+          "unknown",
+          "ACTIVE"
+        ]
+      },
+      {
+        "rule_name": "phone_completeness",
+        "column": "phone",
+        "dimension": "completeness",
+        "severity": "info",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 37,
+        "total_count": 500,
+        "pass_rate": 0.926,
+        "details": "Column 'phone' null rate is 7.40% (threshold: 15.0%). PASSED \u2014 37 nulls in 500 rows.",
+        "failing_values": []
+      },
+      {
+        "rule_name": "first_name_not_null",
+        "column": "first_name",
+        "dimension": "completeness",
+        "severity": "warning",
+        "passed": false,
+        "score": 0.978,
+        "failing_count": 11,
+        "total_count": 500,
+        "pass_rate": 0.978,
+        "details": "Column 'first_name' has 11 null/empty values out of 500 rows (97.8% complete).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "age_is_int",
+        "column": "age",
+        "dimension": "validity",
+        "severity": "error",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 0,
+        "total_count": 500,
+        "pass_rate": 1.0,
+        "details": "Column 'age' type check (expected: int): 0 of 500 rows cannot be cast (100.0% pass).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "signup_date_freshness",
+        "column": "signup_date",
+        "dimension": "freshness",
+        "severity": "info",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 341,
+        "total_count": 500,
+        "pass_rate": 0.318,
+        "details": "Column 'signup_date' freshness: most recent value is '2026-06-07 00:00:00' (age: -19.2h, limit: 8760h). PASSED.",
+        "failing_values": [
+          "2026-06-07 00:00:00"
+        ]
+      }
+    ]
+  },
+  "alerts": [
+    {
+      "alert_id": "ALERT-0001",
+      "severity": "error",
+      "dimension": "completeness",
+      "rule_name": "customer_id_not_null",
+      "column": "customer_id",
+      "message": "3 of 500 rows fail rule 'customer_id_not_null' (pass rate: 99.4%)",
+      "failing_count": 3,
+      "total_count": 500
+    },
+    {
+      "alert_id": "ALERT-0002",
+      "severity": "error",
+      "dimension": "uniqueness",
+      "rule_name": "customer_id_unique",
+      "column": "customer_id",
+      "message": "15 of 500 rows fail rule 'customer_id_unique' (pass rate: 97.0%)",
+      "failing_count": 15,
+      "total_count": 500
+    },
+    {
+      "alert_id": "ALERT-0003",
+      "severity": "warning",
+      "dimension": "completeness",
+      "rule_name": "email_not_null",
+      "column": "email",
+      "message": "29 of 500 rows fail rule 'email_not_null' (pass rate: 94.2%)",
+      "failing_count": 29,
+      "total_count": 500
+    },
+    {
+      "alert_id": "ALERT-0004",
+      "severity": "warning",
+      "dimension": "validity",
+      "rule_name": "email_format",
+      "column": "email",
+      "message": "10 of 500 rows fail rule 'email_format' (pass rate: 98.0%)",
+      "failing_count": 10,
+      "total_count": 500
+    },
+    {
+      "alert_id": "ALERT-0005",
+      "severity": "error",
+      "dimension": "validity",
+      "rule_name": "age_valid_range",
+      "column": "age",
+      "message": "7 of 500 rows fail rule 'age_valid_range' (pass rate: 98.6%)",
+      "failing_count": 7,
+      "total_count": 500
+    },
+    {
+      "alert_id": "ALERT-0006",
+      "severity": "error",
+      "dimension": "validity",
+      "rule_name": "status_allowed",
+      "column": "status",
+      "message": "5 of 500 rows fail rule 'status_allowed' (pass rate: 99.0%)",
+      "failing_count": 5,
+      "total_count": 500
+    },
+    {
+      "alert_id": "ALERT-0008",
+      "severity": "warning",
+      "dimension": "completeness",
+      "rule_name": "first_name_not_null",
+      "column": "first_name",
+      "message": "11 of 500 rows fail rule 'first_name_not_null' (pass rate: 97.8%)",
+      "failing_count": 11,
+      "total_count": 500
+    }
+  ],
+  "recommendations": [
+    "Column 'customer_id' has 0.6% null values. Consider: (1) add NOT NULL constraint at source, (2) impute with domain-appropriate default, (3) review if field is truly required.",
+    "Column 'customer_id' has 15 duplicate values. Add DISTINCT or dedup step in ETL. Investigate upstream system for duplicate record generation.",
+    "Column 'email' has 5.8% null values. Consider: (1) add NOT NULL constraint at source, (2) impute with domain-appropriate default, (3) review if field is truly required.",
+    "Column 'email' has 10 format violations. Add input validation at ingestion layer. Sample bad values: ['@yahoo.com', 'linda@', 'robert@']",
+    "Column 'age' has 7 out-of-range values. Implement range checks in source system or ETL transformation.",
+    "Column 'status' has 5 invalid category values. Standardise at ingestion: map variants to canonical values.",
+    "Column 'first_name' has 2.2% null values. Consider: (1) add NOT NULL constraint at source, (2) impute with domain-appropriate default, (3) review if field is truly required."
+  ]
+}

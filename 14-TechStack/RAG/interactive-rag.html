@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --rag-purple: #6366F1;
+            --rag-blue: #3B82F6;
+            --rag-green: #10B981;
+            --rag-orange: #F59E0B;
+            --rag-red: #EF4444;
+            --rag-dark: #1F2937;
+            --rag-light: #F9FAFB;
+            --primary-color: #6366F1;
+            --secondary-color: #3B82F6;
+            --accent-color: #10B981;
+            --warning-color: #F59E0B;
+            --info-color: #EF4444;
+            --dark-color: #1F2937;
+            --light-color: #F9FAFB;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6366F1 0%, #3B82F6 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--rag-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            min-height: 200px;
+        }
+
+        .btn-rag {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-rag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-outline-rag {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-rag:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: var(--rag-light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--rag-dark);
+        }
+
+        .feature-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .interactive-section {
+            background: var(--rag-light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .rag-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #6366F1, #10B981);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        .document-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .chunk-display {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 2px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .vector-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .vector-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .perf-metric-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .execution-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--rag-light);
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--rag-dark);
+        }
+
+        .stat-value {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .input-group-custom {
+            margin-bottom: 15px;
+        }
+
+        .input-group-custom label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--rag-dark);
+        }
+
+        .input-group-custom input,
+        .input-group-custom select,
+        .input-group-custom textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-group-custom textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .badge-custom {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        .badge-high {
+            background: #10B981;
+            color: white;
+        }
+
+        .badge-medium {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .badge-low {
+            background: #EF4444;
+            color: white;
+        }
+
+        .similarity-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .similarity-item {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .query-result {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .relevance-score {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .score-high {
+            background: #10B981;
+            color: white;
+        }
+
+        .score-medium {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .score-low {
+            background: #EF4444;
+            color: white;
+        }
+
+        .vector-space {
+            background: var(--rag-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .vector-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vector-point:hover {
+            width: 12px;
+            height: 12px;
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .query-point {
+            background: var(--accent-color) !important;
+        }
+
+        .chunk-highlight {
+            background: #fff3cd;
+            border-left: 3px solid var(--warning-color);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [documents, setDocuments] = useState([
+                {
+                    id: 'doc-1',
+                    title: 'Machine Learning Basics',
+                    content: 'Machine learning is a subset of artificial intelligence that enables computers to learn without being explicitly programmed. It involves algorithms that can learn patterns from data.',
+                    chunks: [
+                        { id: 'chunk-1-1', text: 'Machine learning is a subset of artificial intelligence', embedding: [0.1, 0.2, 0.3] },
+                        { id: 'chunk-1-2', text: 'enables computers to learn without being explicitly programmed', embedding: [0.2, 0.3, 0.4] },
+                        { id: 'chunk-1-3', text: 'involves algorithms that can learn patterns from data', embedding: [0.3, 0.4, 0.5] }
+                    ]
+                },
+                {
+                    id: 'doc-2',
+                    title: 'Neural Networks',
+                    content: 'Neural networks are computing systems inspired by biological neural networks. They consist of interconnected nodes called neurons that process and transmit information.',
+                    chunks: [
+                        { id: 'chunk-2-1', text: 'Neural networks are computing systems inspired by biological neural networks', embedding: [0.4, 0.5, 0.6] },
+                        { id: 'chunk-2-2', text: 'consist of interconnected nodes called neurons', embedding: [0.5, 0.6, 0.7] },
+                        { id: 'chunk-2-3', text: 'process and transmit information', embedding: [0.6, 0.7, 0.8] }
+                    ]
+                },
+                {
+                    id: 'doc-3',
+                    title: 'Deep Learning',
+                    content: 'Deep learning is a subset of machine learning that uses neural networks with multiple layers. It excels at pattern recognition and feature extraction.',
+                    chunks: [
+                        { id: 'chunk-3-1', text: 'Deep learning is a subset of machine learning', embedding: [0.7, 0.8, 0.9] },
+                        { id: 'chunk-3-2', text: 'uses neural networks with multiple layers', embedding: [0.8, 0.9, 0.1] },
+                        { id: 'chunk-3-3', text: 'excels at pattern recognition and feature extraction', embedding: [0.9, 0.1, 0.2] }
+                    ]
+                }
+            ]);
+            const [query, setQuery] = useState('How do neural networks work?');
+            const [retrievedChunks, setRetrievedChunks] = useState([]);
+            const [generatedResponse, setGeneratedResponse] = useState('');
+            const [vectorSpace, setVectorSpace] = useState([
+                { id: 'v1', x: 100, y: 80, label: 'ML Basics' },
+                { id: 'v2', x: 200, y: 120, label: 'Neural Nets' },
+                { id: 'v3', x: 300, y: 60, label: 'Deep Learning' },
+                { id: 'query', x: 180, y: 100, label: 'Query', isQuery: true }
+            ]);
+            const [similarityResults, setSimilarityResults] = useState([
+                { chunk: 'Neural networks are computing systems inspired by biological neural networks', score: 0.95, relevance: 'high' },
+                { chunk: 'consist of interconnected nodes called neurons', score: 0.87, relevance: 'high' },
+                { chunk: 'Machine learning is a subset of artificial intelligence', score: 0.45, relevance: 'medium' },
+                { chunk: 'uses neural networks with multiple layers', score: 0.32, relevance: 'low' }
+            ]);
+            const [frameworks, setFrameworks] = useState([
+                {
+                    name: 'LangChain',
+                    description: 'Framework for developing applications powered by language models',
+                    features: ['Document Loaders', 'Text Splitters', 'Vector Stores', 'Chains']
+                },
+                {
+                    name: 'LlamaIndex',
+                    description: 'Data framework for LLM applications',
+                    features: ['Data Connectors', 'Indexing', 'Query Engines', 'Chat Engines']
+                },
+                {
+                    name: 'Haystack',
+                    description: 'Open-source framework for building search systems with LLMs',
+                    features: ['Document Stores', 'Retrievers', 'Generators', 'Pipelines']
+                }
+            ]);
+            const [vectorDBs, setVectorDBs] = useState([
+                { name: 'Pinecone', type: 'Managed', features: ['Serverless', 'Scalable', 'Real-time'] },
+                { name: 'Weaviate', type: 'Self-hosted', features: ['GraphQL API', 'Hybrid Search', 'Open-source'] },
+                { name: 'Chroma', type: 'Local', features: ['Lightweight', 'Python-native', 'Easy setup'] },
+                { name: 'FAISS', type: 'Library', features: ['High performance', 'GPU support', 'Facebook AI'] }
+            ]);
+            const [code, setCode] = useState(`# RAG Implementation with LangChain
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+from langchain.chains import RetrievalQA
+from langchain.llms import OpenAI
+
+# 1. Load documents
+loader = TextLoader("documents.txt")
+documents = loader.load()
+
+# 2. Split documents into chunks
+text_splitter = CharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200
+)
+chunks = text_splitter.split_documents(documents)
+
+# 3. Create embeddings
+embeddings = OpenAIEmbeddings()
+
+# 4. Store in vector database
+vectorstore = Chroma.from_documents(chunks, embeddings)
+
+# 5. Create retrieval chain
+qa_chain = RetrievalQA.from_chain_type(
+    llm=OpenAI(),
+    chain_type="stuff",
+    retriever=vectorstore.as_retriever()
+)
+
+# 6. Query the system
+query = "What is machine learning?"
+response = qa_chain.run(query)
+print(response)`);
+            const [output, setOutput] = useState('');
+            const [isExecuting, setIsExecuting] = useState(false);
+            const [performance, setPerformance] = useState({
+                retrievalTime: '45ms',
+                generationTime: '1.2s',
+                totalLatency: '1.3s',
+                relevanceScore: 0.89
+            });
+
+            const executeRAG = async () => {
+                setIsExecuting(true);
+                setOutput('Executing RAG pipeline...\n');
+
+                // Simulate RAG execution
+                setTimeout(() => {
+                    setRetrievedChunks([
+                        { text: 'Neural networks are computing systems inspired by biological neural networks', score: 0.95 },
+                        { text: 'consist of interconnected nodes called neurons', score: 0.87 },
+                        { text: 'process and transmit information through interconnections', score: 0.76 }
+                    ]);
+                    setGeneratedResponse('Neural networks are computing systems inspired by biological neural networks in the brain. They consist of interconnected nodes called neurons that process and transmit information. Each neuron receives input signals, processes them, and produces an output signal that can be sent to other neurons. This interconnected structure allows neural networks to learn complex patterns and make decisions based on input data.');
+                    setOutput(prev => prev + '✓ Documents loaded\n' +
+                        '✓ Text chunked and embedded\n' +
+                        '✓ Similarity search performed\n' +
+                        '✓ Context retrieved\n' +
+                        '✓ Response generated\n\n' +
+                        'RAG pipeline completed successfully!');
+                    setIsExecuting(false);
+                }, 2000);
+            };
+
+            const performSimilaritySearch = () => {
+                setOutput('Performing similarity search...\n' +
+                    'Query: "' + query + '"\n\n' +
+                    'Top similar chunks found:\n' +
+                    '1. Score: 0.95 - "Neural networks are computing systems..."\n' +
+                    '2. Score: 0.87 - "consist of interconnected nodes..."\n' +
+                    '3. Score: 0.76 - "process and transmit information..."\n');
+            };
+
+            const generateEmbeddings = () => {
+                setOutput('Generating embeddings for documents...\n' +
+                    '✓ Document 1: 512-dimensional vectors created\n' +
+                    '✓ Document 2: 512-dimensional vectors created\n' +
+                    '✓ Document 3: 512-dimensional vectors created\n' +
+                    '✓ Embeddings stored in vector database\n');
+            };
+
+            const chunkDocument = (docId) => {
+                const doc = documents.find(d => d.id === docId);
+                if (doc) {
+                    setOutput(`Chunking document: ${doc.title}\n` +
+                        `Original length: ${doc.content.length} characters\n` +
+                        `Chunks created: ${doc.chunks.length}\n` +
+                        `Average chunk size: ${Math.round(doc.content.length / doc.chunks.length)} characters\n`);
+                }
+            };
+
+            const getRelevanceClass = (score) => {
+                if (score >= 0.8) return 'score-high';
+                if (score >= 0.6) return 'score-medium';
+                return 'score-low';
+            };
+
+            const getRelevanceBadge = (relevance) => {
+                const classes = {
+                    'high': 'badge-high',
+                    'medium': 'badge-medium',
+                    'low': 'badge-low'
+                };
+                return classes[relevance] || 'badge-secondary';
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-search-plus"></i> RAG</h1>
+                        <p>Retrieval-Augmented Generation for enhanced AI responses</p>
+                    </div>
+
+                    {/* Navigation Tabs */}
+                    <ul className="nav nav-tabs justify-content-center mb-4">
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('overview')}>
+                                <i className="fas fa-info-circle"></i> Overview
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'documents' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('documents')}>
+                                <i className="fas fa-file-alt"></i> Documents
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'embeddings' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('embeddings')}>
+                                <i className="fas fa-vector-square"></i> Embeddings
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'retrieval' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('retrieval')}>
+                                <i className="fas fa-search"></i> Retrieval
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'generation' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('generation')}>
+                                <i className="fas fa-brain"></i> Generation
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'frameworks' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('frameworks')}>
+                                <i className="fas fa-tools"></i> Frameworks
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'editor' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('editor')}>
+                                <i className="fas fa-terminal"></i> Code Editor
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'performance' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('performance')}>
+                                <i className="fas fa-tachometer-alt"></i> Performance
+                            </button>
+                        </li>
+                    </ul>
+
+                    {/* Tab Content */}
+                    <div className="tab-content">
+                        {/* Overview Tab */}
+                        {activeTab === 'overview' && (
+                            <div>
+                                <div className="feature-grid">
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-database"></i>
+                                        </div>
+                                        <div className="feature-title">Knowledge Retrieval</div>
+                                        <div className="feature-description">
+                                            Retrieve relevant information from large knowledge bases to provide context-aware responses.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-brain"></i>
+                                        </div>
+                                        <div className="feature-title">Context Enhancement</div>
+                                        <div className="feature-description">
+                                            Augment language model responses with factual information and domain knowledge.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div className="feature-title">Reduced Hallucinations</div>
+                                        <div className="feature-description">
+                                            Ground responses in verified information to minimize factual errors and hallucinations.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-clock"></i>
+                                        </div>
+                                        <div className="feature-title">Up-to-date Knowledge</div>
+                                        <div className="feature-description">
+                                            Access current information beyond the model's training cutoff date.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="rag-flow">
+                                    <div className="flow-step">
+                                        <i className="fas fa-question"></i>
+                                        <div>User Query</div>
+                                        <small>Input question</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-search"></i>
+                                        <div>Retrieval</div>
+                                        <small>Find relevant docs</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-vector-square"></i>
+                                        <div>Embeddings</div>
+                                        <small>Vector similarity</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-brain"></i>
+                                        <div>Generation</div>
+                                        <small>Augmented response</small>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Documents Tab */}
+                        {activeTab === 'documents' && (
+                            <div>
+                                <h3>Document Processing & Chunking</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        {documents.map(doc => (
+                                            <div key={doc.id} className="document-card mb-3">
+                                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                                    <h5>{doc.title}</h5>
+                                                    <span className="badge badge-info">{doc.chunks.length} chunks</span>
+                                                </div>
+                                                <p className="mb-2">{doc.content.substring(0, 100)}...</p>
+                                                <div className="mb-2">
+                                                    <strong>Chunks:</strong>
+                                                    {doc.chunks.map((chunk, i) => (
+                                                        <div key={i} className="chunk-display">
+                                                            <span>Chunk {i + 1}: {chunk.text.substring(0, 50)}...</span>
+                                                            <button className="btn btn-sm btn-outline-primary"
+                                                                onClick={() => chunkDocument(doc.id)}>
+                                                                Process
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Chunking Strategies</h5>
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-cut"></i> Character Split
+                                                    </button>
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-paragraph"></i> Sentence Split
+                                                    </button>
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-file-word"></i> Token Split
+                                                    </button>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-layer-group"></i> Recursive Split
+                                                    </button>
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-code-branch"></i> Semantic Split
+                                                    </button>
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-window-maximize"></i> Sliding Window
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Document Upload</h5>
+                                            <div className="input-group-custom">
+                                                <label>Upload Document:</label>
+                                                <input type="file" accept=".txt,.pdf,.docx" />
+                                            </div>
+                                            <button className="btn btn-rag w-100">
+                                                <i className="fas fa-upload"></i> Process Document
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Embeddings Tab */}
+                        {activeTab === 'embeddings' && (
+                            <div>
+                                <h3>Vector Embeddings & Vector Space</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="vector-space">
+                                            <h6>Vector Space Visualization</h6>
+                                            {vectorSpace.map(vector => (
+                                                <div
+                                                    key={vector.id}
+                                                    className={`vector-point ${vector.isQuery ? 'query-point' : ''}`}
+                                                    style={{ left: vector.x, top: vector.y }}
+                                                    title={vector.label}
+                                                ></div>
+                                            ))}
+                                            <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '0.8rem' }}>
+                                                <div style={{ color: '#6366F1' }}>● Document vectors</div>
+                                                <div style={{ color: '#10B981' }}>● Query vector</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Embedding Models</h5>
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-robot"></i> OpenAI Ada
+                                                    </button>
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-brain"></i> BERT
+                                                    </button>
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-code"></i> Sentence Transformers
+                                                    </button>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-cube"></i> Universal Encoder
+                                                    </button>
+                                                    <button className="btn btn-outline-rag w-100 mb-2">
+                                                        <i className="fas fa-network-wired"></i> Custom Models
+                                                    </button>
+                                                    <button className="btn btn-outline-rag w-100 mb-2"
+                                                        onClick={generateEmbeddings}>
+                                                        <i className="fas fa-play"></i> Generate
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Vector Operations</h5>
+                                            <button className="btn btn-rag w-100 mb-2">
+                                                <i className="fas fa-plus"></i> Vector Addition
+                                            </button>
+                                            <button className="btn btn-rag w-100 mb-2">
+                                                <i className="fas fa-times"></i> Dot Product
+                                            </button>
+                                            <button className="btn btn-rag w-100 mb-2">
+                                                <i className="fas fa-arrows-alt"></i> Cosine Similarity
+                                            </button>
+                                            <button className="btn btn-rag w-100 mb-2">
+                                                <i className="fas fa-compress"></i> Dimensionality Reduction
+                                            </button>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Vector Databases</h5>
+                                            {vectorDBs.map((db, index) => (
+                                                <div key={index} className="vector-card">
+                                                    <h6>{db.name}</h6>
+                                                    <p className="mb-1">{db.type}</p>
+                                                    <div>
+                                                        {db.features.map((feature, i) => (
+                                                            <span key={i} className="badge badge-info me-1">{feature}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Retrieval Tab */}
+                        {activeTab === 'retrieval' && (
+                            <div>
+                                <h3>Information Retrieval</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Query Input</h5>
+                                            <div className="input-group-custom">
+                                                <label>Enter your query:</label>
+                                                <textarea
+                                                    value={query}
+                                                    onChange={(e) => setQuery(e.target.value)}
+                                                    placeholder="Ask a question about machine learning..."
+                                                />
+                                            </div>
+                                            <button className="btn btn-rag w-100 mb-2" onClick={performSimilaritySearch}>
+                                                <i className="fas fa-search"></i> Search Similar Documents
+                                            </button>
+                                            <button className="btn btn-outline-rag w-100">
+                                                <i className="fas fa-keyboard"></i> Keyword Search
+                                            </button>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Retrieval Methods</h5>
+                                            <button className="btn btn-outline-rag w-100 mb-2">
+                                                <i className="fas fa-vector-square"></i> Semantic Search
+                                            </button>
+                                            <button className="btn btn-outline-rag w-100 mb-2">
+                                                <i className="fas fa-tags"></i> BM25 Ranking
+                                            </button>
+                                            <button className="btn btn-outline-rag w-100 mb-2">
+                                                <i className="fas fa-layer-group"></i> Hybrid Search
+                                            </button>
+                                            <button className="btn btn-outline-rag w-100">
+                                                <i className="fas fa-filter"></i> Re-ranking
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Retrieved Results</h5>
+                                            {similarityResults.map((result, index) => (
+                                                <div key={index} className="query-result">
+                                                    <div className="d-flex justify-content-between align-items-start mb-2">
+                                                        <span className={`relevance-score ${getRelevanceClass(result.score)}`}>
+                                                            {result.score.toFixed(2)}
+                                                        </span>
+                                                        <span className={`badge ${getRelevanceBadge(result.relevance)}`}>
+                                                            {result.relevance.toUpperCase()}
+                                                        </span>
+                                                    </div>
+                                                    <p className="mb-0">{result.chunk}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Similarity Metrics</h5>
+                                            <div className="similarity-visual">
+                                                <div className="similarity-item">
+                                                    <div>Cosine Similarity</div>
+                                                    <small>0.95</small>
+                                                </div>
+                                                <div className="similarity-item">
+                                                    <div>Euclidean Distance</div>
+                                                    <small>0.12</small>
+                                                </div>
+                                                <div className="similarity-item">
+                                                    <div>Dot Product</div>
+                                                    <small>0.87</small>
+                                                </div>
+                                                <div className="similarity-item">
+                                                    <div>Manhattan Distance</div>
+                                                    <small>0.34</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Generation Tab */}
+                        {activeTab === 'generation' && (
+                            <div>
+                                <h3>Response Generation</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Retrieved Context</h5>
+                                            {retrievedChunks.map((chunk, index) => (
+                                                <div key={index} className="chunk-highlight">
+                                                    <div className="d-flex justify-content-between align-items-start mb-1">
+                                                        <small>Chunk {index + 1}</small>
+                                                        <span className={`relevance-score ${getRelevanceClass(chunk.score)}`}>
+                                                            {chunk.score.toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                    <p className="mb-0">{chunk.text}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Generated Response</h5>
+                                            <div className="query-result">
+                                                <p>{generatedResponse || 'Run the RAG pipeline to generate a response...'}</p>
+                                            </div>
+                                            <button className="btn btn-rag w-100 mt-2" onClick={executeRAG}>
+                                                <i className="fas fa-play"></i> Generate Response
+                                            </button>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Generation Strategies</h5>
+                                            <button className="btn btn-outline-rag w-100 mb-2">
+                                                <i className="fas fa-list"></i> Stuff Strategy
+                                            </button>
+                                            <button className="btn btn-outline-rag w-100 mb-2">
+                                                <i className="fas fa-window-maximize"></i> Map-Reduce
+                                            </button>
+                                            <button className="btn btn-outline-rag w-100 mb-2">
+                                                <i className="fas fa-sitemap"></i> Refine Strategy
+                                            </button>
+                                            <button className="btn btn-outline-rag w-100">
+                                                <i className="fas fa-compress-arrows-alt"></i> Compression
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Frameworks Tab */}
+                        {activeTab === 'frameworks' && (
+                            <div>
+                                <h3>RAG Frameworks & Tools</h3>
+                                <div className="row">
+                                    {frameworks.map((framework, index) => (
+                                        <div key={index} className="col-md-4 mb-3">
+                                            <div className="vector-card">
+                                                <h5>{framework.name}</h5>
+                                                <p className="mb-2">{framework.description}</p>
+                                                <div className="mb-2">
+                                                    <strong>Key Features:</strong>
+                                                </div>
+                                                {framework.features.map((feature, i) => (
+                                                    <span key={i} className="badge badge-primary me-1 mb-1">{feature}</span>
+                                                ))}
+                                                <button className="btn btn-outline-rag btn-sm w-100 mt-2">
+                                                    <i className="fas fa-external-link-alt"></i> Learn More
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Implementation Patterns</h5>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <h6>Basic RAG</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> Load documents</li>
+                                                <li><i className="fas fa-check text-success"></i> Create embeddings</li>
+                                                <li><i className="fas fa-check text-success"></i> Store in vector DB</li>
+                                                <li><i className="fas fa-check text-success"></i> Retrieve & generate</li>
+                                            </ul>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <h6>Advanced RAG</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> Query expansion</li>
+                                                <li><i className="fas fa-check text-success"></i> Re-ranking</li>
+                                                <li><i className="fas fa-check text-success"></i> Multi-modal retrieval</li>
+                                                <li><i className="fas fa-check text-success"></i> Agent workflows</li>
+                                            </ul>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <h6>Production RAG</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> Monitoring & logging</li>
+                                                <li><i className="fas fa-check text-success"></i> Caching strategies</li>
+                                                <li><i className="fas fa-check text-success"></i> Error handling</li>
+                                                <li><i className="fas fa-check text-success"></i> Scalability</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Code Editor Tab */}
+                        {activeTab === 'editor' && (
+                            <div>
+                                <h3>RAG Implementation Code</h3>
+                                <div className="code-editor">
+                                    <pre>{code}</pre>
+                                </div>
+                                <div className="mt-3">
+                                    <button
+                                        className="btn btn-rag me-2"
+                                        onClick={executeRAG}
+                                        disabled={isExecuting}
+                                    >
+                                        {isExecuting ? (
+                                            <>
+                                                <i className="fas fa-spinner fa-spin"></i> Executing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fas fa-play"></i> Run RAG Pipeline
+                                            </>
+                                        )}
+                                    </button>
+                                    <button className="btn btn-outline-rag">
+                                        <i className="fas fa-download"></i> Download Code
+                                    </button>
+                                </div>
+                                {output && (
+                                    <div className="code-output">
+                                        {output}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Performance Tab */}
+                        {activeTab === 'performance' && (
+                            <div>
+                                <h3>Performance Metrics & Evaluation</h3>
+                                <div className="performance-metrics">
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.retrievalTime}</div>
+                                        <div className="perf-metric-label">Retrieval Time</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.generationTime}</div>
+                                        <div className="perf-metric-label">Generation Time</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.totalLatency}</div>
+                                        <div className="perf-metric-label">Total Latency</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.relevanceScore.toFixed(2)}</div>
+                                        <div className="perf-metric-label">Relevance Score</div>
+                                    </div>
+                                </div>
+
+                                <div className="execution-stats">
+                                    <div className="stat-item">
+                                        <span className="stat-label">Embedding Model:</span>
+                                        <span className="stat-value">text-embedding-ada-002</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Vector Dimension:</span>
+                                        <span className="stat-value">1536</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Chunk Size:</span>
+                                        <span className="stat-value">1000 tokens</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Top-K Retrieval:</span>
+                                        <span className="stat-value">5 chunks</span>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Evaluation Metrics</h5>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <h6>Retrieval Quality</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> Precision@K</li>
+                                                <li><i className="fas fa-check text-success"></i> Recall@K</li>
+                                                <li><i className="fas fa-check text-success"></i> Mean Reciprocal Rank</li>
+                                                <li><i className="fas fa-check text-success"></i> Normalized Discounted Cumulative Gain</li>
+                                            </ul>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <h6>Generation Quality</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> ROUGE scores</li>
+                                                <li><i className="fas fa-check text-success"></i> BLEU scores</li>
+                                                <li><i className="fas fa-check text-success"></i> BERTScore</li>
+                                                <li><i className="fas fa-check text-success"></i> Human evaluation</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-graduation-cap"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://arxiv.org/abs/2005.11401" target="_blank"><i className="fas fa-external-link-alt"></i> RAG Paper</a></li>
+                                        <li><a href="https://python.langchain.com/" target="_blank"><i className="fas fa-external-link-alt"></i> LangChain Docs</a></li>
+                                        <li><a href="https://www.pinecone.io/" target="_blank"><i className="fas fa-external-link-alt"></i> Pinecone</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://gpt-index.readthedocs.io/" target="_blank"><i className="fas fa-external-link-alt"></i> LlamaIndex</a></li>
+                                        <li><a href="https://huggingface.co/docs/transformers/" target="_blank"><i className="fas fa-external-link-alt"></i> Hugging Face</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/rag" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

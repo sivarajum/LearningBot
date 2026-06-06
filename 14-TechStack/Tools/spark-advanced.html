@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apache Spark Advanced - Big Data Processing Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ff6b35;
+        }
+
+        .sidebar-header .service-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .sidebar-header .service-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b35;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header .service-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #ff6b35;
+        }
+
+        .nav-item {
+            padding: 10px 15px;
+            margin: 2px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 107, 53, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #ff6b35;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 320px;
+            padding: 30px;
+            overflow-y: auto;
+            min-height: 100vh;
+            width: calc(100vw - 320px);
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+            border-bottom: 2px solid #ff6b35;
+            padding-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff6b35;
+            margin-bottom: 10px;
+        }
+
+        .section-description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Code Containers */
+        .code-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #343a40;
+            color: white;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .code-tab {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            background: #ff6b35;
+        }
+
+        .code-tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn {
+            padding: 8px 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .code-content {
+            position: relative;
+        }
+
+        .code-block {
+            display: none;
+            padding: 20px;
+            background: #f8f9fa;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .code-block.active {
+            display: block;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .line-numbers {
+            color: #6c757d;
+            margin-right: 15px;
+            user-select: none;
+        }
+
+        .keyword {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #28a745;
+        }
+
+        .comment {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .number {
+            color: #dc3545;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Progress Indicator */
+        .progress-indicator {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        /* Data Flow Diagrams */
+        .data-flow-diagram {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+            margin: 20px 0;
+        }
+
+        .flow-arrow {
+            position: absolute;
+            left: 180px;
+            top: 180px;
+            width: 400px;
+            height: 40px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 40"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="white"/></marker></defs><line x1="0" y1="20" x2="380" y2="20" stroke="white" stroke-width="3" marker-end="url(%23arrow)"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        .flow-label {
+            position: absolute;
+            left: 320px;
+            top: 120px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .data-packet {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: flow 3s linear infinite;
+        }
+
+        @keyframes flow {
+            0% {
+                left: 80px;
+            }
+
+            100% {
+                left: 580px;
+            }
+        }
+
+        .data-source {
+            position: absolute;
+            left: 50px;
+            top: 170px;
+            width: 80px;
+            height: 60px;
+            background: #2196F3;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .data-destination {
+            position: absolute;
+            right: 50px;
+            top: 150px;
+            width: 120px;
+            height: 80px;
+            background: #ea4335;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px;
+            }
+
+            .main-content {
+                margin-left: 280px;
+                width: calc(100vw - 280px);
+                padding: 20px;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: relative;
+                height: auto;
+                width: 100%;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .progress-indicator {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .content-section {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <span class="service-icon">⚡</span>
+                <h2 class="service-title">Apache Spark</h2>
+                <p class="service-subtitle">Big Data Processing Platform</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">📚 Fundamentals</div>
+                <div class="nav-item active" data-section="overview">Overview & Architecture</div>
+                <div class="nav-item" data-section="installation">Installation & Setup</div>
+                <div class="nav-item" data-section="rdds">RDDs (Resilient Distributed Datasets)</div>
+                <div class="nav-item" data-section="dataframes">DataFrames & Datasets</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">🔍 Core Components</div>
+                <div class="nav-item" data-section="sparksql">Spark SQL</div>
+                <div class="nav-item" data-section="streaming">Spark Streaming</div>
+                <div class="nav-item" data-section="mllib">MLlib (Machine Learning)</div>
+                <div class="nav-item" data-section="graphx">GraphX</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">🚀 Advanced Topics</div>
+                <div class="nav-item" data-section="deployment">Deployment & Orchestration</div>
+                <div class="nav-item" data-section="performance">Performance Tuning</div>
+                <div class="nav-item" data-section="security">Security & Governance</div>
+                <div class="nav-item" data-section="monitoring">Monitoring & Debugging</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">🔬 Expert Level</div>
+                <div class="nav-item" data-section="internals">Spark Internals</div>
+                <div class="nav-item" data-section="extensions">Custom Extensions</div>
+                <div class="nav-item" data-section="integration">Enterprise Integration</div>
+                <div class="nav-item" data-section="future">Future & Trends</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Overview Section -->
+            <div id="overview" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Overview & Architecture</h1>
+                    <p class="section-description">
+                        Apache Spark is a unified analytics engine for large-scale data processing, providing high-level
+                        APIs in Java, Scala, Python and R.
+                    </p>
+                </div>
+
+                <div class="fade-in">
+                    <h3>🔥 What is Apache Spark?</h3>
+                    <p>
+                        Apache Spark is an open-source unified analytics engine for large-scale data processing. It
+                        provides an interface for programming entire clusters with implicit data parallelism and fault
+                        tolerance. Originally developed at UC Berkeley AMPLab, Spark has become one of the most popular
+                        big data processing frameworks.
+                    </p>
+
+                    <h3>🏗️ Core Architecture</h3>
+                    <div class="data-flow-diagram">
+                        <div class="data-source">Data Sources</div>
+                        <div class="flow-arrow"></div>
+                        <div class="flow-label">Spark Processing</div>
+                        <div class="data-packet"></div>
+                        <div class="data-destination">Analytics<br />Results</div>
+                    </div>
+
+                    <h3>📊 Key Components</h3>
+                    <ul>
+                        <li><strong>Spark Core:</strong> Foundation with RDDs, task scheduling, memory management</li>
+                        <li><strong>Spark SQL:</strong> Structured data processing with DataFrames</li>
+                        <li><strong>Spark Streaming:</strong> Real-time data stream processing</li>
+                        <li><strong>MLlib:</strong> Machine learning library with algorithms and utilities</li>
+                        <li><strong>GraphX:</strong> Graph processing and analytics</li>
+                    </ul>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-tabs">
+                                <button class="code-tab active" onclick="switchTab(this, 'spark-init')">Spark
+                                    Initialization</button>
+                                <button class="code-tab" onclick="switchTab(this, 'word-count')">Word Count
+                                    Example</button>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <div id="spark-init" class="code-block active">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Initialize Spark Session</span><br><span class="line-numbers"> 2</span><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSession<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span>spark = SparkSession.builder \<br><span class="line-numbers"> 5</span>    .appName(<span class="string">"Spark Application"</span>) \<br><span class="line-numbers"> 6</span>    .config(<span class="string">"spark.executor.memory"</span>, <span class="string">"2g"</span>) \<br><span class="line-numbers"> 7</span>    .config(<span class="string">"spark.driver.memory"</span>, <span class="string">"1g"</span>) \<br><span class="line-numbers"> 8</span>    .getOrCreate()<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># Get Spark Context</span><br><span class="line-numbers">11</span>sc = spark.sparkContext<br><span class="line-numbers">12</span><br><span class="line-numbers">13</span><span class="comment"># Print Spark version</span><br><span class="line-numbers">14</span><span class="keyword">print</span>(<span class="string">f"Spark version: {spark.version}"</span>)</code>
+                            </div>
+                            <div id="word-count" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Classic Word Count Example</span><br><span class="line-numbers"> 2</span>text_file = sc.textFile(<span class="string">"hdfs://..."</span>)<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Transform operations</span><br><span class="line-numbers"> 5</span>words = text_file.flatMap(<span class="keyword">lambda</span> line: line.split(<span class="string">" "</span>))<br><span class="line-numbers"> 6</span>word_pairs = words.map(<span class="keyword">lambda</span> word: (word, <span class="number">1</span>))<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span><span class="comment"># Action operation</span><br><span class="line-numbers"> 9</span>word_counts = word_pairs.reduceByKey(<span class="keyword">lambda</span> a, b: a + b)<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span><span class="comment"># Collect results</span><br><span class="line-numbers">12</span>results = word_counts.collect()<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="keyword">for</span> word, count <span class="keyword">in</span> results:<br><span class="line-numbers">15</span>    <span class="keyword">print</span>(<span class="string">f"{word}: {count}"</span>)</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Installation Section -->
+            <div id="installation" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Installation & Setup</h1>
+                    <p class="section-description">
+                        Setting up Apache Spark on different platforms and environments.
+                    </p>
+                </div>
+
+                <div class="fade-in">
+                    <h3>📦 Installation Methods</h3>
+                    <ul>
+                        <li><strong>Standalone:</strong> Single-node deployment for development</li>
+                        <li><strong>YARN:</strong> Deploy on Hadoop YARN clusters</li>
+                        <li><strong>Kubernetes:</strong> Containerized deployment</li>
+                        <li><strong>Cloud:</strong> Managed services (Databricks, EMR, etc.)</li>
+                    </ul>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-tabs">
+                                <button class="code-tab active" onclick="switchTab(this, 'standalone')">Standalone
+                                    Setup</button>
+                                <button class="code-tab" onclick="switchTab(this, 'docker')">Docker Setup</button>
+                                <button class="code-tab" onclick="switchTab(this, 'kubernetes')">Kubernetes</button>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <div id="standalone" class="code-block active">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Download and extract Spark</span><br><span class="line-numbers"> 2</span>wget https://downloads.apache.org/spark/spark-3.5.0/spark-3.5.0-bin-hadoop3.tgz<br><span class="line-numbers"> 3</span>tar -xzf spark-3.5.0-bin-hadoop3.tgz<br><span class="line-numbers"> 4</span><span class="keyword">cd</span> spark-3.5.0-bin-hadoop3<br><span class="line-numbers"> 5</span><br><span class="line-numbers"> 6</span><span class="comment"># Set environment variables</span><br><span class="line-numbers"> 7</span><span class="keyword">export</span> SPARK_HOME=$(pwd)<br><span class="line-numbers"> 8</span><span class="keyword">export</span> PATH=$PATH:$SPARK_HOME/bin<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># Start master</span><br><span class="line-numbers">11</span>$SPARK_HOME/sbin/start-master.sh<br><span class="line-numbers">12</span><br><span class="line-numbers">13</span><span class="comment"># Start worker</span><br><span class="line-numbers">14</span>$SPARK_HOME/sbin/start-worker.sh spark://localhost:7077<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Submit application</span><br><span class="line-numbers">17</span>spark-submit --master spark://localhost:7077 your-app.py</code>
+                            </div>
+                            <div id="docker" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Pull Spark Docker image</span><br><span class="line-numbers"> 2</span>docker pull apache/spark:3.5.0<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Run Spark master</span><br><span class="line-numbers"> 5</span>docker run -d --name spark-master \<br><span class="line-numbers"> 6</span>  -p 7077:7077 -p 8080:8080 \<br><span class="line-numbers"> 7</span>  apache/spark:3.5.0 \<br><span class="line-numbers"> 8</span>  /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># Run Spark worker</span><br><span class="line-numbers">11</span>docker run -d --name spark-worker \<br><span class="line-numbers">12</span>  --link spark-master \<br><span class="line-numbers">13</span>  apache/spark:3.5.0 \<br><span class="line-numbers">14</span>  /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker \<br><span class="line-numbers">15</span>  spark://spark-master:7077<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span><span class="comment"># Submit job</span><br><span class="line-numbers">18</span>docker run --rm --link spark-master \<br><span class="line-numbers">19</span>  -v $(pwd):/app \<br><span class="line-numbers">20</span>  apache/spark:3.5.0 \<br><span class="line-numbers">21</span>  /opt/spark/bin/spark-submit \<br><span class="line-numbers">22</span>  --master spark://spark-master:7077 \<br><span class="line-numbers">23</span>  /app/your-spark-app.py</code>
+                            </div>
+                            <div id="kubernetes" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Create namespace</span><br><span class="line-numbers"> 2</span>kubectl create namespace spark<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Deploy Spark operator</span><br><span class="line-numbers"> 5</span>kubectl apply -f https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/releases/download/v1beta2-1.3.3-3.1.1/spark-operator.yaml<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span><span class="comment"># Create SparkApplication</span><br><span class="line-numbers"> 8</span>cat &lt;&lt;EOF | kubectl apply -f -<br><span class="line-numbers"> 9</span>apiVersion: "sparkoperator.k8s.io/v1beta2"<br><span class="line-numbers">10</span>kind: SparkApplication<br><span class="line-numbers">11</span>metadata:<br><span class="line-numbers">12</span>  name: spark-pi<br><span class="line-numbers">13</span>  namespace: spark<br><span class="line-numbers">14</span>spec:<br><span class="line-numbers">15</span>  type: Scala<br><span class="line-numbers">16</span>  mode: cluster<br><span class="line-numbers">17</span>  image: "gcr.io/spark-operator/spark:v3.5.0"<br><span class="line-numbers">18</span>  mainClass: org.apache.spark.examples.SparkPi<br><span class="line-numbers">19</span>  mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.12-3.5.0.jar"<br><span class="line-numbers">20</span>  sparkVersion: "3.5.0"<br><span class="line-numbers">21</span>  restartPolicy:<br><span class="line-numbers">22</span>    type: Never<br><span class="line-numbers">23</span>  driver:<br><span class="line-numbers">24</span>    cores: 1<br><span class="line-numbers">25</span>    memory: "512m"<br><span class="line-numbers">26</span>  executor:<br><span class="line-numbers">27</span>    cores: 1<br><span class="line-numbers">28</span>    instances: 2<br><span class="line-numbers">29</span>    memory: "512m"<br><span class="line-numbers">30</span>EOF</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RDDs Section -->
+            <div id="rdds" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">RDDs (Resilient Distributed Datasets)</h1>
+                    <p class="section-description">
+                        The fundamental data structure in Spark, providing fault-tolerant distributed collections.
+                    </p>
+                </div>
+
+                <div class="fade-in">
+                    <h3>🔄 What are RDDs?</h3>
+                    <p>
+                        RDDs are the primary abstraction in Apache Spark representing an immutable, partitioned
+                        collection of elements that can be operated on in parallel. They are fault-tolerant and can be
+                        operated on in parallel.
+                    </p>
+
+                    <h3>✨ Key Characteristics</h3>
+                    <ul>
+                        <li><strong>Immutable:</strong> Cannot be changed after creation</li>
+                        <li><strong>Distributed:</strong> Data partitioned across cluster nodes</li>
+                        <li><strong>Resilient:</strong> Fault-tolerant through lineage</li>
+                        <li><strong>Typed:</strong> Elements have specific data types</li>
+                        <li><strong>Lazy:</strong> Transformations are evaluated only when needed</li>
+                    </ul>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-tabs">
+                                <button class="code-tab active" onclick="switchTab(this, 'rdd-creation')">RDD
+                                    Creation</button>
+                                <button class="code-tab" onclick="switchTab(this, 'rdd-operations')">Operations</button>
+                                <button class="code-tab" onclick="switchTab(this, 'rdd-lineage')">Lineage & Fault
+                                    Tolerance</button>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <div id="rdd-creation" class="code-block active">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Create RDD from collection</span><br><span class="line-numbers"> 2</span>data = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]<br><span class="line-numbers"> 3</span>rdd = sc.parallelize(data, <span class="number">3</span>)  <span class="comment"># 3 partitions</span><br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span><span class="comment"># Create RDD from file</span><br><span class="line-numbers"> 6</span>text_rdd = sc.textFile(<span class="string">"hdfs://path/to/file.txt"</span>)<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span><span class="comment"># Create RDD from another RDD</span><br><span class="line-numbers"> 9</span>squared_rdd = rdd.map(<span class="keyword">lambda</span> x: x * x)<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span><span class="comment"># Check RDD properties</span><br><span class="line-numbers">12</span><span class="keyword">print</span>(<span class="string">f"Partitions: {rdd.getNumPartitions()}"</span>)<br><span class="line-numbers">13</span><span class="keyword">print</span>(<span class="string">f"Count: {rdd.count()}"</span>)<br><span class="line-numbers">14</span><span class="keyword">print</span>(<span class="string">f"First element: {rdd.first()}"</span>)</code>
+                            </div>
+                            <div id="rdd-operations" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Transformations (lazy operations)</span><br><span class="line-numbers"> 2</span>filtered_rdd = rdd.filter(<span class="keyword">lambda</span> x: x % <span class="number">2</span> == <span class="number">0</span>)<br><span class="line-numbers"> 3</span>mapped_rdd = rdd.map(<span class="keyword">lambda</span> x: x * <span class="number">10</span>)<br><span class="line-numbers"> 4</span>flat_mapped = rdd.flatMap(<span class="keyword">lambda</span> x: [x, x*<span class="number">2</span>])<br><span class="line-numbers"> 5</span><br><span class="line-numbers"> 6</span><span class="comment"># Actions (trigger computation)</span><br><span class="line-numbers"> 7</span>result = filtered_rdd.collect()  <span class="comment"># Returns list</span><br><span class="line-numbers"> 8</span>count = rdd.count()  <span class="comment"># Returns integer</span><br><span class="line-numbers"> 9</span>first = rdd.first()  <span class="comment"># Returns first element</span><br><span class="line-numbers">10</span>taken = rdd.take(<span class="number">3</span>)  <span class="comment"># Returns first 3 elements</span><br><span class="line-numbers">11</span><br><span class="line-numbers">12</span><span class="comment"># Key-value operations</span><br><span class="line-numbers">13</span>kv_rdd = rdd.map(<span class="keyword">lambda</span> x: (x % <span class="number">3</span>, x))<br><span class="line-numbers">14</span>grouped = kv_rdd.groupByKey()<br><span class="line-numbers">15</span>reduced = kv_rdd.reduceByKey(<span class="keyword">lambda</span> a, b: a + b)<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span><span class="comment"># Save results</span><br><span class="line-numbers">18</span>rdd.saveAsTextFile(<span class="string">"hdfs://output/path"</span>)</code>
+                            </div>
+                            <div id="rdd-lineage" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># RDD Lineage (DAG of operations)</span><br><span class="line-numbers"> 2</span>rdd = sc.parallelize([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>])<br><span class="line-numbers"> 3</span>filtered = rdd.filter(<span class="keyword">lambda</span> x: x > <span class="number">2</span>)<br><span class="line-numbers"> 4</span>mapped = filtered.map(<span class="keyword">lambda</span> x: x * <span class="number">2</span>)<br><span class="line-numbers"> 5</span><br><span class="line-numbers"> 6</span><span class="comment"># View lineage graph</span><br><span class="line-numbers"> 7</span><span class="keyword">print</span>(mapped.toDebugString())<br><span class="line-numbers"> 8</span><br><span class="line-numbers"> 9</span><span class="comment"># Output:</span><br><span class="line-numbers">10</span><span class="comment"># (4) PythonRDD[3] at RDD at PythonRDD.scala:53 []</span><br><span class="line-numbers">11</span><span class="comment">#  |  MapPartitionsRDD[2] at map at PythonRDD.scala:145 []</span><br><span class="line-numbers">12</span><span class="comment">#  |  MapPartitionsRDD[1] at filter at PythonRDD.scala:145 []</span><br><span class="line-numbers">13</span><span class="comment">#  |  ParallelCollectionRDD[0] at parallelize at PythonRDD.scala:195 []</span><br><span class="line-numbers">14</span><br><span class="line-numbers">15</span><span class="comment"># Fault tolerance through recomputation</span><br><span class="line-numbers">16</span><span class="keyword">def</span> <span class="keyword">expensive_operation</span>(x):<br><span class="line-numbers">17</span>    <span class="comment"># Simulate expensive computation</span><br><span class="line-numbers">18</span>    <span class="keyword">import</span> time<br><span class="line-numbers">19</span>    time.sleep(<span class="number">0.1</span>)<br><span class="line-numbers">20</span>    <span class="keyword">return</span> x * x<br><span class="line-numbers">21</span><br><span class="line-numbers">22</span><span class="comment"># RDD remembers how to recreate lost partitions</span><br><span class="line-numbers">23</span>result_rdd = rdd.map(expensive_operation).cache()<br><span class="line-numbers">24</span><br><span class="line-numbers">25</span><span class="comment"># Persist RDD in memory/disk</span><br><span class="line-numbers">26</span>cached_rdd = rdd.persist(StorageLevel.MEMORY_AND_DISK)<br><span class="line-numbers">27</span>cached_rdd.count()  <span class="comment"># Triggers computation and caching</span></code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DataFrames Section -->
+            <div id="dataframes" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">DataFrames & Datasets</h1>
+                    <p class="section-description">
+                        Higher-level abstractions for structured data processing with optimizations.
+                    </p>
+                </div>
+
+                <div class="fade-in">
+                    <h3>📊 DataFrames vs RDDs</h3>
+                    <p>
+                        DataFrames provide a higher-level abstraction than RDDs, offering structured data processing
+                        with automatic optimization through Catalyst optimizer.
+                    </p>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-tabs">
+                                <button class="code-tab active"
+                                    onclick="switchTab(this, 'dataframe-creation')">DataFrame Creation</button>
+                                <button class="code-tab"
+                                    onclick="switchTab(this, 'dataframe-operations')">Operations</button>
+                                <button class="code-tab" onclick="switchTab(this, 'datasets')">Datasets</button>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <div id="dataframe-creation" class="code-block active">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Create DataFrame from RDD</span><br><span class="line-numbers"> 2</span><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> Row<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span>rdd = sc.parallelize([<br><span class="line-numbers"> 5</span>    Row(name=<span class="string">"Alice"</span>, age=<span class="number">25</span>, city=<span class="string">"NYC"</span>),<br><span class="line-numbers"> 6</span>    Row(name=<span class="string">"Bob"</span>, age=<span class="number">30</span>, city=<span class="string">"LA"</span>)<br><span class="line-numbers"> 7</span>])<br><span class="line-numbers"> 8>df = spark.createDataFrame(rdd)<br><span class="line-numbers"> 9<br><span class="line-numbers">10</span><span class="comment"># Create from list of tuples</span><br><span class="line-numbers">11</span>data = [(<span class="string">"Alice"</span>, <span class="number">25</span>), (<span class="string">"Bob"</span>, <span class="number">30</span>)]<br><span class="line-numbers">12</span>df = spark.createDataFrame(data, [<span class="string">"name"</span>, <span class="string">"age"</span>])<br><span class="line-numbers">13<br><span class="line-numbers">14</span><span class="comment"># Read from file</span><br><span class="line-numbers">15</span>df_csv = spark.read.csv(<span class="string">"data.csv"</span>, header=True, inferSchema=True)<br><span class="line-numbers">16</span>df_json = spark.read.json(<span class="string">"data.json"</span>)<br><span class="line-numbers">17</span>df_parquet = spark.read.parquet(<span class="string">"data.parquet"</span>)<br><span class="line-numbers">18<br><span class="line-numbers">19</span><span class="comment"># Show schema</span><br><span class="line-numbers">20</span>df.printSchema()<br><span class="line-numbers">21<br><span class="line-numbers">22</span><span class="comment"># Display data</span><br><span class="line-numbers">23</span>df.show()<br><span class="line-numbers">24</span>df.describe().show()</code>
+                            </div>
+                            <div id="dataframe-operations" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Select columns</span><br><span class="line-numbers"> 2</span>df.select(<span class="string">"name"</span>, <span class="string">"age"</span>).show()<br><span class="line-numbers"> 3</span>df.select(df.name, df.age * <span class="number">2</span>).show()<br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span><span class="comment"># Filter rows</span><br><span class="line-numbers"> 6</span>df.filter(df.age > <span class="number">25</span>).show()<br><span class="line-numbers"> 7</span>df.where(<span class="string">"age > 25 AND city = 'NYC'"</span>).show()<br><span class="line-numbers"> 8<br><span class="line-numbers"> 9</span><span class="comment"># Group and aggregate</span><br><span class="line-numbers">10</span>df.groupBy(<span class="string">"city"</span>).avg(<span class="string">"age"</span>).show()<br><span class="line-numbers">11</span>df.groupBy(<span class="string">"city"</span>).agg({<span class="string">"age"</span>: <span class="string">"max"</span>, <span class="string">"name"</span>: <span class="string">"count"</span>}).show()<br><span class="line-numbers">12<br><span class="line-numbers">13</span><span class="comment"># Join DataFrames</span><br><span class="line-numbers">14</span>df1.join(df2, <span class="string">"id"</span>).show()<br><span class="line-numbers">15</span>df1.join(df2, df1.id == df2.id, <span class="string">"inner"</span>).show()<br><span class="line-numbers">16<br><span class="line-numbers">17</span><span class="comment"># Window functions</span><br><span class="line-numbers">18</span><span class="keyword">from</span> pyspark.sql.window <span class="keyword">import</span> Window<br><span class="line-numbers">19</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> row_number, rank<br><span class="line-numbers">20<br><span class="line-numbers">21</span>window_spec = Window.partitionBy(<span class="string">"department"</span>).orderBy(<span class="string">"salary"</span>.desc())<br><span class="line-numbers">22</span>df.withColumn(<span class="string">"rank"</span>, rank().over(window_spec)).show()<br><span class="line-numbers">23<br><span class="line-numbers">24</span><span class="comment"># User-defined functions (UDFs)</span><br><span class="line-numbers">25</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> udf<br><span class="line-numbers">26</span><span class="keyword">from</span> pyspark.sql.types <span class="keyword">import</span> StringType<br><span class="line-numbers">27<br><span class="line-numbers">28</span><span class="keyword">def</span> categorize_age(age):<br><span class="line-numbers">29</span>    <span class="keyword">if</span> age < <span class="number">30</span>:<br><span class="line-numbers">30</span>        <span class="keyword">return</span> <span class="string">"Young"</span><br><span class="line-numbers">31</span>    <span class="keyword">else</span>:<br><span class="line-numbers">32</span>        <span class="keyword">return</span> <span class="string">"Adult"</span><br><span class="line-numbers">33<br><span class="line-numbers">34</span>categorize_udf = udf(categorize_age, StringType())<br><span class="line-numbers">35</span>df.withColumn(<span class="string">"age_category"</span>, categorize_udf(df.age)).show()</code>
+                            </div>
+                            <div id="datasets" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Datasets: Type-safe DataFrames</span><br><span class="line-numbers"> 2</span><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> Dataset<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Define case class (Scala) or equivalent in Python</span><br><span class="line-numbers"> 5</span><span class="keyword">class</span> Person:<br><span class="line-numbers"> 6</span>    <span class="keyword">def</span> __init__(self, name, age):<br><span class="line-numbers"> 7</span>        self.name = name<br><span class="line-numbers"> 8</span>        self.age = age<br><br><span class="line-numbers"> 9</span><span class="comment"># Create Dataset from DataFrame</span><br><span class="line-numbers">10</span>df = spark.createDataFrame([(<span class="string">"Alice"</span>, <span class="number">25</span>), (<span class="string">"Bob"</span>, <span class="number">30</span>)], [<span class="string">"name"</span>, <span class="string">"age"</span>])<br><span class="line-numbers">11</span><br><span class="line-numbers">12</span><span class="comment"># In Scala (Datasets are primarily Scala/Java)</span><br><span class="line-numbers">13</span><span class="comment">// val ds: Dataset[Person] = df.as[Person]</span><br><span class="line-numbers">14</span><span class="comment">// ds.filter(_.age > 25).show()</span><br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Type-safe operations</span><br><span class="line-numbers">17</span><span class="comment">// ds.map(person => person.name.toUpperCase)</span><br><span class="line-numbers">18</span><span class="comment">//   .filter(_.age > 20)</span><br><span class="line-numbers">19</span><span class="comment">//   .groupByKey(_.age / 10)</span><br><span class="line-numbers">20</span><span class="comment">//   .count()</span><br><span class="line-numbers">21</span><br><span class="line-numbers">22</span><span class="comment"># Encoder-based serialization</span><br><span class="line-numbers">23</span><span class="keyword">from</span> pyspark.sql.types <span class="keyword">import</span> StructType, StructField, StringType, IntegerType<br><span class="line-numbers">24</span><br><span class="line-numbers">25</span>schema = StructType([<br><span class="line-numbers">26</span>    StructField(<span class="string">"name"</span>, StringType(), True),<br><span class="line-numbers">27</span>    StructField(<span class="string">"age"</span>, IntegerType(), True)<br><span class="line-numbers">28</span>])<br><span class="line-numbers">29<br><span class="line-numbers">30</span><span class="comment"># Datasets provide compile-time type safety</span><br><span class="line-numbers">31</span><span class="comment"># Unlike DataFrames which are runtime-checked</span></code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Tuning Section -->
+            <div id="performance" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Performance Tuning</h1>
+                    <p class="section-description">
+                        Optimizing Spark applications for maximum performance and efficiency.
+                    </p>
+                </div>
+
+                <div class="fade-in">
+                    <h3>⚡ Performance Optimization</h3>
+                    <p>
+                        Key strategies for tuning Spark applications including memory management, parallelism, and data
+                        serialization.
+                    </p>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-tabs">
+                                <button class="code-tab active" onclick="switchTab(this, 'memory-tuning')">Memory
+                                    Tuning</button>
+                                <button class="code-tab" onclick="switchTab(this, 'parallelism')">Parallelism</button>
+                                <button class="code-tab" onclick="switchTab(this, 'data-skew')">Data Skew</button>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <div id="memory-tuning" class="code-block active">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Memory Configuration</span><br><span class="line-numbers"> 2</span>spark-submit \<br><span class="line-numbers"> 3</span>  --conf spark.driver.memory=4g \<br><span class="line-numbers"> 4</span>  --conf spark.executor.memory=6g \<br><span class="line-numbers"> 5</span>  --conf spark.executor.memoryOverhead=1g \<br><span class="line-numbers"> 6</span>  --conf spark.memory.fraction=0.8 \<br><span class="line-numbers"> 7</span>  --conf spark.memory.storageFraction=0.3 \<br><span class="line-numbers"> 8</span>  --conf spark.sql.shuffle.partitions=200 \<br><span class="line-numbers"> 9</span>  --conf spark.default.parallelism=200 \<br><span class="line-numbers">10</span>  myapp.jar<br><span class="line-numbers">11</span><br><span class="line-numbers">12</span><span class="comment"># Garbage Collection Tuning</span><br><span class="line-numbers">13</span>--conf spark.executor.extraJavaOptions="-XX:+UseG1GC -XX:MaxGCPauseMillis=200"<br><span class="line-numbers">14</span>--conf spark.driver.extraJavaOptions="-XX:+UseG1GC -XX:MaxGCPauseMillis=200"<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Off-heap Memory</span><br><span class="line-numbers">17</span>--conf spark.memory.offHeap.enabled=true \<br><span class="line-numbers">18</span>--conf spark.memory.offHeap.size=2g<br><br><span class="line-numbers">19</span><span class="comment"># Kryo Serialization (faster than Java serialization)</span><br><span class="line-numbers">20</span>spark.conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")<br><span class="line-numbers">21</span>spark.conf.set("spark.kryo.registrationRequired", "true")<br><span class="line-numbers">22</span><br><span class="line-numbers">23</span><span class="comment"># Register classes for Kryo</span><br><span class="line-numbers">24</span><span class="keyword">from</span> pyspark.serializers <span class="keyword">import</span> PickleSerializer<br><span class="line-numbers">25</span>sc.getConf().registerKryoClasses([MyClass])</code>
+                            </div>
+                            <div id="parallelism" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Parallelism Tuning</span><br><span class="line-numbers"> 2</span><span class="comment"># Rule of thumb: 2-3 tasks per CPU core</span><br><span class="line-numbers"> 3</span>spark-submit \<br><span class="line-numbers"> 4</span>  --conf spark.default.parallelism=200 \<br><span class="line-numbers"> 5</span>  --conf spark.sql.shuffle.partitions=200 \<br><span class="line-numbers"> 6</span>  --conf spark.sql.adaptive.enabled=true \<br><span class="line-numbers"> 7</span>  --conf spark.sql.adaptive.coalescePartitions.enabled=true \<br><span class="line-numbers"> 8</span>  myapp.jar<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># Repartitioning Strategies</span><br><span class="line-numbers">11</span><span class="comment"># Avoid unnecessary shuffles</span><br><span class="line-numbers">12</span>df = df.repartition(100, "partition_key")  <span class="comment"># Good: partition by key</span><br><span class="line-numbers">13</span>df = df.repartition(100)  <span class="comment"># Bad: random repartitioning</span><br><span class="line-numbers">14</span><br><span class="line-numbers">15</span><span class="comment"># Coalesce for reducing partitions (no shuffle)</span><br><span class="line-numbers">16</span>df = df.coalesce(50)  <span class="comment"># Good for reducing partitions</span><br><span class="line-numbers">17</span><br><span class="line-numbers">18</span><span class="comment"># Adaptive Query Execution</span><br><span class="line-numbers">19</span>spark.conf.set("spark.sql.adaptive.enabled", "true")<br><span class="line-numbers">20</span>spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")<br><span class="line-numbers">21</span>spark.conf.set("spark.sql.adaptive.localShuffleReader.enabled", "true")<br><br><span class="line-numbers">22</span><span class="comment"># Speculative Execution</span><br><span class="line-numbers">23</span>spark.conf.set("spark.speculation", "true")<br><span class="line-numbers">24</span>spark.conf.set("spark.speculation.interval", "100ms")<br><span class="line-numbers">25</span>spark.conf.set("spark.speculation.multiplier", "1.5")<br><span class="line-numbers">26</span>spark.conf.set("spark.speculation.quantile", "0.75")</code>
+                            </div>
+                            <div id="data-skew" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Handling Data Skew</span><br><span class="line-numbers"> 2</span><span class="comment"># Identify skew using task metrics</span><br><span class="line-numbers"> 3</span>df.groupBy("skewed_column").count().orderBy("count", ascending=False).show()<br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span><span class="comment"># Salting technique for skewed joins</span><br><span class="line-numbers"> 6</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> rand, concat, lit<br><br><span class="line-numbers"> 7</span><span class="comment"># Add salt to skewed table</span><br><span class="line-numbers"> 8</span>skewed_df = skewed_df.withColumn("salt", (rand() * 10).cast("int"))<br><span class="line-numbers"> 9</span>skewed_df = skewed_df.withColumn("salted_key", concat("key", "salt"))<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span><span class="comment"># Replicate small table</span><span class="line-numbers">12</span>small_df_salted = small_df.crossJoin(<br><span class="line-numbers">13</span>    spark.range(0, 10).withColumnRenamed("id", "salt")<br><span class="line-numbers">14</span>).withColumn("salted_key", concat("key", "salt"))<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Join on salted keys</span><br><span class="line-numbers">17</span>result = skewed_df.join(small_df_salted, "salted_key")<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span><span class="comment"># Broadcast join for small tables</span><br><span class="line-numbers">20</span>spark.conf.set("spark.sql.autoBroadcastJoinThreshold", "100MB")<br><span class="line-numbers">21</span>large_df.join(broadcast(small_df), "key")<br><span class="line-numbers">22</span><br><span class="line-numbers">23</span><span class="comment"># Skew join optimization</span><br><span class="line-numbers">24</span>spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")<br><span class="line-numbers">25</span>spark.conf.set("spark.sql.adaptive.skewJoin.skewedPartitionFactor", "10")<br><span class="line-numbers">26</span>spark.conf.set("spark.sql.adaptive.skewJoin.skewedPartitionThresholdInBytes", "256MB")<br><br><span class="line-numbers">27</span><span class="comment"># Custom partitioning</span><br><span class="line-numbers">28</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> hash<br><span class="line-numbers">29</span>df = df.repartitionByRange(100, "partition_key")<br><span class="line-numbers">30</span>df = df.repartition(100, hash("column1"), hash("column2"))</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Section -->
+            <div id="security" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Security & Governance</h1>
+                    <p class="section-description">
+                        Authentication, authorization, encryption, and compliance in Spark deployments.
+                    </p>
+                </div>
+
+                <div class="fade-in">
+                    <h3>🔐 Security Architecture</h3>
+                    <p>
+                        Comprehensive security features for enterprise Spark deployments.
+                    </p>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-tabs">
+                                <button class="code-tab active"
+                                    onclick="switchTab(this, 'authentication')">Authentication</button>
+                                <button class="code-tab" onclick="switchTab(this, 'encryption')">Encryption</button>
+                                <button class="code-tab" onclick="switchTab(this, 'access-control')">Access
+                                    Control</button>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <div id="authentication" class="code-block active">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Kerberos Authentication</span><br><span class="line-numbers"> 2</span>spark-submit \<br><span class="line-numbers"> 3</span>  --principal user@REALM.COM \<br><span class="line-numbers"> 4</span>  --keytab /path/to/user.keytab \<br><span class="line-numbers"> 5</span>  --conf spark.kerberos.principal=user@REALM.COM \<br><span class="line-numbers"> 6</span>  --conf spark.kerberos.keytab=/path/to/user.keytab \<br><span class="line-numbers"> 7</span>  myapp.jar<br><span class="line-numbers"> 8</span><br><span class="line-numbers"> 9</span><span class="comment"># SSL/TLS Configuration</span><br><span class="line-numbers">10</span>spark-submit \<br><span class="line-numbers">11</span>  --conf spark.ssl.enabled=true \<br><span class="line-numbers">12</span>  --conf spark.ssl.keyPassword=password \<br><span class="line-numbers">13</span>  --conf spark.ssl.keyStore=/path/to/keystore \<br><span class="line-numbers">14</span>  --conf spark.ssl.keyStorePassword=password \<br><span class="line-numbers">15</span>  --conf spark.ssl.trustStore=/path/to/truststore \<br><span class="line-numbers">16</span>  --conf spark.ssl.trustStorePassword=password \<br><span class="line-numbers">17</span>  myapp.jar</code>
+                            </div>
+                            <div id="encryption" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Data Encryption</span><br><span class="line-numbers"> 2</span><span class="comment"># Enable I/O encryption</span><br><span class="line-numbers"> 3</span>spark-submit \<br><span class="line-numbers"> 4</span>  --conf spark.io.encryption.enabled=true \<br><span class="line-numbers"> 5</span>  --conf spark.io.encryption.keySizeBits=256 \<br><span class="line-numbers"> 6</span>  myapp.jar<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span><span class="comment"># HDFS Encryption</span><br><span class="line-numbers"> 9</span>spark-submit \<br><span class="line-numbers">10</span>  --conf spark.hadoop.fs.hdfs.impl=org.apache.hadoop.hdfs.DistributedFileSystem \<br><span class="line-numbers">11</span>  --conf spark.hadoop.dfs.encryption.key.provider.uri=kms://http@kms-host:9600/kms \<br><span class="line-numbers">12</span>  myapp.jar<br><span class="line-numbers">13</span><br><span class="line-numbers"> 14</span><span class="comment"># Column-level Encryption (Spark 3.2+)</span><br><span class="line-numbers">15</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> aes_encrypt, aes_decrypt<br><br><span class="line-numbers">16</span>encrypted_df = df.withColumn(<br><span class="line-numbers">17</span>    "encrypted_ssn", <br><span class="line-numbers">18</span>    aes_encrypt("ssn", "encryption_key")<br><span class="line-numbers">19</span>)<br><span class="line-numbers">20</span><br><span class="line-numbers">21</span>decrypted_df = encrypted_df.withColumn(<br><span class="line-numbers">22</span>    "decrypted_ssn",<br><span class="line-numbers">23</span>    aes_decrypt("encrypted_ssn", "encryption_key")<br><span class="line-numbers">24</span>)</code>
+                            </div>
+                            <div id="access-control" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Apache Ranger Integration</span><br><span class="line-numbers"> 2</span>spark-submit \<br><span class="line-numbers"> 3</span>  --jars /path/to/ranger-spark-plugin.jar \<br><span class="line-numbers"> 4</span>  --conf spark.sql.extensions=org.apache.ranger.authorization.spark.authorizer.RangerSparkSQLExtension \<br><span class="line-numbers"> 5</span>  --conf spark.ranger.plugin.spark.policy.source=hdfs \<br><span class="line-numbers"> 6</span>  --conf spark.ranger.plugin.spark.policy.rest.url=http://ranger-admin:6080 \<br><span class="line-numbers"> 7</span>  myapp.jar<br><span class="line-numbers"> 8</span><br><span class="line-numbers"> 9</span><span class="comment"># Row-level Security (RLS)</span><br><span class="line-numbers">10</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> current_user<br><br><span class="line-numbers">11</span><span class="comment"># Add user context</span><br><span class="line-numbers">12</span>df_with_user = df.withColumn("current_user", current_user())<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="comment"># Filter based on user permissions</span><br><span class="line-numbers">15</span>filtered_df = df_with_user.filter(<br><span class="line-numbers">16</span>    "current_user IN ('admin', department_manager) OR department = user_dept"<br><span class="line-numbers">17</span>)<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span><span class="comment"># Column-level Security (CLS)</span><br><span class="line-numbers">20</span>secure_df = df.select(<br><span class="line-numbers">21</span>    "id",<br><span class="line-numbers">22</span>    "name",<br><span class="line-numbers">23</span>    when(current_user() == "admin", "salary").otherwise(lit("REDACTED")).alias("salary")<br><span class="line-numbers">24</span>)</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monitoring Section -->
+            <div id="monitoring" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Monitoring & Debugging</h1>
+                    <p class="section-description">
+                        Tools and techniques for monitoring Spark applications and troubleshooting issues.
+                    </p>
+                </div>
+
+                <div class="fade-in">
+                    <h3>📊 Monitoring Stack</h3>
+                    <p>
+                        Comprehensive monitoring and observability for Spark applications.
+                    </p>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-tabs">
+                                <button class="code-tab active" onclick="switchTab(this, 'spark-ui')">Spark UI</button>
+                                <button class="code-tab" onclick="switchTab(this, 'metrics')"> Metrics
+                                    Collection</button>
+                                <button class="code-tab" onclick="switchTab(this, 'logging')">Logging &
+                                    Debugging</button>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <div id="spark-ui" class="code-block active">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Spark UI Configuration</span><br><span class="line-numbers"> 2</span>spark-submit \<br><span class="line-numbers"> 3</span>  --conf spark.ui.port=4040 \<br><span class="line-numbers"> 4</span>  --conf spark.ui.enabled=true \<br><span class="line-numbers"> 5</span>  --conf spark.ui.killEnabled=true \<br><span class="line-numbers"> 6</span>  --conf spark.ui.retainedJobs=100 \<br><span class="line-numbers"> 7</span>  --conf spark.ui.retainedStages=100 \<br><span class="line-numbers"> 8</span>  myapp.jar<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># History Server for Completed Applications</span><br><span class="line-numbers">11</span>$SPARK_HOME/sbin/start-history-server.sh \<br><span class="line-numbers">12</span>  --properties-file /path/to/spark-history.properties<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="comment"># spark-history.properties</span><br><span class="line-numbers">15</span>spark.history.ui.port=18080<br><span class="line-numbers">16</span>spark.history.fs.logDirectory=hdfs://namenode:port/user/spark/applicationHistory<br><span class="line-numbers">17</span>spark.history.retainedApplications=50<br><br><span class="line-numbers">18</span><span class="comment"># Event Logging</span><br><span class="line-numbers">19</span>spark-submit \<br><span class="line-numbers">20</span>  --conf spark.eventLog.enabled=true \<br><span class="line-numbers">21</span>  --conf spark.eventLog.dir=hdfs://namenode:port/user/spark/applicationHistory \<br><span class="line-numbers">22</span>  myapp.jar</code>
+                            </div>
+                            <div id="metrics" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Metrics Configuration</span><br><span class="line-numbers"> 2</span><span class="comment"># metrics.properties</span><br><span class="line-numbers"> 3</span>*.sink.jmx.class=org.apache.spark.metrics.sink.JmxSink<br><span class="line-numbers"> 4</span>*.sink.console.class=org.apache.spark.metrics.sink.ConsoleSink<br><span class="line-numbers"> 5</span>*.sink.console.period=10<br><span class="line-numbers"> 6</span>*.sink.console.unit=seconds<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span><span class="comment"># Graphite Integration</span><br><span class="line-numbers"> 9</span>*.sink.graphite.class=org.apache.spark.metrics.sink.GraphiteSink<br><span class="line-numbers">10</span>*.sink.graphite.host=graphite-host<br><span class="line-numbers">11</span>*.sink.graphite.port=2003<br><span class="line-numbers">12</span>*.sink.graphite.period=10<br><span class="line-numbers">13</span>*.sink.graphite.unit=seconds<br><span class="line-numbers">14</span>*.sink.graphite.prefix=spark<br><br><span class="line-numbers">15</span><span class="comment"># Prometheus Metrics</span><br><span class="line-numbers">16</span>spark-submit \<br><span class="line-numbers">17</span>  --packages io.prometheus:simpleclient:0.8.1 \<br><span class="line-numbers">18</span>  --conf spark.metrics.appStatusSource.enabled=true \<br><span class="line-numbers">19</span>  --conf spark.ui.prometheus.enabled=true \<br><span class="line-numbers">20</span>  myapp.jar<br><br><span class="line-numbers">21</span><span class="comment"># Custom Metrics</span><br><span class="line-numbers">22</span><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSession<br><span class="line-numbers">23</span><span class="keyword">from</span> pyspark <span class="keyword">import</span> AccumulatorParam<br><br><span class="line-numbers">24</span><span class="comment"># Custom accumulator</span><br><span class="line-numbers">25</span>class VectorAccumulatorParam(AccumulatorParam):<br><span class="line-numbers">26</span>    <span class="keyword">def</span> zero(self, initialValue):<br><span class="line-numbers">27</span>        <span class="keyword">return</span> initialValue<br><span class="line-numbers">28</span>    <span class="keyword">def</span> addInPlace(self, v1, v2):<br><span class="line-numbers">29</span>        <span class="keyword">return</span> v1 + v2<br><br><span class="line-numbers">30</span>processing_time = sc.accumulator(0.0)<br><span class="line-numbers">31</span>record_count = sc.accumulator(0)</code>
+                            </div>
+                            <div id="logging" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Logging Configuration</span><br><span class="line-numbers"> 2</span><span class="comment"># log4j.properties</span><br><span class="line-numbers"> 3</span>log4j.rootCategory=INFO, console<br><span class="line-numbers"> 4</span>log4j.appender.console=org.apache.log4j.ConsoleAppender<br><span class="line-numbers"> 5</span>log4j.appender.console.target=System.err<br><span class="line-numbers"> 6</span>log4j.appender.console.layout=org.apache.log4j.PatternLayout<br><span class="line-numbers"> 7</span>log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n<br><br><span class="line-numbers"> 8</span><span class="comment"># Spark Logging Levels</span><br><span class="line-numbers"> 9</span>log4j.logger.org.apache.spark=WARN<br><span class="line-numbers">10</span>log4j.logger.org.apache.spark.sql=WARN<br><span class="line-numbers">11</span>log4j.logger.org.apache.spark.streaming=WARN<br><br><span class="line-numbers">12</span><span class="comment"># Application Logging</span><br><span class="line-numbers">13</span><span class="keyword">import</span> logging<br><br><span class="line-numbers">14</span>logging.basicConfig(level=logging.INFO)<br><span class="line-numbers">15</span>logger = logging.getLogger(__name__)<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span>logger.info("Starting Spark application")<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span><span class="comment"># Structured Logging</span><br><span class="line-numbers">20</span><span class="keyword">import</span> json<br><span class="line-numbers">21</span><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime<br><br><span class="line-numbers">22</span><span class="keyword">def</span> log_event(event_type, details):<br><span class="line-numbers">23</span>    log_entry = {<br><span class="line-numbers">24</span>        "timestamp": datetime.utcnow().isoformat(),<br><span class="line-numbers">25</span>        "event_type": event_type,<br><span class="line-numbers">26</span>        "details": details<br><span class="line-numbers">27</span>    }<br><span class="line-numbers">28</span>    logger.info(json.dumps(log_entry))<br><br><span class="line-numbers">29</span>log_event("job_started", {"job_id": "12345", "input_size": "1TB"})</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extensions Section -->
+            <div id="extensions" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Custom Extensions</h1>
+                    <p class="section-description">
+                        Building custom Spark extensions, UDFs, and connectors.
+                    </p>
+                </div>
+
+                <div class="fade-in">
+                    <h3>🔧 Extension Development</h3>
+                    <p>
+                        Creating custom components to extend Spark's functionality.
+                    </p>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-tabs">
+                                <button class="code-tab active" onclick="switchTab(this, 'udfs')">Custom UDFs</button>
+                                <button class="code-tab" onclick="switchTab(this, 'connectors')">Custom
+                                    Connectors</button>
+                                <button class="code-tab" onclick="switchTab(this, 'optimizations')">Query
+                                    Optimizations</button>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <div id="udfs" class="code-block active">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Custom UDFs (User Defined Functions)</span><br><span class="line-numbers"> 2</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> udf<br><span class="line-numbers"> 3</span><span class="keyword">from</span> pyspark.sql.types <span class="keyword">import</span> StringType, DoubleType<br><br><span class="line-numbers"> 4</span><span class="comment"># Scalar UDF</span><br><span class="line-numbers"> 5</span><span class="keyword">def</span> categorize_age(age):<br><span class="line-numbers"> 6</span>    <span class="keyword">if</span> age < <span class="number">18</span>:<br><span class="line-numbers"> 7</span>        <span class="keyword">return</span> <span class="string">"Minor"</span><br><span class="line-numbers"> 8</span>    <span class="keyword">elif</span> age < <span class="number">65</span>:<br><span class="line-numbers"> 9</span>        <span class="keyword">return</span> <span class="string">"Adult"</span><br><span class="line-numbers">10</span>    <span class="keyword">else</span>:<br><span class="line-numbers">11</span>        <span class="keyword">return</span> <span class="string">"Senior"</span><br><br><span class="line-numbers">12</span>categorize_udf = udf(categorize_age, StringType())<br><span class="line-numbers">13</span>df.withColumn(<span class="string">"age_category"</span>, categorize_udf(df.age)).show()<br><br><span class="line-numbers">14</span><span class="comment"># Pandas UDF (Vectorized)</span><br><span class="line-numbers">15</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> pandas_udf<br><br><span class="line-numbers">16</span>@pandas_udf(DoubleType())<br><span class="line-numbers">17</span><span class="keyword">def</span> complex_calculation(values):<br><span class="line-numbers">18</span>    <span class="comment"># Vectorized operations using pandas/numpy</span><br><span class="line-numbers">19</span>    <span class="keyword">import</span> numpy <span class="keyword">as</span> np<br><span class="line-numbers">20</span>    result = np.sin(values) * np.cos(values) + np.exp(values / 100)<br><span class="line-numbers">21</span>    <span class="keyword">return</span> result<br><br><span class="line-numbers">22</span>df.withColumn(<span class="string">"complex_result"</span>, complex_calculation(df.input_value)).show()<br><br><span class="line-numbers">23</span><span class="comment"># Aggregate UDF</span><br><span class="line-numbers">24</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> udaf<br><span class="line-numbers">25</span><span class="keyword">from</span> pyspark.sql.types <span class="keyword">import</span> DoubleType<br><br><span class="line-numbers">26</span><span class="keyword">class</span> GeometricMean:<br><span class="line-numbers">27</span>    <span class="keyword">def</span> __init__(self):<br><span class="line-numbers">28</span>        self.values = []<br><span class="line-numbers">29</span>    <br><span class="line-numbers">30</span>    <span class="keyword">def</span> input(self, value):<br><span class="line-numbers">31</span>        self.values.append(value)<br><span class="line-numbers">32</span>    <br><span class="line-numbers">33</span>    <span class="keyword">def</span> merge(self, other):<br><span class="line-numbers">34</span>        self.values.extend(other.values)<br><span class="line-numbers">35</span>    <br><span class="line-numbers">36</span>    <span class="keyword">def</span> evaluate(self):<br><span class="line-numbers">37</span>        <span class="keyword">import</span> math<br><span class="line-numbers">38</span>        <span class="keyword">return</span> math.exp(sum(math.log(x) <span class="keyword">for</span> x <span class="keyword">in</span> self.values) / len(self.values))<br><br><span class="line-numbers">39</span>geometric_mean = udaf(GeometricMean, DoubleType())<br><span class="line-numbers">40</span>df.groupBy(<span class="string">"category"</span>).agg(geometric_mean(df.value)).show()</code>
+                            </div>
+                            <div id="connectors" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Custom Data Source Connector</span><br><span class="line-numbers"> 2</span><span class="keyword">from</span> pyspark.sql.sources <span class="keyword">import</span> BaseRelation, DataSourceRegister<br><span class="line-numbers"> 3</span><span class="keyword">from</span> pyspark.sql.types <span class="keyword">import</span> StructType<br><br><span class="line-numbers"> 4</span><span class="keyword">class</span> CustomDataSource(BaseRelation, DataSourceRegister):<br><span class="line-numbers"> 5</span>    <span class="comment"># Register the data source</span><br><span class="line-numbers"> 6</span>    @staticmethod<br><span class="line-numbers"> 7</span>    <span class="keyword">def</span> shortName():<br><span class="line-numbers"> 8</span>        <span class="keyword">return</span> <span class="string">"custom"</span><br><span class="line-numbers"> 9</span>    <br><span class="line-numbers">10</span>    <span class="keyword">def</span> __init__(self, sqlContext, path):<br><span class="line-numbers">11</span>        <span class="keyword">super</span>(CustomDataSource, self).__init__(sqlContext)<br><span class="line-numbers">12</span>        self.path = path<br><span class="line-numbers">13</span>    <br><span class="line-numbers">14</span>    <span class="keyword">def</span> schema(self):<br><span class="line-numbers">15</span>        <span class="keyword">return</span> StructType([...])  <span class="comment"># Define schema</span><br><span class="line-numbers">16</span>    <br><span class="line-numbers">17</span>    <span class="keyword">def</span> buildScan(self, requiredColumns, filters):<br><span class="line-numbers">18</span>        <span class="comment"># Implement data reading logic</span><br><span class="line-numbers">19</span>        <span class="keyword">return</span> self.sqlContext.sparkContext.parallelize([...]).toDF()<br><br><span class="line-numbers">20</span><span class="comment"># Usage</span><br><span class="line-numbers">21</span>df = spark.read \<br><span class="line-numbers">22</span>    .format("custom") \<br><span class="line-numbers">23</span>    .option("path", "/data/custom") \<br><span class="line-numbers">24</span>    .load()<br><br><span class="line-numbers">25</span><span class="comment"># Streaming Source</span><br><span class="line-numbers">26</span><span class="keyword">from</span> pyspark.sql.sources <span class="keyword">import</span> Source<br><br><span class="line-numbers">27</span><span class="keyword">class</span> CustomStreamSource(Source):<br><span class="line-numbers">28</span>    <span class="keyword">def</span> schema(self):<br><span class="line-numbers">29</span>        <span class="keyword">return</span> StructType([...])<br><span class="line-numbers">30</span>    <br><span class="line-numbers">31</span>    <span class="keyword">def</span> getOffset(self):<br><span class="line-numbers">32</span>        <span class="comment"># Return current offset</span><br><span class="line-numbers">33</span>        <span class="keyword">return</span> ...<br><span class="line-numbers">34</span>    <br><span class="line-numbers">35</span>    <span class="keyword">def</span> getBatch(self, start, end):<br><span class="line-numbers">36</span>        <span class="comment"># Return data batch</span><br><span class="line-numbers">37</span>        <span class="keyword">return</span> ...<br><br><span class="line-numbers">38</span><span class="comment"># Register streaming source</span><br><span class="line-numbers">39</span>spark.readStream \<br><span class="line-numbers">40</span>    .format("custom-stream") \<br><span class="line-numbers">41</span>    .load()</code>
+                            </div>
+                            <div id="optimizations" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Custom Query Optimizer Rules</span><br><span class="line-numbers"> 2</span><span class="keyword">from</span> pyspark.sql.catalyst.plans.logical <span class="keyword">import</span> LogicalPlan<br><span class="line-numbers"> 3</span><span class="keyword">from</span> pyspark.sql.catalyst.rules <span class="keyword">import</span> Rule<br><br><span class="line-numbers"> 4</span><span class="keyword">class</span> CustomOptimizationRule(Rule[LogicalPlan]):<br><span class="line-numbers"> 5</span>    <span class="keyword">def</span> apply(self, plan: LogicalPlan) -> LogicalPlan:<br><span class="line-numbers"> 6</span>        <span class="comment"># Implement custom optimization logic</span><br><span class="line-numbers"> 7</span>        <span class="keyword">return</span> plan  <span class="comment"># Return optimized plan</span><br><br><span class="line-numbers"> 8</span><span class="comment"># Register custom rule</span><br><span class="line-numbers"> 9</span>spark.experimental.extraOptimizations = [CustomOptimizationRule]<br><br><span class="line-numbers">10</span><span class="comment"># Custom Catalyst Expression</span><br><span class="line-numbers">11</span><span class="keyword">from</span> pyspark.sql.catalyst.expressions <span class="keyword">import</span> Expression<br><br><span class="line-numbers">12</span><span class="keyword">class</span> CustomExpression(Expression):<br><span class="line-numbers">13</span>    <span class="keyword">def</span> eval(self, input):<br><span class="line-numbers">14</span>        <span class="comment"># Custom evaluation logic</span><br><span class="line-numbers">15</span>        <span class="keyword">return</span> ...<br><span class="line-numbers">16</span>    <br><span class="line-numbers">17</span>    <span class="keyword">def</span> children(self):<br><span class="line-numbers">18</span>        <span class="keyword">return</span> []<br><br><span class="line-numbers">18</span><span class="comment"># Custom Physical Operator</span><br><span class="line-numbers">19</span><span class="keyword">from</span> pyspark.sql.execution <span class="keyword">import</span> SparkPlan<br><br><span class="line-numbers">20</span><span class="keyword">class</span> CustomPhysicalOperator(SparkPlan):<br><span class="line-numbers">21</span>    <span class="keyword">def</span> execute(self):<br><span class="line-numbers">22</span>        <span class="comment"># Custom execution logic</span><br><span class="line-numbers">23</span>        <span class="keyword">return</span> self.sparkContext.parallelize([...])<br><br><span class="line-numbers">24</span><span class="comment"># Spark Extension</span><br><span class="line-numbers">25</span><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSessionExtensions<br><br><span class="line-numbers">26</span><span class="keyword">class</span> CustomExtension:<br><span class="line-numbers">27</span>    @staticmethod<br><span class="line-numbers">28</span>    <span class="keyword">def</span> apply(extension: SparkSessionExtensions):<br><span class="line-numbers">29</span>        extension.injectOptimizerRule(CustomOptimizationRule)<br><br><span class="line-numbers">30</span><span class="comment"># Register extension</span><span class="line-numbers">31</span>spark = SparkSession.builder \<br><span class="line-numbers">32</span>    .config("spark.sql.extensions", "com.example.CustomExtension") \<br><span class="line-numbers">33</span>    .getOrCreate()</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integration Section -->
+            <div id="integration" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Enterprise Integration</h1>
+                    <p class="section-description">
+                        Integrating Spark with enterprise systems, data governance, and DevOps pipelines.
+                    </p>
+                </div>
+
+                <div class="fade-in">
+                    <h3>🏢 Enterprise Architecture</h3>
+                    <p>
+                        Production-ready Spark deployments in enterprise environments.
+                    </p>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-tabs">
+                                <button class="code-tab active" onclick="switchTab(this, 'data-governance')">Data
+                                    Governance</button>
+                                <button class="code-tab" onclick="switchTab(this, 'ci-cd')">CI/CD Integration</button>
+                                <button class="code-tab"
+                                    onclick="switchTab(this, 'multi-cluster')">Multi-Cluster</button>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <div id="data-governance" class="code-block active">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Data Catalog Integration</span><br><span class="line-numbers"> 2</span><span class="comment"># Alation, Collibra, or custom catalog</span><br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Schema Registry (Confluent)</span><br><span class="line-numbers"> 5</span><span class="keyword">from</span> confluent_kafka.schema_registry <span class="keyword">import</span> SchemaRegistryClient<br><br><span class="line-numbers"> 6</span>schema_registry = SchemaRegistryClient({<br><span class="line-numbers"> 7</span>    <span class="string">'url'</span>: <span class="string">'http://schema-registry:8081'</span><br><span class="line-numbers"> 8</span>})<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># Register schema</span><br><span class="line-numbers">11</span>schema_id = schema_registry.register_schema(<br><span class="line-numbers">12</span>    <span class="string">'user-events'</span>, avro_schema<br><span class="line-numbers">13</span>)<br><span class="line-numbers">14</span><br><span class="line-numbers">15</span><span class="comment"># Data Quality Checks</span><br><span class="line-numbers">16</span><span class="keyword">from</span> pyspark.sql.functions <span class="keyword">import</span> col, when<br><br><span class="line-numbers">17</span><span class="comment"># Data validation rules</span><br><span class="line-numbers">18</span>validated_df = df.withColumn(<br><span class="line-numbers">19</span>    <span class="string">"data_quality_score"</span>,<br><span class="line-numbers">20</span>    when(col(<span class="string">"email"</span>).isNotNull() & col(<span class="string">"email"</span>).contains(<span class="string">"@"</span>), 1).otherwise(0) +<br><span class="line-numbers">21</span>    when(col(<span class="string">"age"</span>).between(0, 120), 1).otherwise(0) +<br><span class="line-numbers">22</span>    when(col(<span class="string">"name"</span>).isNotNull(), 1).otherwise(0)<br><span class="line-numbers">23</span>)<br><br><span class="line-numbers">24</span><span class="comment"># Data Lineage Tracking</span><br><span class="line-numbers">25</span><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> DataFrame<br><br><span class="line-numbers">26</span><span class="keyword">class</span> LineageTracker:<br><span class="line-numbers">27</span>    <span class="keyword">def</span> __init__(self):<br><span class="line-numbers">28</span>        self.lineage = {}<br><span class="line-numbers">29</span>    <br><span class="line-numbers">30</span>    <span class="keyword">def</span> track_transformation(self, input_df, output_df, operation):<br><span class="line-numbers">31</span>        input_columns = input_df.columns<br><span class="line-numbers">32</span>        output_columns = output_df.columns<br><span class="line-numbers">33</span>        self.lineage[operation] = {<br><span class="line-numbers">34</span>            <span class="string">"input"</span>: input_columns,<br><span class="line-numbers">35</span>            <span class="string">"output"</span>: output_columns,<br><span class="line-numbers">36</span>            <span class="string">"timestamp"</span>: datetime.now()<br><span class="line-numbers">37</span>        }<br><br><span class="line-numbers">38</span>tracker = LineageTracker()<br><span class="line-numbers">39</span>tracker.track_transformation(df, filtered_df, "filter_adults")</code>
+                            </div>
+                            <div id="ci-cd" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># CI/CD Pipeline for Spark Applications</span><br><span class="line-numbers"> 2</span><span class="comment"># Jenkins Pipeline Example</span><br><span class="line-numbers"> 3</span>pipeline {<br><span class="line-numbers"> 4</span>    agent any<br><span class="line-numbers"> 5</span>    stages {<br><span class="line-numbers"> 6</span>        stage('Build') {<br><span class="line-numbers"> 7</span>            steps {<br><span class="line-numbers"> 8</span>                sh 'mvn clean package'<br><span class="line-numbers"> 9</span>            }<br><span class="line-numbers">10</span>        }<br><span class="line-numbers">11</span>        stage('Test') {<br><span class="line-numbers">12</span>            steps {<br><span class="line-numbers">13</span>                sh '''<br><span class="line-numbers">14</span>                    export SPARK_HOME=/opt/spark<br><span class="line-numbers">15</span>                    mvn test<br><span class="line-numbers">16</span>                '''<br><span class="line-numbers">17</span>            }<br><span class="line-numbers">18</span>        }<br><span class="line-numbers">19</span>        stage('Deploy') {<br><span class="line-numbers">20</span>            steps {<br><span class="line-numbers">21</span>                sh '''<br><span class="line-numbers">22</span>                    scp target/spark-app.jar prod-server:/opt/spark-apps/<br><span class="line-numbers">23</span>                    ssh prod-server '/opt/spark/bin/spark-submit \<br><span class="line-numbers">24</span>                        --master yarn \<br><span class="line-numbers">25</span>                        --deploy-mode cluster \<br><span class="line-numbers">26</span>                        /opt/spark-apps/spark-app.jar'<br><span class="line-numbers">27</span>                '''<br><span class="line-numbers">28</span>            }<br><span class="line-numbers">29</span>        }<br><span class="line-numbers">30</span>    }<br><span class="line-numbers">31</span>}<br><br><span class="line-numbers">32</span><span class="comment"># GitHub Actions Workflow</span><br><span class="line-numbers">33</span>name: Spark CI/CD<br><span class="line-numbers">34</span>on: [push]<br><span class="line-numbers">35</span>jobs:<br><span class="line-numbers">36</span>  test:<br><span class="line-numbers">37</span>    runs-on: ubuntu-latest<br><span class="line-numbers">38</span>    steps:<br><span class="line-numbers">39</span>    - uses: actions/checkout@v2<br><span class="line-numbers">40</span>    - name: Setup Python<br><span class="line-numbers">41</span>      uses: actions/setup-python@v2<br><span class="line-numbers">42</span>      with:<br><span class="line-numbers">43</span>        python-version: '3.8'<br><span class="line-numbers">44</span>    - name: Install Dependencies<br><span class="line-numbers">45</span>      run: |<br><span class="line-numbers">46</span>        pip install pyspark pytest<br><span class="line-numbers">47</span>    - name: Run Tests<br><span class="line-numbers">48</span>      run: |<br><span class="line-numbers">49</span>        python -m pytest tests/<br><br><span class="line-numbers">50</span><span class="comment"># Infrastructure as Code</span><br><span class="line-numbers">51</span><span class="comment"># Terraform for Spark cluster</span><br><span class="line-numbers">52</span>resource "google_dataproc_cluster" "spark_cluster" {<br><span class="line-numbers">53</span>  name   = "spark-cluster"<br><span class="line-numbers">54</span>  region = "us-central1"<br><span class="line-numbers">55</span><br><span class="line-numbers">56</span>  cluster_config {<br><span class="line-numbers">57</span>    master_config {<br><span class="line-numbers">58</span>      num_instances = 1<br><span class="line-numbers">59</span>      machine_type  = "n1-standard-4"<br><span class="line-numbers">60</span>    }<br><span class="line-numbers">61</span><br><span class="line-numbers">62</span>    worker_config {<br><span class="line-numbers">63</span>      num_instances = 2<br><span class="line-numbers">64</span>      machine_type  = "n1-standard-4"<br><span class="line-numbers">65</span>    }<br><span class="line-numbers">66</span>  }<br><span class="line-numbers">67</span>}</code>
+                            </div>
+                            <div id="multi-cluster" class="code-block">
+                                <code><span class="line-numbers"> 1</span><span class="comment"># Multi-Cluster Deployments</span><br><span class="line-numbers"> 2</span><span class="comment"># Cross-cluster data processing</span><br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Federated Spark Clusters</span><br><span class="line-numbers"> 5</span><span class="comment"># Cluster 1: Data ingestion</span><br><span class="line-numbers"> 6</span>spark1 = SparkSession.builder \<br><span class="line-numbers"> 7</span>    .appName("DataIngestion") \<br><span class="line-numbers"> 8</span>    .master("spark://cluster1:7077") \<br><span class="line-numbers"> 9</span>    .getOrCreate()<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span><span class="comment"># Save to shared storage</span><br><span class="line-numbers">12</span>df.write.parquet("s3a://shared-bucket/processed-data/")<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="comment"># Cluster 2: Analytics</span><br><span class="line-numbers">15</span>spark2 = SparkSession.builder \<br><span class="line-numbers">16</span>    .appName("Analytics") \<br><span class="line-numbers">17</span>    .master("spark://cluster2:7077") \<br><span class="line-numbers">18</span>    .getOrCreate()<br><span class="line-numbers">19</span><br><span class="line-numbers">20</span><span class="comment"># Read from shared storage</span><br><span class="line-numbers">21</span>analytics_df = spark2.read.parquet("s3a://shared-bucket/processed-data/")<br><span class="line-numbers">22</span><br><span class="line-numbers">23</span><span class="comment"># Disaster Recovery</span><br><span class="line-numbers">24</span><span class="comment"># Automatic failover configuration</span><br><span class="line-numbers">25</span>spark-submit \<br><span class="line-numbers">26</span>  --master spark://zk1,zk2,zk3/mesos \<br><span class="line-numbers">27</span>  --deploy-mode cluster \<br><span class="line-numbers">28</span>  --supervise \<br><span class="line-numbers">29</span>  --conf spark.driver.superviseRecoveryTimeout=30s \<br><span class="line-numbers">30</span>  myapp.jar<br><br><span class="line-numbers">31</span><span class="comment"># Global Data Mesh</span><br><span class="line-numbers">32</span><span class="comment"># Cross-region data processing</span><br><span class="line-numbers">33</span><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSession<br><br><span class="line-numbers">34</span><span class="comment"># Multi-region cluster configuration</span><br><span class="line-numbers">35</span>spark = SparkSession.builder \<br><span class="line-numbers">36</span>    .appName("GlobalAnalytics") \<br><span class="line-numbers">37</span>    .config("spark.sql.adaptive.enabled", "true") \<br><span class="line-numbers">38</span>    .config("spark.sql.adaptive.skewJoin.enabled", "true") \<br><span class="line-numbers">39</span>    .getOrCreate()<br><span class="line-numbers">40</span><br><span class="line-numbers">41</span><span class="comment"># Read from multiple regions</span><br><span class="line-numbers">42</span>us_data = spark.read.parquet("s3a://us-bucket/data/")<br><span class="line-numbers">43</span>eu_data = spark.read.parquet("s3a://eu-bucket/data/")<br><span class="line-numbers">44</span>asia_data = spark.read.parquet("s3a://asia-bucket/data/")<br><span class="line-numbers">45</span><br><span class="line-numbers">46</span><span class="comment"># Global aggregation</span><br><span class="line-numbers">47</span>global_data = us_data.union(eu_data).union(asia_data)<br><span class="line-numbers">48</span>global_analytics = global_data.groupBy("country").agg({"revenue": "sum"})</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add more sections for other topics -->
+            <!-- Deployment, Performance, etc. -->
+
+            <!-- Progress Indicator -->
+            <div class="progress-indicator" id="progressIndicator">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0% Complete</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.content-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                        section.classList.remove('visible');
+                    });
+
+                    // Show selected section
+                    const sectionId = this.dataset.section;
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        setTimeout(() => {
+                            targetSection.classList.add('visible');
+                        }, 100);
+
+                        // Smooth scroll to section
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Show first section by default
+            const firstSection = document.getElementById('overview');
+            if (firstSection) {
+                firstSection.style.display = 'block';
+                setTimeout(() => {
+                    firstSection.classList.add('visible');
+                }, 100);
+            }
+
+            // Intersection Observer for animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Progress tracking
+            let completedSections = new Set(['overview']);
+
+            function updateProgress() {
+                const totalSections = navItems.length;
+                const progress = (completedSections.size / totalSections) * 100;
+
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressText').textContent = Math.round(progress) + '% Complete';
+
+                // Show progress indicator after some progress
+                if (progress > 10) {
+                    document.getElementById('progressIndicator').style.display = 'block';
+                }
+            }
+
+            // Mark sections as completed when viewed
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                        const sectionId = entry.target.id;
+                        completedSections.add(sectionId);
+                        updateProgress();
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+            updateProgress();
+        });
+
+        // Tab switching functionality
+        function switchTab(clickedTab, targetId) {
+            const container = clickedTab.closest('.code-container');
+            const tabs = container.querySelectorAll('.code-tab');
+            const codeBlocks = container.querySelectorAll('.code-block');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            codeBlocks.forEach(block => block.classList.remove('active'));
+
+            clickedTab.classList.add('active');
+            document.getElementById(targetId).classList.add('active');
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const container = button.closest('.code-container');
+            const activeCodeBlock = container.querySelector('.code-block.active code');
+            if (activeCodeBlock) {
+                const textToCopy = activeCodeBlock.textContent || activeCodeBlock.innerText;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = button.textContent;
+                    button.textContent = '✅ Copied!';
+                    button.style.background = '#4CAF50';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

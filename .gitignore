@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node / Next.js
+node_modules/
+.next/
+.turbo/
+dist/
+out/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data / Models
+*.joblib
+*.pkl
+*.parquet
+*.duckdb
+**/chroma_db/
+
+# Large binary assets
+4k_cheatsheets/*.png
+
+# Pytest
+.pytest_cache/
+.coverage
+
+# Superpowers
+.superpowers/

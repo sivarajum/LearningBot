@@ -1,0 +1,39 @@
+name: 'medallion_dbt'
+version: '1.0.0'
+config-version: 2
+
+# Profile to use (matches profiles.yml)
+profile: 'medallion_dbt'
+
+# Directories dbt will look in for models, macros, tests, seeds
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+analysis-paths: ["analyses"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Model configuration per layer
+models:
+  medallion_dbt:
+    # Bronze: raw ingest — always table materialisation so downstream can join
+    bronze:
+      +materialized: table
+      +schema: bronze
+      +tags: ["bronze", "raw"]
+
+    # Silver: cleaned and validated
+    silver:
+      +materialized: table
+      +schema: silver
+      +tags: ["silver", "cleaned"]
+
+    # Gold: aggregated business metrics
+    gold:
+      +materialized: table
+      +schema: gold
+      +tags: ["gold", "business"]

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPC Network Advanced - GCP Learning Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #34a853 0%, #4caf50 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #34a853;
+        }
+
+        .sidebar-header .service-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .sidebar-header .service-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #34a853;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header .service-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(52, 168, 83, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #34a853;
+        }
+
+        .nav-item {
+            padding: 10px 15px;
+            margin: 2px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(52, 168, 83, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #34a853;
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3);
+        }
+
+        .nav-item .nav-icon {
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .nav-item .nav-level {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-left: auto;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 320px;
+            padding: 30px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #34a853;
+        }
+
+        .section-icon {
+            font-size: 35px;
+            margin-right: 15px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #34a853;
+            margin: 0;
+        }
+
+        .section-level {
+            background: #34a853;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .section-content {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .section-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.1), rgba(76, 175, 80, 0.1));
+            border-left: 4px solid #34a853;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .highlight-box .highlight-title {
+            font-weight: bold;
+            color: #34a853;
+            margin-bottom: 10px;
+        }
+
+        /* VPC Architecture Animation */
+        .vpc-architecture {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .architecture-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .architecture-diagram {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, #34a853 0%, #4caf50 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .architecture-stage {
+            position: absolute;
+            width: 100px;
+            height: 70px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stage-vpc {
+            left: 50px;
+            top: 165px;
+            background: #34a853;
+        }
+
+        .stage-subnet {
+            left: 200px;
+            top: 165px;
+            background: #ff9800;
+        }
+
+        .stage-vm {
+            left: 350px;
+            top: 120px;
+            background: #1565c0;
+        }
+
+        .stage-lb {
+            left: 350px;
+            top: 210px;
+            background: #e91e63;
+        }
+
+        .stage-internet {
+            right: 50px;
+            top: 165px;
+            background: #9c27b0;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .connection-line.line1 {
+            left: 150px;
+            top: 185px;
+            width: 100px;
+        }
+
+        .connection-line.line2 {
+            left: 300px;
+            top: 185px;
+            width: 100px;
+        }
+
+        .connection-line.line3 {
+            left: 450px;
+            top: 185px;
+            width: 100px;
+        }
+
+        .connection-line.line4 {
+            left: 400px;
+            top: 150px;
+            width: 2px;
+            height: 60px;
+        }
+
+        .architecture-label {
+            position: absolute;
+            left: 280px;
+            top: 80px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Code Examples */
+        .code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .code-tab {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            background: #4285f4;
+            color: white;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #cccccc;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #555;
+            color: white;
+        }
+
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .code-block {
+            display: none;
+        }
+
+        .code-block.active {
+            display: block;
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #d4d4d4;
+        }
+
+        .code-block .line-numbers {
+            display: inline-block;
+            width: 30px;
+            color: #858585;
+            margin-right: 10px;
+            user-select: none;
+        }
+
+        /* Network Types Grid */
+        .network-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .network-type {
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.1), rgba(76, 175, 80, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(52, 168, 83, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .network-type:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(52, 168, 83, 0.3);
+        }
+
+        .network-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .network-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1b5e20;
+            margin-bottom: 10px;
+        }
+
+        .network-desc {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Performance Metrics */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .metric-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-level {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .network-types {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="service-icon">🌐</span>
+            <div class="service-title">VPC Network</div>
+            <div class="service-subtitle">Virtual Private Cloud</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🏗️ Fundamentals</div>
+            <div class="nav-item active" data-section="overview">
+                <span class="nav-icon">📋</span>
+                Overview & Architecture
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="subnets">
+                <span class="nav-icon">🔧</span>
+                Subnets & IP Addressing
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="routing">
+                <span class="nav-icon">🛣️</span>
+                Routes & Routing Tables
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔒 Security & Access</div>
+            <div class="nav-item" data-section="firewalls">
+                <span class="nav-icon">🛡️</span>
+                Firewall Rules
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="vpc-peering">
+                <span class="nav-icon">🤝</span>
+                VPC Peering & VPN
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="cloud-nat">
+                <span class="nav-icon">🌉</span>
+                Cloud NAT & Proxies
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔗 Connectivity</div>
+            <div class="nav-item" data-section="load-balancing">
+                <span class="nav-icon">⚖️</span>
+                Load Balancing
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="hybrid-connectivity">
+                <span class="nav-icon">🔄</span>
+                Hybrid Connectivity
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="service-controls">
+                <span class="nav-icon">🎛️</span>
+                Service Controls
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">📊 Monitoring & Management</div>
+            <div class="nav-item" data-section="network-intelligence">
+                <span class="nav-icon">🧠</span>
+                Network Intelligence
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="flow-logs">
+                <span class="nav-icon">📊</span>
+                VPC Flow Logs
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="network-telemetry">
+                <span class="nav-icon">📈</span>
+                Network Telemetry
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">💰 Cost & Optimization</div>
+            <div class="nav-item" data-section="cost-optimization">
+                <span class="nav-icon">💰</span>
+                Cost Optimization
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="best-practices">
+                <span class="nav-icon">✅</span>
+                Best Practices
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overview" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🌐</span>
+                <h2 class="section-title">VPC Network Overview</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Virtual Private Cloud (VPC) provides networking functionality to Compute Engine virtual
+                    machine instances, Kubernetes Engine clusters, and App Engine Flex applications. It offers
+                    global, scalable, and flexible networking for your cloud-based services.
+                </p>
+
+                <div class="performance-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">7000+</div>
+                        <div class="metric-label">IP Addresses</div>
+                        <div class="metric-desc">Per VPC network</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">28</div>
+                        <div class="metric-label">Regions</div>
+                        <div class="metric-desc">Global coverage</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Auto</div>
+                        <div class="metric-label">Mode</div>
+                        <div class="metric-desc">Automatic subnets</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Global</div>
+                        <div class="metric-label">Routing</div>
+                        <div class="metric-desc">Worldwide connectivity</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🌐 Key Capabilities</div>
+                    <ul>
+                        <li><strong>Global Network:</strong> Single VPC spans all regions worldwide</li>
+                        <li><strong>Subnets:</strong> Regional subnets with automatic or custom IP ranges</li>
+                        <li><strong>Firewall Rules:</strong> Stateful firewall with hierarchical rules</li>
+                        <li><strong>Private Access:</strong> Private Google access without external IP</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subnets Section -->
+        <div id="subnets" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🔧</span>
+                <h2 class="section-title">Subnets & IP Addressing</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    VPC networks are subdivided into regional subnets, each with its own IP address range.
+                    You can create subnets in auto mode (automatic) or custom mode (manual) depending on your needs.
+                </p>
+
+                <div class="network-types">
+                    <div class="network-type">
+                        <span class="network-icon">🤖</span>
+                        <div class="network-name">Auto Mode</div>
+                        <div class="network-desc">Automatic subnet creation with predefined IP ranges per region</div>
+                    </div>
+                    <div class="network-type">
+                        <span class="network-icon">⚙️</span>
+                        <div class="network-name">Custom Mode</div>
+                        <div class="network-desc">Manual subnet creation with custom IP ranges and sizes</div>
+                    </div>
+                    <div class="network-type">
+                        <span class="network-icon">🔒</span>
+                        <div class="network-name">Private Subnets</div>
+                        <div class="network-desc">Subnets without external IP addresses for enhanced security</div>
+                    </div>
+                    <div class="network-type">
+                        <span class="network-icon">🌍</span>
+                        <div class="network-name">Shared VPC</div>
+                        <div class="network-desc">VPC networks shared across multiple projects in an organization</div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'vpc-gcloud')">gcloud</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="vpc-gcloud" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Create auto mode VPC network</span><br><span class="line-numbers"> 2</span>gcloud compute networks create my-auto-network \<br><span class="line-numbers"> 3</span>  --subnet-mode=auto \<br><span class="line-numbers"> 4</span>  --bgp-routing-mode=regional<br><span class="line-numbers"> 5</span><br><span class="line-numbers"> 6</span><span class="comment"># Create custom mode VPC network</span><br><span class="line-numbers"> 7</span>gcloud compute networks create my-custom-network \<br><span class="line-numbers"> 8</span>  --subnet-mode=custom \<br><span class="line-numbers"> 9</span>  --bgp-routing-mode=global<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span><span class="comment"># Create subnet in custom VPC</span><br><span class="line-numbers">12</span>gcloud compute networks subnets create my-subnet \<br><span class="line-numbers">13</span>  --network=my-custom-network \<br><span class="line-numbers">14</span>  --region=us-central1 \<br><span class="line-numbers">15</span>  --range=10.0.1.0/24 \<br><span class="line-numbers">16</span>  --secondary-range=pods=10.1.0.0/16,services=10.2.0.0/20<br><span class="line-numbers">17</span><br><span class="line-numbers">18</span><span class="comment"># Create private subnet (no external IPs)</span><br><span class="line-numbers">19</span>gcloud compute networks subnets create private-subnet \<br><span class="line-numbers">20</span>  --network=my-custom-network \<br><span class="line-numbers">21</span>  --region=us-central1 \<br><span class="line-numbers">22</span>  --range=10.0.2.0/24 \<br><span class="line-numbers">23</span>  --enable-private-ip-google-access \<br><span class="line-numbers">24</span>  --no-enable-flow-logs<br><span class="line-numbers">25</span><br><span class="line-numbers">26</span><span class="comment"># List networks and subnets</span><br><span class="line-numbers">27</span>gcloud compute networks list<br><span class="line-numbers">28</span>gcloud compute networks subnets list --network=my-custom-network<br><span class="line-numbers">29</span><br><span class="line-numbers">30</span><span class="comment"># Expand subnet (only increase size)</span><br><span class="line-numbers">31</span>gcloud compute networks subnets expand-ip-range my-subnet \<br><span class="line-numbers">32</span>  --region=us-central1 \<br><span class="line-numbers">33</span>  --prefix-length=23</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Routing Section -->
+        <div id="routing" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🛣️</span>
+                <h2 class="section-title">Routes & Routing Tables</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Routes determine how packets are directed within your VPC network and to external destinations.
+                    GCP automatically creates routes for subnets, but you can add custom routes for specific needs.
+                </p>
+
+                <div class="vpc-architecture">
+                    <div class="architecture-title">🌐 VPC Network Flow: VPC → Subnet → VM/LB → Internet</div>
+                    <div class="architecture-diagram">
+                        <div class="architecture-stage stage-vpc">
+                            <div>🌐 VPC</div>
+                            <div style="font-size: 8px;">Network</div>
+                        </div>
+                        <div class="architecture-stage stage-subnet">
+                            <div>🏢 Subnet</div>
+                            <div style="font-size: 8px;">Region</div>
+                        </div>
+                        <div class="architecture-stage stage-vm">
+                            <div>🖥️ VM</div>
+                            <div style="font-size: 8px;">Instance</div>
+                        </div>
+                        <div class="architecture-stage stage-lb">
+                            <div>⚖️ Load Balancer</div>
+                            <div style="font-size: 8px;">GCLB</div>
+                        </div>
+                        <div class="architecture-stage stage-internet">
+                            <div>🌍 Internet</div>
+                            <div style="font-size: 8px;">External</div>
+                        </div>
+
+                        <!-- Connection lines -->
+                        <div class="connection-line line1"></div>
+                        <div class="connection-line line2"></div>
+                        <div class="connection-line line3"></div>
+                        <div class="connection-line line4"></div>
+
+                        <div class="architecture-label">Network Traffic Flow</div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'routing-gcloud')">gcloud</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="routing-gcloud" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># List all routes in a network</span><br><span class="line-numbers"> 2</span>gcloud compute routes list --filter="network=my-custom-network"<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Create custom route to VPN gateway</span><br><span class="line-numbers"> 5</span>gcloud compute routes create vpn-route \<br><span class="line-numbers"> 6</span>  --network=my-custom-network \<br><span class="line-numbers"> 7</span>  --destination-range=192.168.1.0/24 \<br><span class="line-numbers"> 8</span>  --next-hop-vpn-tunnel=vpn-tunnel-1 \<br><span class="line-numbers"> 9</span>  --priority=100<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span><span class="comment"># Create route to instance as next hop</span><br><span class="line-numbers">12</span>gcloud compute routes create instance-route \<br><span class="line-numbers">13</span>  --network=my-custom-network \<br><span class="line-numbers">14</span>  --destination-range=10.10.0.0/16 \<br><span class="line-numbers">15</span>  --next-hop-instance=my-router-instance \<br><span class="line-numbers">16</span>  --next-hop-instance-zone=us-central1-a \<br><span class="line-numbers">17</span>  --priority=200<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span><span class="comment"># Create route to internet gateway</span><br><span class="line-numbers">20</span>gcloud compute routes create internet-route \<br><span class="line-numbers">21</span>  --network=my-custom-network \<br><span class="line-numbers">22</span>  --destination-range=0.0.0.0/0 \<br><span class="line-numbers">23</span>  --next-hop-gateway=default-internet-gateway \<br><span class="line-numbers">24</span>  --priority=1000<br><span class="line-numbers">25</span><br><span class="line-numbers">26</span><span class="comment"># Create peering route</span><br><span class="line-numbers">27</span>gcloud compute routes create peering-route \<br><span class="line-numbers">28</span>  --network=my-custom-network \<br><span class="line-numbers">29</span>  --destination-range=172.16.0.0/16 \<br><span class="line-numbers">30</span>  --next-hop-peering=peering-name \<br><span class="line-numbers">31</span>  --priority=50<br><span class="line-numbers">32</span><br><span class="line-numbers">33</span><span class="comment"># Delete custom route</span><br><span class="line-numbers">34</span>gcloud compute routes delete vpn-route --quiet<br><span class="line-numbers">35</span><br><span class="line-numbers">36</span><span class="comment"># View effective routes for an instance</span><br><span class="line-numbers">37</span>gcloud compute instances get-serial-port-output my-instance \<br><span class="line-numbers">38</span>  --zone=us-central1-a \<br><span class="line-numbers">39</span>  --port=1 | grep "Routes"</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🛣️ Route Types & Priorities</div>
+                    <ul>
+                        <li><strong>Subnet Routes:</strong> Auto-created for each subnet (priority 1000)</li>
+                        <li><strong>Custom Routes:</strong> User-defined routes (priorities 0-65535)</li>
+                        <li><strong>Peering Routes:</strong> Routes from VPC peering connections</li>
+                        <li><strong>VPN Routes:</strong> Routes through VPN tunnels</li>
+                        <li><strong>Internet Routes:</strong> Routes to external destinations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firewall Rules Section -->
+        <div id="firewalls" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🛡️</span>
+                <h2 class="section-title">Firewall Rules & Security</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Firewall rules control inbound and outbound traffic to your VPC network. GCP firewall rules
+                    are stateful and can be applied at the network level with hierarchical inheritance.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'firewall-gcloud')">gcloud</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="firewall-gcloud" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Create allow rule for HTTP/HTTPS</span><br><span class="line-numbers"> 2</span>gcloud compute firewall-rules create allow-web \<br><span class="line-numbers"> 3</span>  --network=my-custom-network \<br><span class="line-numbers"> 4</span>  --allow=tcp:80,tcp:443 \<br><span class="line-numbers"> 5</span>  --source-ranges=0.0.0.0/0 \<br><span class="line-numbers"> 6</span>  --target-tags=web-server \<br><span class="line-numbers"> 7</span>  --description="Allow HTTP and HTTPS traffic"<br><span class="line-numbers"> 8</span><br><span class="line-numbers"> 9</span><span class="comment"># Create internal network rule</span><br><span class="line-numbers">10</span>gcloud compute firewall-rules create allow-internal \<br><span class="line-numbers">11</span>  --network=my-custom-network \<br><span class="line-numbers">12</span>  --allow=tcp:0-65535,udp:0-65535,icmp \<br><span class="line-numbers">13</span>  --source-ranges=10.0.0.0/8 \<br><span class="line-numbers">14</span>  --description="Allow all internal traffic"<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Create SSH rule with specific source</span><br><span class="line-numbers">17</span>gcloud compute firewall-rules create allow-ssh \<br><span class="line-numbers">18</span>  --network=my-custom-network \<br><span class="line-numbers">19</span>  --allow=tcp:22 \<br><span class="line-numbers">20</span>  --source-ranges=203.0.113.0/24 \<br><span class="line-numbers">21</span>  --target-tags=ssh-access \<br><span class="line-numbers">22</span>  --description="Allow SSH from specific IP range"<br><span class="line-numbers">23</span><br><span class="line-numbers">24</span><span class="comment"># Create deny rule (higher priority)</span><br><span class="line-numbers">25</span>gcloud compute firewall-rules create deny-bad-traffic \<br><span class="line-numbers">26</span>  --network=my-custom-network \<br><span class="line-numbers">27</span>  --action=deny \<br><span class="line-numbers">28</span>  --rules=tcp:23 \<br><span class="line-numbers">29</span>  --source-ranges=0.0.0.0/0 \<br><span class="line-numbers">30</span>  --priority=10 \<br><span class="line-numbers">31</span>  --description="Block Telnet traffic"<br><span class="line-numbers">32</span><br><span class="line-numbers">33</span><span class="comment"># Create egress rule</span><br><span class="line-numbers">34</span>gcloud compute firewall-rules create allow-egress \<br><span class="line-numbers">35</span>  --network=my-custom-network \<br><span class="line-numbers">36</span>  --action=allow \<br><span class="line-numbers">37</span>  --direction=egress \<br><span class="line-numbers">38</span>  --rules=tcp:443 \<br><span class="line-numbers">39</span>  --destination-ranges=0.0.0.0/0 \<br><span class="line-numbers">40</span>  --target-tags=https-only \<br><span class="line-numbers">41</span>  --description="Allow HTTPS outbound traffic only"<br><span class="line-numbers">42</span><br><span class="line-numbers">43</span><span class="comment"># List firewall rules</span><br><span class="line-numbers">44</span>gcloud compute firewall-rules list --filter="network=my-custom-network"<br><span class="line-numbers">45</span><br><span class="line-numbers">46</span><span class="comment"># Update firewall rule</span><br><span class="line-numbers">47</span>gcloud compute firewall-rules update allow-web \<br><span class="line-numbers">48</span>  --source-ranges=10.0.0.0/8,192.168.0.0/16</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🛡️ Firewall Best Practices</div>
+                    <ul>
+                        <li><strong>Least Privilege:</strong> Only allow necessary ports and sources</li>
+                        <li><strong>Use Tags:</strong> Apply rules to specific instances with network tags</li>
+                        <li><strong>Hierarchical Rules:</strong> Network-level rules apply to all instances</li>
+                        <li><strong>Regular Audits:</strong> Review and update rules periodically</li>
+                        <li><strong>Priority Management:</strong> Lower numbers = higher priority (0-65535)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.content-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                        section.classList.remove('visible');
+                    });
+
+                    // Show selected section
+                    const sectionId = this.dataset.section;
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        setTimeout(() => {
+                            targetSection.classList.add('visible');
+                        }, 100);
+
+                        // Smooth scroll to section
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Show first section by default
+            const firstSection = document.getElementById('overview');
+            if (firstSection) {
+                firstSection.style.display = 'block';
+                setTimeout(() => {
+                    firstSection.classList.add('visible');
+                }, 100);
+            }
+
+            // Intersection Observer for animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        // Tab switching functionality
+        function switchTab(clickedTab, targetId) {
+            const container = clickedTab.closest('.code-container');
+            const tabs = container.querySelectorAll('.code-tab');
+            const codeBlocks = container.querySelectorAll('.code-block');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            codeBlocks.forEach(block => block.classList.remove('active'));
+
+            clickedTab.classList.add('active');
+            document.getElementById(targetId).classList.add('active');
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const container = button.closest('.code-container');
+            const activeCodeBlock = container.querySelector('.code-block.active code');
+            if (activeCodeBlock) {
+                const textToCopy = activeCodeBlock.textContent || activeCodeBlock.innerText;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = button.textContent;
+                    button.textContent = '✅ Copied!';
+                    button.style.background = '#4CAF50';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

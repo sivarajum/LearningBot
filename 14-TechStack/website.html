@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStack Learning Hub - Comprehensive Technology Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>TechStack Learning Hub</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#tools">All Tools</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <h1 class="hero-title">Comprehensive Technology Stack Guide</h1>
+            <p class="hero-subtitle">Master modern technologies with in-depth guides, visual diagrams, and practical examples</p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTechs">150+</div>
+                    <div class="stat-label">Technologies</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Visual Diagrams</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Coverage</div>
+                </div>
+            </div>
+            <div class="hero-search">
+                <input type="text" id="searchInput" placeholder="Search technologies, tools, or concepts...">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Filter Buttons -->
+            <div class="filter-section">
+                <button class="filter-btn active" data-filter="all">All Technologies</button>
+                <button class="filter-btn" data-filter="devops">DevOps</button>
+                <button class="filter-btn" data-filter="data">Data Engineering</button>
+                <button class="filter-btn" data-filter="gcp">GCP</button>
+                <button class="filter-btn" data-filter="ai-ml">AI/ML</button>
+                <button class="filter-btn" data-filter="gen-ai">Gen-AI</button>
+                <button class="filter-btn" data-filter="frontend">Frontend</button>
+                <button class="filter-btn" data-filter="backend">Backend</button>
+                <button class="filter-btn" data-filter="databases">Databases</button>
+                <button class="filter-btn" data-filter="tools">Tools</button>
+            </div>
+
+            <!-- Categories -->
+            <div id="categories" class="categories-section">
+                <!-- DevOps -->
+                <section class="category-block" data-category="devops">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div>
+                            <h2>DevOps & Infrastructure</h2>
+                            <p>Containerization, orchestration, CI/CD, and infrastructure automation</p>
+                        </div>
+                    </div>
+                    <div class="tech-grid" id="devops-grid"></div>
+                </section>
+
+                <!-- Data Engineering -->
+                <section class="category-block" data-category="data">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div>
+                            <h2>Data Engineering</h2>
+                            <p>Big data processing, ETL pipelines, and data transformation</p>
+                        </div>
+                    </div>
+                    <div class="tech-grid" id="data-grid"></div>
+                </section>
+
+                <!-- GCP -->
+                <section class="category-block" data-category="gcp">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fab fa-google"></i>
+                        </div>
+                        <div>
+                            <h2>Google Cloud Platform</h2>
+                            <p>Cloud services, data storage, AI/ML platform, and serverless computing</p>
+                        </div>
+                    </div>
+                    <div class="tech-grid" id="gcp-grid"></div>
+                </section>
+
+                <!-- AI/ML -->
+                <section class="category-block" data-category="ai-ml">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div>
+                            <h2>AI & Machine Learning</h2>
+                            <p>ML frameworks, experiment tracking, and model management</p>
+                        </div>
+                    </div>
+                    <div class="tech-grid" id="ai-ml-grid"></div>
+                </section>
+
+                <!-- Gen-AI -->
+                <section class="category-block" data-category="gen-ai">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <h2>Generative AI & LLMs</h2>
+                            <p>LLMs, prompt engineering, RAG systems, and vector databases</p>
+                        </div>
+                    </div>
+                    <div class="tech-grid" id="gen-ai-grid"></div>
+                </section>
+
+                <!-- Frontend -->
+                <section class="category-block" data-category="frontend">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <div>
+                            <h2>Frontend Technologies</h2>
+                            <p>User interface development, visualization, and web frameworks</p>
+                        </div>
+                    </div>
+                    <div class="tech-grid" id="frontend-grid"></div>
+                </section>
+
+                <!-- Backend -->
+                <section class="category-block" data-category="backend">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div>
+                            <h2>Backend Technologies</h2>
+                            <p>Server-side development, APIs, and data processing</p>
+                        </div>
+                    </div>
+                    <div class="tech-grid" id="backend-grid"></div>
+                </section>
+
+                <!-- Databases -->
+                <section class="category-block" data-category="databases">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div>
+                            <h2>Databases</h2>
+                            <p>Data storage, retrieval, and management systems</p>
+                        </div>
+                    </div>
+                    <div class="tech-grid" id="databases-grid"></div>
+                </section>
+
+                <!-- Tools -->
+                <section class="category-block" data-category="tools">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div>
+                            <h2>Tools & Libraries</h2>
+                            <p>Development environments, libraries, and version control</p>
+                        </div>
+                    </div>
+                    <div class="tech-grid" id="tools-grid"></div>
+                </section>
+            </div>
+
+            <!-- No Results -->
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>No technologies found</h3>
+                <p>Try adjusting your search or filter criteria</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TechStack Learning Hub</h3>
+                    <p>Comprehensive technology reference guide for modern software development, data engineering, and cloud computing.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="#devops">DevOps</a></li>
+                        <li><a href="#data">Data Engineering</a></li>
+                        <li><a href="#gcp">GCP</a></li>
+                        <li><a href="#ai-ml">AI/ML</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#tools">All Tools</a></li>
+                        <li><a href="#categories">Categories</a></li>
+                        <li><a href="#about">About</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TechStack Learning Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+

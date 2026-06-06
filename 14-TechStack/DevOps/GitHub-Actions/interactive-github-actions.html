@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Actions Interactive Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.5.0/dist/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --github-black: #24292e;
+            --github-blue: #0366d6;
+            --github-green: #28a745;
+            --github-orange: #f66a0a;
+            --github-red: #d73a49;
+            --github-purple: #6f42c1;
+            --github-light: #f6f8fa;
+            --primary-color: #0366d6;
+            --secondary-color: #f6f8fa;
+            --accent-color: #28a745;
+            --warning-color: #f66a0a;
+            --info-color: #0366d6;
+            --dark-color: #24292e;
+            --light-color: #f6f8fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #24292e 0%, #f6f8fa 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .workflow-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 300px;
+            white-space: pre-wrap;
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(3, 102, 214, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(3, 102, 214, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .workflow-viz {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            position: relative;
+        }
+
+        .workflow-job {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .workflow-job:hover {
+            transform: scale(1.05);
+        }
+
+        .workflow-job.success {
+            background: var(--accent-color);
+        }
+
+        .workflow-job.running {
+            background: var(--warning-color);
+            animation: pulse 2s infinite;
+        }
+
+        .workflow-job.failed {
+            background: var(--github-red);
+        }
+
+        .workflow-job.pending {
+            background: #6c757d;
+            opacity: 0.7;
+        }
+
+        .job-arrow {
+            position: absolute;
+            color: var(--primary-color);
+            font-size: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -20px;
+        }
+
+        .workflow-history {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .workflow-run {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .workflow-run.success {
+            border-left-color: var(--accent-color);
+        }
+
+        .workflow-run.failed {
+            border-left-color: var(--github-red);
+        }
+
+        .workflow-run.running {
+            border-left-color: var(--warning-color);
+        }
+
+        .run-info {
+            flex-grow: 1;
+        }
+
+        .run-status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .run-status.success {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .run-status.failed {
+            background: var(--github-red);
+            color: white;
+        }
+
+        .run-status.running {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .run-status.pending {
+            background: #6c757d;
+            color: white;
+        }
+
+        .query-results {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .result-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .result-properties {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .property {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .property-name {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .property-value {
+            color: var(--dark-color);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .workflow-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .job-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .job-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-job {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-job-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .result-properties {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="demo-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fab fa-github"></i> GitHub Actions Demo</h1>
+                <p>Automate your workflow with GitHub's CI/CD platform</p>
+            </div>
+
+            <!-- GitHub Actions Features Overview -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-star"></i> GitHub Actions Key Features</h3>
+                </div>
+                <div class="card-body">
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-code-branch"></i></div>
+                            <div class="feature-title">Event-Driven Automation</div>
+                            <div class="feature-description">Trigger workflows on push, pull requests, releases, and
+                                scheduled events. React to any GitHub event with custom automation.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-server"></i></div>
+                            <div class="feature-title">GitHub-Hosted Runners</div>
+                            <div class="feature-description">Use GitHub's infrastructure for free with Ubuntu, Windows,
+                                and macOS runners. Scale with self-hosted runners for custom environments.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-puzzle-piece"></i></div>
+                            <div class="feature-title">Rich Marketplace</div>
+                            <div class="feature-description">Access thousands of pre-built actions from the GitHub
+                                Marketplace. Create and share reusable workflow components.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="feature-title">Security & Compliance</div>
+                            <div class="feature-description">Built-in security scanning, dependency reviews, and secret
+                                management. Enterprise-grade security for your CI/CD pipelines.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="feature-title">Comprehensive Insights</div>
+                            <div class="feature-description">Detailed workflow logs, performance metrics, and analytics.
+                                Monitor and optimize your CI/CD performance.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-users"></i></div>
+                            <div class="feature-title">Team Collaboration</div>
+                            <div class="feature-description">Share workflows across repositories and organizations.
+                                Collaborate on automation with team-based workflow management.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Editor -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-edit"></i> Workflow Editor</h3>
+                </div>
+                <div class="card-body">
+                    <div class="workflow-editor" contenteditable="true" v-html="currentWorkflow"></div>
+                    <div style="margin-top: 15px;">
+                        <button class="run-btn" @click="runWorkflow" :disabled="!currentWorkflow.trim() || isRunning">
+                            <i class="fas fa-play"></i> Run Workflow
+                        </button>
+                        <button class="run-btn" @click="validateWorkflow" style="margin-left: 10px;">
+                            <i class="fas fa-check"></i> Validate
+                        </button>
+                        <button class="run-btn" @click="loadWorkflowTemplate" style="margin-left: 10px;">
+                            <i class="fas fa-file-import"></i> Load Template
+                        </button>
+                    </div>
+                    <div v-if="workflowResult" class="output-panel">{{ workflowResult }}</div>
+                </div>
+            </div>
+
+            <!-- Workflow Visualization -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-project-diagram"></i> Workflow Visualization</h3>
+                </div>
+                <div class="card-body">
+                    <div class="workflow-viz">
+                        <!-- Workflow Jobs -->
+                        <div v-for="(job, index) in workflowJobs" :key="job.id" class="workflow-job"
+                            :class="job.status">
+                            <div><i :class="job.icon"></i></div>
+                            <div style="font-weight: bold; margin: 5px 0;">{{ job.name }}</div>
+                            <div style="font-size: 12px;">{{ job.duration }}</div>
+                            <div style="font-size: 11px; opacity: 0.8;">{{ job.status }}</div>
+                            <div v-if="index < workflowJobs.length - 1" class="job-arrow">→</div>
+                        </div>
+
+                        <!-- Workflow Controls -->
+                        <div style="position: absolute; bottom: 20px; right: 20px;">
+                            <button class="run-btn" @click="triggerWorkflow" style="margin-right: 10px;">
+                                <i class="fas fa-play-circle"></i> Trigger Run
+                            </button>
+                            <button class="run-btn" @click="cancelWorkflow"
+                                style="background: linear-gradient(45deg, #dc3545, #ff6b6b);">
+                                <i class="fas fa-stop-circle"></i> Cancel Run
+                            </button>
+                        </div>
+
+                        <!-- Workflow Progress -->
+                        <div style="position: absolute; top: 20px; right: 20px; font-size: 14px; color: #6c757d;">
+                            <div>Run #{{ currentRun.number }}</div>
+                            <div>Triggered: {{ currentRun.timestamp }}</div>
+                            <div>Branch: {{ currentRun.branch }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Runs History -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Workflow Runs</h3>
+                </div>
+                <div class="card-body">
+                    <div class="workflow-history">
+                        <div v-for="run in workflowRuns" :key="run.id" class="workflow-run" :class="run.status">
+                            <div class="run-info">
+                                <div style="font-weight: bold;">{{ run.workflow }} #{{ run.number }}</div>
+                                <div style="font-size: 12px; color: #6c757d;">{{ run.timestamp }} • {{ run.duration }} •
+                                    {{ run.trigger }}</div>
+                                <div style="font-size: 13px; margin-top: 5px;">{{ run.commit }}</div>
+                            </div>
+                            <div class="run-status" :class="run.status">
+                                {{ run.status.toUpperCase() }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="run-controls" style="text-align: center; margin-top: 20px;">
+                        <button class="run-btn" @click="addWorkflowRun" style="margin-right: 10px;">
+                            <i class="fas fa-plus"></i> Add Run
+                        </button>
+                        <button class="run-btn" @click="clearRuns"
+                            style="background: linear-gradient(45deg, #6c757d, #9ca3af);">
+                            <i class="fas fa-trash"></i> Clear History
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GitHub Actions Operations -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-cogs"></i> Actions Operations</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Operation Tabs -->
+                    <div class="operation-tabs">
+                        <button class="operation-tab active" @click="actionsOperation = 'workflow'">
+                            <i class="fas fa-code-branch"></i> Workflow Management
+                        </button>
+                        <button class="operation-tab" @click="actionsOperation = 'action'">
+                            <i class="fas fa-puzzle-piece"></i> Custom Actions
+                        </button>
+                        <button class="operation-tab" @click="actionsOperation = 'secret'">
+                            <i class="fas fa-key"></i> Secrets & Variables
+                        </button>
+                        <button class="operation-tab" @click="actionsOperation = 'environment'">
+                            <i class="fas fa-server"></i> Environments
+                        </button>
+                    </div>
+
+                    <!-- Workflow Management -->
+                    <div v-show="actionsOperation === 'workflow'">
+                        <h4>Workflow Management</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Workflow Name:</label>
+                                        <input type="text" class="form-control" v-model="workflowConfig.name"
+                                            placeholder="ci.yml">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Trigger Events:</label>
+                                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                            <label><input type="checkbox" v-model="workflowConfig.triggers.push">
+                                                Push</label>
+                                            <label><input type="checkbox" v-model="workflowConfig.triggers.pullRequest">
+                                                Pull Request</label>
+                                            <label><input type="checkbox" v-model="workflowConfig.triggers.schedule">
+                                                Schedule</label>
+                                            <label><input type="checkbox" v-model="workflowConfig.triggers.release">
+                                                Release</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Runner OS:</label>
+                                        <select class="form-control" v-model="workflowConfig.runner">
+                                            <option value="ubuntu-latest">Ubuntu Latest</option>
+                                            <option value="windows-latest">Windows Latest</option>
+                                            <option value="macos-latest">macOS Latest</option>
+                                            <option value="self-hosted">Self-hosted</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Branches:</label>
+                                        <input type="text" class="form-control" v-model="workflowConfig.branches"
+                                            placeholder="main, develop">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="createWorkflow" :disabled="!workflowConfig.name">
+                                <i class="fas fa-plus"></i> Create Workflow
+                            </button>
+                        </div>
+                        <div v-if="operationResult" class="response-display">
+                            <h5>Result:</h5>
+                            <pre>{{ operationResult }}</pre>
+                        </div>
+                    </div>
+
+                    <!-- Custom Actions -->
+                    <div v-show="actionsOperation === 'action'">
+                        <h4>Custom Actions</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Action Name:</label>
+                                        <input type="text" class="form-control" v-model="actionConfig.name"
+                                            placeholder="hello-world-action">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Action Type:</label>
+                                        <select class="form-control" v-model="actionConfig.type">
+                                            <option value="docker">Docker Container</option>
+                                            <option value="javascript">JavaScript</option>
+                                            <option value="composite">Composite Run Steps</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Description:</label>
+                                        <input type="text" class="form-control" v-model="actionConfig.description"
+                                            placeholder="A hello world action">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Inputs:</label>
+                                        <input type="text" class="form-control" v-model="actionConfig.inputs"
+                                            placeholder="name, message">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="createAction" :disabled="!actionConfig.name">
+                                <i class="fas fa-puzzle-piece"></i> Create Action
+                            </button>
+                        </div>
+                        <div v-if="operationResult" class="response-display">
+                            <h5>Result:</h5>
+                            <pre>{{ operationResult }}</pre>
+                        </div>
+                    </div>
+
+                    <!-- Secrets & Variables -->
+                    <div v-show="actionsOperation === 'secret'">
+                        <h4>Secrets & Variables</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Secret Name:</label>
+                                        <input type="text" class="form-control" v-model="secretConfig.name"
+                                            placeholder="DOCKER_HUB_TOKEN">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Secret Type:</label>
+                                        <select class="form-control" v-model="secretConfig.type">
+                                            <option value="repository">Repository Secret</option>
+                                            <option value="environment">Environment Secret</option>
+                                            <option value="organization">Organization Secret</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Description:</label>
+                                        <input type="text" class="form-control" v-model="secretConfig.description"
+                                            placeholder="Docker Hub access token">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Visibility:</label>
+                                        <select class="form-control" v-model="secretConfig.visibility">
+                                            <option value="private">Private</option>
+                                            <option value="public">Public</option>
+                                            <option value="selected">Selected Repositories</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="createSecret" :disabled="!secretConfig.name">
+                                <i class="fas fa-key"></i> Create Secret
+                            </button>
+                        </div>
+                        <div v-if="operationResult" class="response-display">
+                            <h5>Result:</h5>
+                            <pre>{{ operationResult }}</pre>
+                        </div>
+                    </div>
+
+                    <!-- Environments -->
+                    <div v-show="actionsOperation === 'environment'">
+                        <h4>Environments</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Environment Name:</label>
+                                        <input type="text" class="form-control" v-model="environmentConfig.name"
+                                            placeholder="production">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Environment URL:</label>
+                                        <input type="text" class="form-control" v-model="environmentConfig.url"
+                                            placeholder="https://my-app.com">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Deployment Branch:</label>
+                                        <input type="text" class="form-control" v-model="environmentConfig.branch"
+                                            placeholder="main">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Required Reviewers:</label>
+                                        <input type="number" class="form-control"
+                                            v-model.number="environmentConfig.reviewers" min="0" max="10">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="createEnvironment" :disabled="!environmentConfig.name">
+                                <i class="fas fa-server"></i> Create Environment
+                            </button>
+                        </div>
+                        <div v-if="operationResult" class="response-display">
+                            <h5>Result:</h5>
+                            <pre>{{ operationResult }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Builder -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tools"></i> Workflow Builder</h3>
+                </div>
+                <div class="card-body">
+                    <div class="workflow-builder">
+                        <h5>Build GitHub Actions Workflows</h5>
+                        <div v-for="(job, index) in workflowBuilderJobs" :key="index" class="job-row">
+                            <div class="job-header">
+                                <span class="job-type">{{ job.type }}</span>
+                                <button class="remove-job" @click="removeWorkflowJob(index)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label>Job Name:</label>
+                                <input type="text" class="form-control" v-model="job.name"
+                                    :placeholder="getJobPlaceholder(job.type)">
+                            </div>
+                            <div class="form-group">
+                                <label>Steps:</label>
+                                <textarea class="form-control" v-model="job.steps" rows="4"
+                                    :placeholder="getStepsPlaceholder(job.type)"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Add Job:</label>
+                            <select class="form-control" v-model="newJobType">
+                                <option value="">Select job type...</option>
+                                <option value="Test">Test</option>
+                                <option value="Build">Build</option>
+                                <option value="Deploy">Deploy</option>
+                                <option value="Security">Security Scan</option>
+                                <option value="Lint">Lint</option>
+                            </select>
+                        </div>
+
+                        <button class="add-job-btn" @click="addWorkflowJob" :disabled="!newJobType">
+                            <i class="fas fa-plus"></i> Add Job
+                        </button>
+
+                        <button class="run-btn" @click="generateWorkflow" :disabled="workflowBuilderJobs.length === 0"
+                            style="margin-left: 10px;">
+                            <i class="fas fa-code"></i> Generate Workflow
+                        </button>
+
+                        <div class="workflow-editor">
+                            <strong>Generated .github/workflows/ci.yml:</strong><br>
+                            {{ generatedWorkflow }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tachometer-alt"></i> Actions Performance</h3>
+                </div>
+                <div class="card-body">
+                    <div class="performance-metrics">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ performance.activeWorkflows }}</div>
+                            <div class="metric-label">Active Workflows</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">{{ performance.minutesUsed }}</div>
+                            <div class="metric-label">Minutes Used</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">{{ performance.successRate }}%</div>
+                            <div class="metric-label">Success Rate</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">{{ performance.avgDuration }}</div>
+                            <div class="metric-label">Avg Duration (min)</div>
+                        </div>
+                    </div>
+
+                    <div class="execution-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Repository:</span>
+                            <span class="stat-value">my-org/my-repo</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Included Minutes:</span>
+                            <span class="stat-value">2000</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Actions:</span>
+                            <span class="stat-value">{{ performance.totalActions }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Storage Used:</span>
+                            <span class="stat-value">{{ performance.storageUsed }} GB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Resources -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-book"></i> Learn More</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Official Resources</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="https://github.com/features/actions" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> GitHub Actions</a></li>
+                                <li><a href="https://docs.github.com/en/actions" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> Documentation</a></li>
+                                <li><a href="https://github.com/marketplace?type=actions" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> Marketplace</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Learning & Community</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="https://docs.github.com/en/actions/learn-github-actions" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> Learn Actions</a></li>
+                                <li><a href="https://github.com/sdras/awesome-actions" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> Awesome Actions</a></li>
+                                <li><a href="https://github.community/c/github-actions/41" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> Community</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    currentWorkflow: `name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: npm test`,
+                    workflowResult: '',
+                    isRunning: false,
+                    actionsOperation: 'workflow',
+
+                    // Workflow visualization
+                    workflowJobs: [
+                        { id: 1, name: 'checkout', icon: 'fas fa-code-branch', duration: '12s', status: 'success' },
+                        { id: 2, name: 'setup-node', icon: 'fab fa-node-js', duration: '8s', status: 'success' },
+                        { id: 3, name: 'install-deps', icon: 'fas fa-download', duration: '45s', status: 'running' },
+                        { id: 4, name: 'run-tests', icon: 'fas fa-vial', duration: 'pending', status: 'pending' },
+                        { id: 5, name: 'deploy', icon: 'fas fa-rocket', duration: 'pending', status: 'pending' }
+                    ],
+
+                    currentRun: {
+                        number: 42,
+                        timestamp: '2024-01-15 14:30:00',
+                        branch: 'main'
+                    },
+
+                    // Workflow runs history
+                    workflowRuns: [
+                        { id: 1, workflow: 'CI', number: 42, status: 'running', timestamp: '2024-01-15 14:30:00', duration: '2m 15s', trigger: 'push', commit: 'feat: add user authentication' },
+                        { id: 2, workflow: 'CI', number: 41, status: 'success', timestamp: '2024-01-15 14:15:00', duration: '3m 42s', trigger: 'pull_request', commit: 'fix: resolve memory leak' },
+                        { id: 3, workflow: 'CI', number: 40, status: 'success', timestamp: '2024-01-15 14:00:00', duration: '3m 18s', trigger: 'push', commit: 'docs: update README' },
+                        { id: 4, workflow: 'CI', number: 39, status: 'failed', timestamp: '2024-01-15 13:45:00', duration: '1m 33s', trigger: 'push', commit: 'refactor: optimize database queries' }
+                    ],
+
+                    // Workflow configuration
+                    workflowConfig: {
+                        name: '',
+                        triggers: {
+                            push: true,
+                            pullRequest: false,
+                            schedule: false,
+                            release: false
+                        },
+                        runner: 'ubuntu-latest',
+                        branches: 'main'
+                    },
+
+                    // Action configuration
+                    actionConfig: {
+                        name: '',
+                        type: 'javascript',
+                        description: '',
+                        inputs: ''
+                    },
+
+                    // Secret configuration
+                    secretConfig: {
+                        name: '',
+                        type: 'repository',
+                        description: '',
+                        visibility: 'private'
+                    },
+
+                    // Environment configuration
+                    environmentConfig: {
+                        name: '',
+                        url: '',
+                        branch: 'main',
+                        reviewers: 1
+                    },
+
+                    operationResult: '',
+
+                    // Workflow builder
+                    workflowBuilderJobs: [
+                        {
+                            type: 'Test',
+                            name: 'test',
+                            steps: `- uses: actions/checkout@v4\n- name: Setup Node.js\n  uses: actions/setup-node@v4\n  with:\n    node-version: '18'\n- name: Install dependencies\n  run: npm ci\n- name: Run tests\n  run: npm test`
+                        }
+                    ],
+                    newJobType: '',
+
+                    // Performance metrics
+                    performance: {
+                        activeWorkflows: 5,
+                        minutesUsed: 1250,
+                        successRate: 98,
+                        avgDuration: 8,
+                        totalActions: 45,
+                        storageUsed: 2.3
+                    }
+                }
+            },
+            computed: {
+                generatedWorkflow() {
+                    if (this.workflowBuilderJobs.length === 0) return `name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Add jobs here`;
+
+                    let workflow = `name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+`;
+
+                    this.workflowBuilderJobs.forEach((job, index) => {
+                        workflow += `  ${job.name}:
+    runs-on: ubuntu-latest
+
+    steps:
+`;
+                        const steps = job.steps.split('\n');
+                        steps.forEach(step => {
+                            if (step.trim()) {
+                                workflow += `    ${step.trim()}\n`;
+                            }
+                        });
+                        if (index < this.workflowBuilderJobs.length - 1) {
+                            workflow += '\n';
+                        }
+                    });
+
+                    return workflow;
+                }
+            },
+            methods: {
+                async runWorkflow() {
+                    this.isRunning = true;
+                    this.workflowResult = 'Starting GitHub Actions workflow...\n\n';
+
+                    try {
+                        await this.delay(500);
+
+                        const result = this.simulateWorkflowExecution(this.currentWorkflow);
+                        this.workflowResult += result;
+
+                        // Update workflow jobs
+                        this.updateWorkflowJobs();
+
+                    } catch (error) {
+                        this.workflowResult += 'Error: ' + error.message;
+                    } finally {
+                        this.isRunning = false;
+                    }
+                },
+
+                simulateWorkflowExecution(workflow) {
+                    const jobs = ['checkout', 'setup-node', 'install-deps', 'run-tests', 'deploy'];
+                    let result = '';
+
+                    result += 'Run #42 started\n\n';
+                    result += 'Triggered via push to main branch\n';
+                    result += 'Commit: feat: add user authentication\n\n';
+
+                    jobs.forEach((job, index) => {
+                        const duration = Math.floor(Math.random() * 60) + 10;
+                        result += `Job '${job}' starting...\n`;
+                        result += `Job '${job}' completed in ${duration}s\n\n`;
+                    });
+
+                    result += 'All jobs completed successfully\n';
+                    result += 'Workflow run completed\n';
+                    result += 'Duration: 2 min 15 sec\n';
+
+                    return result;
+                },
+
+                updateWorkflowJobs() {
+                    this.workflowJobs.forEach((job, index) => {
+                        setTimeout(() => {
+                            if (job.status === 'pending') {
+                                job.status = 'running';
+                            } else if (job.status === 'running') {
+                                job.status = 'success';
+                                job.duration = Math.floor(Math.random() * 60) + 10 + 's';
+                            }
+                        }, index * 1000);
+                    });
+                },
+
+                triggerWorkflow() {
+                    this.currentRun.number++;
+                    this.currentRun.timestamp = new Date().toLocaleString();
+
+                    // Reset job statuses
+                    this.workflowJobs.forEach(job => {
+                        job.status = 'pending';
+                        job.duration = 'pending';
+                    });
+
+                    this.workflowJobs[0].status = 'running';
+
+                    // Add to workflow runs
+                    this.workflowRuns.unshift({
+                        id: Date.now(),
+                        workflow: 'CI',
+                        number: this.currentRun.number,
+                        status: 'running',
+                        timestamp: this.currentRun.timestamp,
+                        duration: 'running',
+                        trigger: 'manual',
+                        commit: 'trigger: manual workflow run'
+                    });
+                },
+
+                cancelWorkflow() {
+                    this.workflowJobs.forEach(job => {
+                        if (job.status === 'running') {
+                            job.status = 'failed';
+                            job.duration = 'cancelled';
+                        }
+                    });
+
+                    // Update current run
+                    this.workflowRuns[0].status = 'failed';
+                    this.workflowRuns[0].duration = 'cancelled';
+                },
+
+                addWorkflowRun() {
+                    const triggers = ['push', 'pull_request', 'schedule', 'manual'];
+                    const statuses = ['success', 'failed', 'success', 'success'];
+
+                    const newRun = {
+                        id: Date.now(),
+                        workflow: 'CI',
+                        number: this.workflowRuns[0].number + 1,
+                        status: statuses[Math.floor(Math.random() * statuses.length)],
+                        timestamp: new Date().toLocaleString(),
+                        duration: Math.floor(Math.random() * 300) + 60 + 's',
+                        trigger: triggers[Math.floor(Math.random() * triggers.length)],
+                        commit: 'feat: add new feature'
+                    };
+
+                    this.workflowRuns.unshift(newRun);
+                },
+
+                clearRuns() {
+                    this.workflowRuns = [];
+                },
+
+                async createWorkflow() {
+                    this.operationResult = 'Creating GitHub Actions workflow...\n\n';
+
+                    try {
+                        await this.delay(400);
+                        this.operationResult += `✅ Workflow "${this.workflowConfig.name}" created successfully\n`;
+                        this.operationResult += `📋 Runner: ${this.workflowConfig.runner}\n`;
+                        this.operationResult += `🌿 Branches: ${this.workflowConfig.branches}\n`;
+
+                        const triggers = [];
+                        if (this.workflowConfig.triggers.push) triggers.push('Push');
+                        if (this.workflowConfig.triggers.pullRequest) triggers.push('Pull Request');
+                        if (this.workflowConfig.triggers.schedule) triggers.push('Schedule');
+                        if (this.workflowConfig.triggers.release) triggers.push('Release');
+
+                        if (triggers.length > 0) {
+                            this.operationResult += `⏰ Triggers: ${triggers.join(', ')}\n`;
+                        }
+
+                        this.operationResult += '\nWorkflow file created at .github/workflows/\nWorkflow is ready for execution';
+
+                        // Reset form
+                        this.workflowConfig = {
+                            name: '',
+                            triggers: {
+                                push: true,
+                                pullRequest: false,
+                                schedule: false,
+                                release: false
+                            },
+                            runner: 'ubuntu-latest',
+                            branches: 'main'
+                        };
+
+                    } catch (error) {
+                        this.operationResult += '❌ Error: ' + error.message;
+                    }
+                },
+
+                async createAction() {
+                    this.operationResult = 'Creating custom GitHub Action...\n\n';
+
+                    try {
+                        await this.delay(350);
+                        this.operationResult += `✅ Action "${this.actionConfig.name}" created successfully\n`;
+                        this.operationResult += `🔧 Type: ${this.actionConfig.type}\n`;
+                        this.operationResult += `📝 Description: ${this.actionConfig.description}\n`;
+
+                        if (this.actionConfig.inputs) {
+                            this.operationResult += `📥 Inputs: ${this.actionConfig.inputs}\n`;
+                        }
+
+                        this.operationResult += '\nAction metadata file created\nAction is ready for use in workflows';
+
+                        // Reset form
+                        this.actionConfig = {
+                            name: '',
+                            type: 'javascript',
+                            description: '',
+                            inputs: ''
+                        };
+
+                    } catch (error) {
+                        this.operationResult += '❌ Error: ' + error.message;
+                    }
+                },
+
+                async createSecret() {
+                    this.operationResult = 'Creating GitHub secret...\n\n';
+
+                    try {
+                        await this.delay(300);
+                        this.operationResult += `✅ Secret "${this.secretConfig.name}" created successfully\n`;
+                        this.operationResult += `🔐 Type: ${this.secretConfig.type}\n`;
+                        this.operationResult += `👁️ Visibility: ${this.secretConfig.visibility}\n`;
+                        this.operationResult += `📝 Description: ${this.secretConfig.description}\n`;
+
+                        this.operationResult += '\nSecret stored securely\nAvailable for use in workflows';
+
+                        // Reset form
+                        this.secretConfig = {
+                            name: '',
+                            type: 'repository',
+                            description: '',
+                            visibility: 'private'
+                        };
+
+                    } catch (error) {
+                        this.operationResult += '❌ Error: ' + error.message;
+                    }
+                },
+
+                async createEnvironment() {
+                    this.operationResult = 'Creating GitHub environment...\n\n';
+
+                    try {
+                        await this.delay(250);
+                        this.operationResult += `✅ Environment "${this.environmentConfig.name}" created successfully\n`;
+                        this.operationResult += `🌐 URL: ${this.environmentConfig.url}\n`;
+                        this.operationResult += `🌿 Branch: ${this.environmentConfig.branch}\n`;
+                        this.operationResult += `👥 Required Reviewers: ${this.environmentConfig.reviewers}\n`;
+
+                        this.operationResult += '\nEnvironment configured\nReady for deployment protection rules';
+
+                        // Reset form
+                        this.environmentConfig = {
+                            name: '',
+                            url: '',
+                            branch: 'main',
+                            reviewers: 1
+                        };
+
+                    } catch (error) {
+                        this.operationResult += '❌ Error: ' + error.message;
+                    }
+                },
+
+                addWorkflowJob() {
+                    if (this.newJobType) {
+                        const job = {
+                            type: this.newJobType,
+                            name: '',
+                            steps: ''
+                        };
+
+                        // Set default values based on type
+                        switch (this.newJobType) {
+                            case 'Test':
+                                job.name = 'test';
+                                job.steps = `- uses: actions/checkout@v4\n- name: Setup Node.js\n  uses: actions/setup-node@v4\n  with:\n    node-version: '18'\n- name: Install dependencies\n  run: npm ci\n- name: Run tests\n  run: npm test`;
+                                break;
+                            case 'Build':
+                                job.name = 'build';
+                                job.steps = `- uses: actions/checkout@v4\n- name: Setup Node.js\n  uses: actions/setup-node@v4\n  with:\n    node-version: '18'\n- name: Install dependencies\n  run: npm ci\n- name: Build application\n  run: npm run build`;
+                                break;
+                            case 'Deploy':
+                                job.name = 'deploy';
+                                job.steps = `- name: Deploy to production\n  run: echo "Deploying to production..."\n- name: Health check\n  run: curl -f https://my-app.com/health`;
+                                break;
+                            case 'Security':
+                                job.name = 'security';
+                                job.steps = `- name: Run security scan\n  uses: github/super-linter@v5\n- name: Dependency check\n  uses: dependency-check/Dependency-Check_Action@main`;
+                                break;
+                            case 'Lint':
+                                job.name = 'lint';
+                                job.steps = `- uses: actions/checkout@v4\n- name: Setup Node.js\n  uses: actions/setup-node@v4\n  with:\n    node-version: '18'\n- name: Install dependencies\n  run: npm ci\n- name: Run linter\n  run: npm run lint`;
+                                break;
+                        }
+
+                        this.workflowBuilderJobs.push(job);
+                        this.newJobType = '';
+                    }
+                },
+
+                removeWorkflowJob(index) {
+                    this.workflowBuilderJobs.splice(index, 1);
+                },
+
+                getJobPlaceholder(type) {
+                    const placeholders = {
+                        'Test': 'test',
+                        'Build': 'build',
+                        'Deploy': 'deploy',
+                        'Security': 'security-scan',
+                        'Lint': 'lint'
+                    };
+                    return placeholders[type] || 'job-name';
+                },
+
+                getStepsPlaceholder(type) {
+                    const placeholders = {
+                        'Test': `- uses: actions/checkout@v4\n- name: Setup Node.js\n  uses: actions/setup-node@v4\n  with:\n    node-version: '18'\n- name: Install dependencies\n  run: npm ci\n- name: Run tests\n  run: npm test`,
+                        'Build': `- uses: actions/checkout@v4\n- name: Setup Node.js\n  uses: actions/setup-node@v4\n  with:\n    node-version: '18'\n- name: Install dependencies\n  run: npm ci\n- name: Build application\n  run: npm run build`,
+                        'Deploy': `- name: Deploy to production\n  run: echo "Deploying to production..."\n- name: Health check\n  run: curl -f https://my-app.com/health`,
+                        'Security': `- name: Run security scan\n  uses: github/super-linter@v5\n- name: Dependency check\n  uses: dependency-check/Dependency-Check_Action@main`,
+                        'Lint': `- uses: actions/checkout@v4\n- name: Setup Node.js\n  uses: actions/setup-node@v4\n  with:\n    node-version: '18'\n- name: Install dependencies\n  run: npm ci\n- name: Run linter\n  run: npm run lint`
+                    };
+                    return placeholders[type] || 'Enter job steps...';
+                },
+
+                async generateWorkflow() {
+                    // The computed property handles the generation
+                    await this.delay(100);
+                },
+
+                loadWorkflowTemplate() {
+                    this.currentWorkflow = `name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: \${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run ESLint
+      run: npm run lint
+
+    - name: Run Prettier
+      run: npm run format:check
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: \${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: npm test -- --coverage
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: test-results.xml
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: \${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build application
+      run: npm run build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-files
+        path: dist/
+
+  security:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [build, security]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-files
+        path: dist/
+
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment..."
+        # Add your staging deployment commands here
+
+    - name: Health check
+      run: |
+        echo "Running health checks..."
+        # Add health check commands here
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [build, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'release'
+    environment: production
+
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-files
+        path: dist/
+
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production environment..."
+        # Add your production deployment commands here
+
+    - name: Health check
+      run: |
+        echo "Running production health checks..."
+        # Add production health check commands here
+
+    - name: Create GitHub deployment
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.repos.createDeployment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.sha,
+            environment: 'production',
+            description: 'Production deployment'
+          });`;
+                },
+
+                async validateWorkflow() {
+                    this.workflowResult = 'Validating GitHub Actions workflow...\n\n';
+
+                    try {
+                        await this.delay(300);
+                        this.workflowResult += '✅ Workflow validation successful\n\n';
+                        this.workflowResult += 'Validation results:\n';
+                        this.workflowResult += '- YAML syntax: OK\n';
+                        this.workflowResult += '- Job definitions: OK\n';
+                        this.workflowResult += '- Step configurations: OK\n';
+                        this.workflowResult += '- Action references: OK\n';
+                        this.workflowResult += '- Trigger events: OK\n\n';
+                        this.workflowResult += 'Workflow is valid and ready to run';
+
+                    } catch (error) {
+                        this.workflowResult += '❌ Validation failed: ' + error.message;
+                    }
+                },
+
+                delay(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+            },
+
+            mounted() {
+                // Simulate real-time performance updates
+                setInterval(() => {
+                    this.performance.activeWorkflows = Math.floor(Math.random() * 8) + 3;
+                    this.performance.minutesUsed = Math.floor(Math.random() * 200) + 1000;
+                    this.performance.successRate = Math.floor(Math.random() * 5) + 95;
+                    this.performance.avgDuration = Math.floor(Math.random() * 5) + 5;
+                    this.performance.totalActions = Math.floor(Math.random() * 10) + 40;
+                    this.performance.storageUsed = (Math.random() * 2 + 1).toFixed(1);
+                }, 5000);
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>

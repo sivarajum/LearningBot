@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertex AI Advanced - GCP Learning Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ea4335;
+        }
+
+        .sidebar-header .service-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .sidebar-header .service-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ea4335;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header .service-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(234, 67, 53, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #ea4335;
+        }
+
+        .nav-item {
+            padding: 10px 15px;
+            margin: 2px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(234, 67, 53, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #ea4335;
+            color: white;
+            box-shadow: 0 4px 12px rgba(234, 67, 53, 0.3);
+        }
+
+        .nav-item .nav-icon {
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .nav-item .nav-level {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-left: auto;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 320px;
+            padding: 30px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ea4335;
+        }
+
+        .section-icon {
+            font-size: 35px;
+            margin-right: 15px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ea4335;
+            margin: 0;
+        }
+
+        .section-level {
+            background: #ea4335;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .section-content {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .section-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(234, 67, 53, 0.1), rgba(244, 54, 54, 0.1));
+            border-left: 4px solid #ea4335;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .highlight-box .highlight-title {
+            font-weight: bold;
+            color: #ea4335;
+            margin-bottom: 10px;
+        }
+
+        /* ML Pipeline Animation */
+        .ml-pipeline {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pipeline-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .pipeline-diagram {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, #ea4335 0%, #ff7043 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .pipeline-stage {
+            position: absolute;
+            width: 100px;
+            height: 70px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 11px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stage-data {
+            left: 50px;
+            top: 165px;
+            background: #34a853;
+        }
+
+        .stage-training {
+            left: 200px;
+            top: 165px;
+            background: #ea4335;
+        }
+
+        .stage-model {
+            right: 50px;
+            top: 165px;
+            background: #4285f4;
+        }
+
+        .data-flow {
+            position: absolute;
+            width: 20px;
+            height: 15px;
+            background: #ffc107;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            animation: mlDataFlow 5s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        .data-flow:nth-child(2) {
+            animation-delay: 0.8s;
+        }
+
+        .data-flow:nth-child(3) {
+            animation-delay: 1.6s;
+        }
+
+        @keyframes mlDataFlow {
+            0% {
+                left: 75px;
+                top: 180px;
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+
+            25% {
+                left: 220px;
+                top: 180px;
+                transform: scale(1.3) rotate(45deg);
+                opacity: 1;
+            }
+
+            50% {
+                left: 350px;
+                top: 180px;
+                transform: scale(1.6) rotate(90deg);
+                opacity: 0.8;
+            }
+
+            75% {
+                left: 480px;
+                top: 180px;
+                transform: scale(1.3) rotate(135deg);
+                opacity: 1;
+            }
+
+            100% {
+                left: 530px;
+                top: 180px;
+                transform: scale(1) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        .pipeline-arrow {
+            position: absolute;
+            left: 170px;
+            top: 185px;
+            width: 360px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .pipeline-arrow::after {
+            content: '🚀';
+            position: absolute;
+            right: -25px;
+            top: -12px;
+            font-size: 20px;
+            animation: mlRocket 2.5s ease-in-out infinite;
+        }
+
+        @keyframes mlRocket {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.4);
+            }
+        }
+
+        .pipeline-label {
+            position: absolute;
+            left: 320px;
+            top: 120px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Code Examples */
+        .code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .code-tab {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            background: #4285f4;
+            color: white;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #cccccc;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #555;
+            color: white;
+        }
+
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+            max-height: 0;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .code-container.expanded .code-content {
+            max-height: 1000px;
+            opacity: 1;
+        }
+
+        .code-toggle-btn {
+            background: #ea4335;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .code-toggle-btn:hover {
+            background: #d33b2c;
+        }
+
+        .code-toggle-btn.collapsed::before {
+            content: "▶ ";
+        }
+
+        .code-toggle-btn.expanded::before {
+            content: "▼ ";
+        }
+
+        .code-block {
+            display: none;
+        }
+
+        .code-block.active {
+            display: block;
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #d4d4d4;
+        }
+
+        .code-block .line-numbers {
+            display: inline-block;
+            width: 30px;
+            color: #858585;
+            margin-right: 10px;
+            user-select: none;
+        }
+
+        /* Syntax Highlighting */
+        .code-block .keyword {
+            color: #569cd6;
+            font-weight: bold;
+        }
+
+        .code-block .string {
+            color: #ce9178;
+        }
+
+        .code-block .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        .code-block .function {
+            color: #dcdcaa;
+        }
+
+        .code-block .number {
+            color: #b5cea8;
+        }
+
+        .code-block .operator {
+            color: #d4d4d4;
+        }
+
+        .code-block .variable {
+            color: #9cdcfe;
+        }
+
+        .code-block .class {
+            color: #4ec9b0;
+        }
+
+        .code-block .method {
+            color: #dcdcaa;
+        }
+
+        /* Model Types Grid */
+        .model-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .model-type {
+            background: linear-gradient(135deg, rgba(234, 67, 53, 0.1), rgba(244, 54, 54, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(234, 67, 53, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .model-type:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(234, 67, 53, 0.3);
+        }
+
+        .model-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .model-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 10px;
+        }
+
+        .model-desc {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Performance Metrics */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .metric-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-level {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .model-types {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="service-icon">🤖</span>
+            <div class="service-title">Vertex AI</div>
+            <div class="service-subtitle">Unified ML Platform</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🏗️ Fundamentals</div>
+            <div class="nav-item active" data-section="overview">
+                <span class="nav-icon">📋</span>
+                Overview & Architecture
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="model-types">
+                <span class="nav-icon">🎯</span>
+                Model Types & Training
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="vertex-workbench">
+                <span class="nav-icon">💻</span>
+                Vertex Workbench
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔄 MLOps Pipeline</div>
+            <div class="nav-item" data-section="pipelines">
+                <span class="nav-icon">🔧</span>
+                Vertex Pipelines
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="model-registry">
+                <span class="nav-icon">📚</span>
+                Model Registry
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="endpoints">
+                <span class="nav-icon">🌐</span>
+                Model Endpoints
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🎯 AutoML & Custom Training</div>
+            <div class="nav-item" data-section="automl">
+                <span class="nav-icon">🎯</span>
+                AutoML Training
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="custom-training">
+                <span class="nav-icon">⚙️</span>
+                Custom Training Jobs
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="hyperparameter-tuning">
+                <span class="nav-icon">🎛️</span>
+                Hyperparameter Tuning
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">📊 Model Monitoring</div>
+            <div class="nav-item" data-section="model-monitoring">
+                <span class="nav-icon">📊</span>
+                Model Monitoring
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="feature-store">
+                <span class="nav-icon">💎</span>
+                Feature Store
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="experiments">
+                <span class="nav-icon">🧪</span>
+                Experiments & Tracking
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🚀 Advanced Features</div>
+            <div class="nav-item" data-section="generative-ai">
+                <span class="nav-icon">✨</span>
+                Generative AI
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="matching-engine">
+                <span class="nav-icon">🎯</span>
+                Vector Search
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="rag">
+                <span class="nav-icon">📚</span>
+                RAG Applications
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overview" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🤖</span>
+                <h2 class="section-title">Vertex AI Overview</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Vertex AI is Google's unified machine learning platform that brings together all ML tools and
+                    services
+                    into a single, easy-to-use platform. From data preparation to model deployment and monitoring,
+                    Vertex AI provides everything needed for end-to-end ML workflows.
+                </p>
+
+                <div class="performance-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">100+</div>
+                        <div class="metric-label">Pre-trained Models</div>
+                        <div class="metric-desc">Ready-to-use AI models</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">AutoML</div>
+                        <div class="metric-label">No-Code ML</div>
+                        <div class="metric-desc">Automated model training</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">MLOps</div>
+                        <div class="metric-label">Production ML</div>
+                        <div class="metric-desc">End-to-end ML pipelines</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Global</div>
+                        <div class="metric-label">Scale</div>
+                        <div class="metric-desc">Worldwide deployment</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🚀 Key Capabilities</div>
+                    <ul>
+                        <li><strong>Unified Platform:</strong> Single interface for all ML workflows</li>
+                        <li><strong>AutoML:</strong> Automatic model training without ML expertise</li>
+                        <li><strong>Custom Training:</strong> Full control with custom code and frameworks</li>
+                        <li><strong>MLOps:</strong> Production-ready ML with monitoring and governance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Types Section -->
+        <div id="model-types" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">Model Types & Training Methods</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Vertex AI supports multiple approaches to machine learning, from no-code AutoML to full custom
+                    training.
+                    Choose the right approach based on your data, expertise, and requirements.
+                </p>
+
+                <div class="model-types">
+                    <div class="model-type">
+                        <span class="model-icon">🎯</span>
+                        <div class="model-name">AutoML</div>
+                        <div class="model-desc">No-code machine learning with automatic model selection and training
+                        </div>
+                    </div>
+                    <div class="model-type">
+                        <span class="model-icon">⚙️</span>
+                        <div class="model-name">Custom Training</div>
+                        <div class="model-desc">Full control with custom code, frameworks, and infrastructure</div>
+                    </div>
+                    <div class="model-type">
+                        <span class="model-icon">📚</span>
+                        <div class="model-name">Pre-trained Models</div>
+                        <div class="model-desc">Ready-to-use models for common tasks like vision, language, and
+                            prediction</div>
+                    </div>
+                    <div class="model-type">
+                        <span class="model-icon">🔧</span>
+                        <div class="model-name">Foundation Models</div>
+                        <div class="model-desc">Large language models and generative AI for advanced applications</div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'automl-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="automl-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><br><span class="line-numbers"> 3</span><span class="keyword">def</span> <span class="keyword">create_automl_training_job</span>(project, location, dataset_id, target_column):<br><span class="line-numbers"> 4</span>    <span class="string">"""Create an AutoML tabular training job."""</span><br><span class="line-numbers"> 5</span>    aiplatform.init(project=project, location=location)<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span>    <span class="comment"># Define training job</span><br><span class="line-numbers"> 8</span>    training_job = aiplatform.AutoMLTabularTrainingJob(<br><span class="line-numbers"> 9</span>        display_name=<span class="string">"automl-tabular-training"</span>,<br><span class="line-numbers">10</span>        optimization_prediction_type=<span class="string">"regression"</span>,<br><span class="line-numbers">11</span>        column_transformations=[<br><span class="line-numbers">12</span>            {<span class="string">"numeric"</span>: {<span class="string">"column_name"</span>: <span class="string">"feature1"</span>}},<br><span class="line-numbers">13</span>            {<span class="string">"categorical"</span>: {<span class="string">"column_name"</span>: <span class="string">"category"</span>}}<br><span class="line-numbers">14</span>        ]<br><span class="line-numbers">15</span>    )<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span>    <span class="comment"># Run training</span><br><span class="line-numbers">18</span>    model = training_job.run(<br><span class="line-numbers">19</span>        dataset=aiplatform.TabularDataset(dataset_id),<br><span class="line-numbers">20</span>        target_column=target_column,<br><span class="line-numbers">21</span>        training_fraction_split=<span class="string">0.8</span>,<br><span class="line-numbers">22</span>        validation_fraction_split=<span class="string">0.1</span>,<br><span class="line-numbers">23</span>        test_fraction_split=<span class="string">0.1</span>,<br><span class="line-numbers">24</span>        budget_milli_node_hours=<span class="string">1000</span>,<br><span class="line-numbers">25</span>        model_display_name=<span class="string">"automl-model"</span><br><span class="line-numbers">26</span>    )<br><span class="line-numbers">27</span><br><span class="line-numbers">28</span>    <span class="keyword">print</span>(<span class="string">f"Model trained: {model.resource_name}"</span>)<br><span class="line-numbers">29</span>    <span class="keyword">return</span> model<br><span class="line-numbers">30</span><br><span class="line-numbers">31</span><span class="comment"># Usage</span><br><span class="line-numbers">32</span>model = create_automl_training_job(<br><span class="line-numbers">33</span>    project=<span class="string">"my-project"</span>,<br><span class="line-numbers">34</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">35</span>    dataset_id=<span class="string">"123456789"</span>,<br><span class="line-numbers">36</span>    target_column=<span class="string">"target"</span><br><span class="line-numbers">37</span>)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vertex Workbench Section -->
+        <div id="vertex-workbench" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">💻</span>
+                <h2 class="section-title">Vertex Workbench - Managed JupyterLab</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Vertex Workbench provides fully managed JupyterLab environments for data science and ML development.
+                    Access powerful computing resources with pre-installed ML frameworks and seamless integration with
+                    other Vertex AI services.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">💻 Workbench Features</div>
+                    <ul>
+                        <li><strong>Managed JupyterLab:</strong> Pre-configured environments with popular ML libraries
+                        </li>
+                        <li><strong>Custom Containers:</strong> Use your own Docker images or pre-built ones</li>
+                        <li><strong>Git Integration:</strong> Direct integration with GitHub, GitLab, and Bitbucket</li>
+                        <li><strong>Collaboration:</strong> Share notebooks and collaborate with team members</li>
+                        <li><strong>Auto-scaling:</strong> Scale compute resources based on workload demands</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active"
+                                onclick="switchTab(this, 'workbench-python')">Python</button>
+                            <button class="code-tab" onclick="switchTab(this, 'workbench-bash')">Bash</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="workbench-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><span class="keyword">from</span> google.cloud.aiplatform <span class="keyword">import</span> notebook<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="keyword">def</span> <span class="keyword">create_workbench_instance</span>(project_id, location, instance_name):<br><span class="line-numbers"> 5</span>    <span class="string">"""Create a Vertex Workbench instance."""</span><br><span class="line-numbers"> 6</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span>    <span class="comment"># Define instance configuration</span><br><span class="line-numbers"> 9</span>    instance_config = {<br><span class="line-numbers">10</span>        <span class="string">"instance_owners"</span>: [<span class="string">"user@example.com"</span>],<br><span class="line-numbers">11</span>        <span class="string">"machine_type"</span>: <span class="string">"n1-standard-4"</span>,<br><span class="line-numbers">12</span>        <span class="string">"accelerator_config"</span>: {<br><span class="line-numbers">13</span>            <span class="string">"type"</span>: <span class="string">"NVIDIA_TESLA_T4"</span>,<br><span class="line-numbers">14</span>            <span class="string">"core_count"</span>: <span class="string">1</span><br><span class="line-numbers">15</span>        },<br><span class="line-numbers">16</span>        <span class="string">"container_image_uri"</span>: <span class="string">"gcr.io/deeplearning-platform-release/pytorch-gpu"</span>,<br><span class="line-numbers">17</span>        <span class="string">"boot_disk_type"</span>: <span class="string">"PD_SSD"</span>,<br><span class="line-numbers">18</span>        <span class="string">"boot_disk_size_gb"</span>: <span class="string">100</span><br><span class="line-numbers">19</span>    }<br><span class="line-numbers">20</span><br><span class="line-numbers">21</span>    <span class="comment"># Create the instance</span><br><span class="line-numbers">22</span>    instance = notebook.NotebookServiceClient().create_instance(<br><span class="line-numbers">23</span>        parent=<span class="string">f"projects/{project_id}/locations/{location}"</span>,<br><span class="line-numbers">24</span>        instance_id=instance_name,<br><span class="line-numbers">25</span>        instance=instance_config<br><span class="line-numbers">26</span>    )<br><span class="line-numbers">27</span><br><span class="line-numbers">28</span>    <span class="keyword">print</span>(<span class="string">f"Workbench instance created: {instance.name}"</span>)<br><span class="line-numbers">29</span>    <span class="keyword">return</span> instance<br><span class="line-numbers">30</span><br><span class="line-numbers">31</span><span class="comment"># Usage</span><br><span class="line-numbers">32</span>create_workbench_instance(<br><span class="line-numbers">33</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">34</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">35</span>    instance_name=<span class="string">"ml-workbench-instance"</span><br><span class="line-numbers">36</span>)</code>
+                        </div>
+                        <div id="workbench-bash" class="code-block">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Create Vertex Workbench instance using gcloud</span><br><span class="line-numbers"> 2</span>gcloud notebooks instances create ml-workbench \<br><span class="line-numbers"> 3</span>  --project=my-project \<br><span class="line-numbers"> 4</span>  --location=us-central1 \<br><span class="line-numbers"> 5</span>  --machine-type=n1-standard-4 \<br><span class="line-numbers"> 6</span>  --accelerator-type=NVIDIA_TESLA_T4 \<br><span class="line-numbers"> 7</span>  --accelerator-core-count=1 \<br><span class="line-numbers"> 8</span>  --container-repository=gcr.io/deeplearning-platform-release \<br><span class="line-numbers"> 9</span>  --container-tag=pytorch-gpu \<br><span class="line-numbers">10</span>  --boot-disk-type=PD_SSD \<br><span class="line-numbers">11</span>  --boot-disk-size=100<br><span class="line-numbers">12</span><br><span class="line-numbers">13</span><span class="comment"># List running instances</span><br><span class="line-numbers">14</span>gcloud notebooks instances list --project=my-project<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Start a stopped instance</span><br><span class="line-numbers">17</span>gcloud notebooks instances start ml-workbench --project=my-project<br><span class="line-numbers">18</span><br><span class="comment"># Stop an instance</span><br><span class="line-numbers">19</span>gcloud notebooks instances stop ml-workbench --project=my-project</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Registry Section -->
+        <div id="model-registry" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📚</span>
+                <h2 class="section-title">Model Registry - Version Control for ML Models</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Model Registry provides centralized storage and versioning for your ML models. Track model lineage,
+                    manage different versions, and maintain model metadata for governance and compliance.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">📚 Registry Capabilities</div>
+                    <ul>
+                        <li><strong>Version Control:</strong> Track model versions with automatic versioning</li>
+                        <li><strong>Metadata Management:</strong> Store training parameters, metrics, and artifacts</li>
+                        <li><strong>Lineage Tracking:</strong> Trace models back to their training data and code</li>
+                        <li><strong>Access Control:</strong> Manage permissions and sharing</li>
+                        <li><strong>Model Comparison:</strong> Compare performance across versions</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'registry-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="registry-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><br><span class="line-numbers"> 3</span><span class="keyword">def</span> <span class="keyword">register_model</span>(project_id, location, model_path, display_name):<br><span class="line-numbers"> 4</span>    <span class="string">"""Register a model in Vertex AI Model Registry."""</span><br><span class="line-numbers"> 5</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span>    <span class="comment"># Upload model to registry</span><br><span class="line-numbers"> 8</span>    model = aiplatform.Model.upload(<br><span class="line-numbers"> 9</span>        display_name=display_name,<br><span class="line-numbers">10</span>        artifact_uri=model_path,<br><span class="line-numbers">11</span>        serving_container_image_uri=<span class="string">"gcr.io/cloud-aiplatform/prediction/sklearn-cpu.1-0:latest"</span>,<br><span class="line-numbers">12</span>        description=<span class="string">"Trained ML model for prediction"</span>,<br><span class="line-numbers">13</span>        labels={<span class="string">"framework"</span>: <span class="string">"sklearn"</span>, <span class="string">"version"</span>: <span class="string">"1.0"</span>}<br><span class="line-numbers">14</span>    )<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span>    <span class="comment"># Add model metadata</span><br><span class="line-numbers">17</span>    model.update(<br><span class="line-numbers">18</span>        labels={<br><span class="string">"accuracy"</span>: <span class="string">"0.95"</span>,<br><span class="line-numbers">19</span>            <span class="string">"precision"</span>: <span class="string">"0.93"</span>,<br><span class="line-numbers">20</span>            <span class="string">"training_date"</span>: <span class="string">"2024-01-15"</span><br><span class="line-numbers">21</span>        }<br><span class="line-numbers">22</span>    )<br><span class="line-numbers">23</span><br><span class="line-numbers">24</span>    <span class="keyword">print</span>(<span class="string">f"Model registered: {model.resource_name}"</span>)<br><span class="line-numbers">25</span>    <span class="keyword">return</span> model<br><span class="line-numbers">26</span><br><span class="line-numbers">27</span><span class="keyword">def</span> <span class="keyword">list_model_versions</span>(project_id, location, model_name):<br><span class="line-numbers">28</span>    <span class="string">"""List all versions of a model."""</span><br><span class="line-numbers">29</span>    models = aiplatform.Model.list(<br><span class="line-numbers">30</span>        filter=<span class="string">f"display_name={model_name}"</span>,<br><span class="line-numbers">31</span>        project=project_id,<br><span class="line-numbers">32</span>        location=location<br><span class="line-numbers">33</span>    )<br><span class="line-numbers">34</span><br><span class="line-numbers">35</span>    <span class="keyword">for</span> model <span class="keyword">in</span> models:<br><span class="line-numbers">36</span>        <span class="keyword">print</span>(<span class="string">f"Version: {model.version_id}, Created: {model.create_time}"</span>)<br><span class="line-numbers">37</span><br><span class="line-numbers">38</span><span class="comment"># Usage</span><br><span class="line-numbers">39</span>model = register_model(<br><span class="line-numbers">40</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">41</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">42</span>    model_path=<span class="string">"gs://my-bucket/models/model.pkl"</span>,<br><span class="line-numbers">43</span>    display_name=<span class="string">"customer-churn-model"</span><br><span class="line-numbers">44</span>)<br><span class="line-numbers">45</span><br><span class="line-numbers">46</span>list_model_versions(<span class="string">"my-project"</span>, <span class="string">"us-central1"</span>, <span class="string">"customer-churn-model"</span>)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Endpoints Section -->
+        <div id="endpoints" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🌐</span>
+                <h2 class="section-title">Model Endpoints - Production Model Serving</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Deploy your trained models to scalable endpoints for real-time or batch predictions.
+                    Vertex AI endpoints provide automatic scaling, monitoring, and high availability for your ML models.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🌐 Endpoint Features</div>
+                    <ul>
+                        <li><strong>Auto-scaling:</strong> Automatically scale based on traffic patterns</li>
+                        <li><strong>Multi-model:</strong> Serve multiple model versions from one endpoint</li>
+                        <li><strong>Traffic Splitting:</strong> Gradually roll out new model versions</li>
+                        <li><strong>Monitoring:</strong> Built-in performance and health monitoring</li>
+                        <li><strong>Security:</strong> Enterprise-grade security and access controls</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active"
+                                onclick="switchTab(this, 'endpoints-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="endpoints-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><br><span class="line-numbers"> 3</span><span class="keyword">def</span> <span class="keyword">deploy_model_to_endpoint</span>(project_id, location, model_id, endpoint_name):<br><span class="line-numbers"> 4</span>    <span class="string">"""Deploy a model to a Vertex AI endpoint."""</span><br><span class="line-numbers"> 5</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span>    <span class="comment"># Get the model</span><br><span class="line-numbers"> 8</span>    model = aiplatform.Model(model_id)<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span>    <span class="comment"># Create or get endpoint</span><br><span class="line-numbers">11</span>    endpoint = aiplatform.Endpoint.create(<br><span class="line-numbers">12</span>        display_name=endpoint_name,<br><span class="line-numbers">13</span>        project=project_id,<br><span class="line-numbers">14</span>        location=location<br><span class="line-numbers">15</span>    )<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span>    <span class="comment"># Deploy model to endpoint</span><br><span class="line-numbers">18</span>    deployed_model = endpoint.deploy(<br><span class="line-numbers">19</span>        model=model,<br><span class="line-numbers">20</span>        deployed_model_display_name=<span class="string">"production-model"</span>,<br><span class="line-numbers">21</span>        machine_type=<span class="string">"n1-standard-4"</span>,<br><span class="line-numbers">22</span>        min_replica_count=<span class="string">1</span>,<br><span class="line-numbers">23</span>        max_replica_count=<span class="string">5</span>,<br><span class="line-numbers">24</span>        accelerator_type=<span class="string">"NVIDIA_TESLA_T4"</span>,<br><span class="line-numbers">25</span>        accelerator_count=<span class="string">1</span><br><span class="line-numbers">26</span>    )<br><span class="line-numbers">27</span><br><span class="line-numbers">28</span>    <span class="keyword">print</span>(<span class="string">f"Model deployed to endpoint: {endpoint.resource_name}"</span>)<br><span class="line-numbers">29</span>    <span class="keyword">return</span> endpoint<br><span class="line-numbers">30</span><br><span class="line-numbers">31</span><span class="keyword">def</span> <span class="keyword">make_prediction</span>(endpoint, instances):<br><span class="line-numbers">32</span>    <span class="string">"""Make predictions using the deployed model."""</span><br><span class="line-numbers">33</span>    prediction = endpoint.predict(instances=instances)<br><span class="line-numbers">34</span>    <span class="keyword">return</span> prediction.predictions<br><span class="line-numbers">35</span><br><span class="line-numbers">36</span><span class="comment"># Usage</span><br><span class="line-numbers">37</span>endpoint = deploy_model_to_endpoint(<br><span class="line-numbers">38</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">39</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">40</span>    model_id=<span class="string">"1234567890123456789"</span>,<br><span class="line-numbers">41</span>    endpoint_name=<span class="string">"customer-churn-endpoint"</span><br><span class="line-numbers">42</span>)<br><span class="line-numbers">43</span><br><span class="line-numbers">44</span><span class="comment"># Make predictions</span><br><span class="line-numbers">45</span>test_instances = [<br><span class="line-numbers">46</span>    [<span class="string">0.5</span>, <span class="string">0.3</span>, <span class="string">0.8</span>, <span class="string">0.1</span>],  <span class="comment"># feature values</span><br><span class="line-numbers">47</span>    [<span class="string">0.2</span>, <span class="string">0.7</span>, <span class="string">0.4</span>, <span class="string">0.9</span>]<br><span class="line-numbers">48</span>]<br><span class="line-numbers">49</span><br><span class="line-numbers">50</span>predictions = make_prediction(endpoint, test_instances)<br><span class="line-numbers">51</span><span class="keyword">print</span>(<span class="string">f"Predictions: {predictions}"</span>)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AutoML Training Section -->
+        <div id="automl" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">AutoML Training - No-Code Machine Learning</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    AutoML automatically finds the best model architecture and hyperparameters for your dataset.
+                    No machine learning expertise required - just provide your data and let Vertex AI do the rest.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🎯 AutoML Capabilities</div>
+                    <ul>
+                        <li><strong>Tabular Data:</strong> Regression and classification for structured data</li>
+                        <li><strong>Image Classification:</strong> Automatic model selection for vision tasks</li>
+                        <li><strong>Text Classification:</strong> NLP models for text categorization</li>
+                        <li><strong>Automatic Tuning:</strong> Hyperparameter optimization without manual tuning</li>
+                        <li><strong>Model Interpretability:</strong> Understand model decisions and feature importance
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <button class="code-toggle-btn" onclick="toggleCode(this)">▶️ Show Code</button>
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'automl-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content collapsed">
+                        <div id="automl-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><br><span class="line-numbers"> 3</span><span class="keyword">def</span> <span class="keyword">create_automl_tabular_training</span>(project_id, location, dataset_id, target_column):<br><span class="line-numbers"> 4</span>    <span class="string">"""Create an AutoML tabular training job."""</span><br><span class="line-numbers"> 5</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span>    <span class="comment"># Create training job</span><br><span class="line-numbers"> 8</span>    training_job = aiplatform.AutoMLTabularTrainingJob(<br><span class="line-numbers"> 9</span>        display_name=<span class="string">"automl-tabular-training"</span>,<br><span class="line-numbers">10</span>        optimization_prediction_type=<span class="string">"classification"</span>,<br><span class="line-numbers">11</span>        column_specs={<br><span class="line-numbers">12</span>            <span class="string">"age"</span>: <span class="string">"numeric"</span>,<br><span class="line-numbers">13</span>            <span class="string">"income"</span>: <span class="string">"numeric"</span>,<br><span class="line-numbers">14</span>            <span class="string">"category"</span>: <span class="string">"categorical"</span>,<br><span class="line-numbers">15</span>            <span class="string">"churn"</span>: <span class="string">"categorical"</span><br><span class="line-numbers">16</span>        }<br><span class="line-numbers">17</span>    )<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span>    <span class="comment"># Run training</span><br><span class="line-numbers">20</span>    model = training_job.run(<br><span class="line-numbers">21</span>        dataset=aiplatform.TabularDataset(dataset_id),<br><span class="line-numbers">22</span>        target_column=target_column,<br><span class="line-numbers">23</span>        training_fraction_split=<span class="string">0.8</span>,<br><span class="line-numbers">24</span>        validation_fraction_split=<span class="string">0.1</span>,<br><span class="line-numbers">25</span>        test_fraction_split=<span class="string">0.1</span>,<br><span class="line-numbers">26</span>        budget_milli_node_hours=<span class="string">1000</span>,<br><span class="line-numbers">27</span>        model_display_name=<span class="string">"automl-churn-model"</span><br><span class="line-numbers">28</span>    )<br><span class="line-numbers">29</span><br><span class="line-numbers">30</span>    <span class="keyword">print</span>(<span class="string">f"AutoML model trained: {model.resource_name}"</span>)<br><span class="line-numbers">31</span>    <span class="keyword">print</span>(<span class="string">f"Model accuracy: {model.get_model_evaluation().metrics['auPrc']}"</span>)<br><span class="line-numbers">32</span><br><span class="line-numbers">33</span>    <span class="keyword">return</span> model<br><span class="line-numbers">34</span><br><span class="line-numbers">35</span><span class="keyword">def</span> <span class="keyword">create_automl_image_training</span>(project_id, location, dataset_id):<br><span class="line-numbers">36</span>    <span class="string">"""Create an AutoML image classification training job."""</span><br><span class="line-numbers">37</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers">38</span><br><span class="line-numbers">39</span>    training_job = aiplatform.AutoMLImageTrainingJob(<br><span class="line-numbers">40</span>        display_name=<span class="string">"automl-image-training"</span>,<br><span class="line-numbers">41</span>        prediction_type=<span class="string">"classification"</span>,<br><span class="line-numbers">42</span>        multi_label=<span class="string">False</span>,<br><span class="line-numbers">43</span>        model_type=<span class="string">"CLOUD"</span><br><span class="line-numbers">44</span>    )<br><span class="line-numbers">45</span><br><span class="line-numbers">46</span>    model = training_job.run(<br><span class="line-numbers">47</span>        dataset=aiplatform.ImageDataset(dataset_id),<br><span class="line-numbers">48</span>        training_fraction_split=<span class="string">0.8</span>,<br><span class="line-numbers">49</span>        validation_fraction_split=<span class="string">0.1</span>,<br><span class="line-numbers">50</span>        test_fraction_split=<span class="string">0.1</span>,<br><span class="line-numbers">51</span>        budget_milli_node_hours=<span class="string">8000</span>,<br><span class="line-numbers">52</span>        model_display_name=<span class="string">"automl-image-classifier"</span><br><span class="line-numbers">53</span>    )<br><span class="line-numbers">54</span><br><span class="line-numbers">55</span>    <span class="keyword">return</span> model<br><span class="line-numbers">56</span><br><span class="line-numbers">57</span><span class="comment"># Usage</span><br><span class="line-numbers">58</span>tabular_model = create_automl_tabular_training(<br><span class="line-numbers">59</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">60</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">61</span>    dataset_id=<span class="string">"123456789"</span>,<br><span class="line-numbers">62</span>    target_column=<span class="string">"churn"</span><br><span class="line-numbers">63</span>)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Training Jobs Section -->
+        <div id="custom-training" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">⚙️</span>
+                <h2 class="section-title">Custom Training Jobs - Full Control</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Custom training jobs give you complete control over your ML training process. Use any framework,
+                    custom algorithms, and training infrastructure while leveraging Vertex AI's managed services.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">⚙️ Custom Training Features</div>
+                    <ul>
+                        <li><strong>Any Framework:</strong> TensorFlow, PyTorch, scikit-learn, XGBoost, etc.</li>
+                        <li><strong>Custom Code:</strong> Bring your own training scripts and containers</li>
+                        <li><strong>GPU/TPU Support:</strong> Access to high-performance accelerators</li>
+                        <li><strong>Distributed Training:</strong> Scale across multiple machines</li>
+                        <li><strong>Hyperparameter Tuning:</strong> Automated parameter optimization</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'custom-python')">Python</button>
+                            <button class="code-tab" onclick="switchTab(this, 'custom-yaml')">YAML</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="custom-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><span class="keyword">from</span> google.cloud.aiplatform <span class="keyword">import</span> CustomTrainingJob<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="keyword">def</span> <span class="keyword">create_custom_training_job</span>(project_id, location, training_script, requirements_file):<br><span class="line-numbers"> 5</span>    <span class="string">"""Create a custom training job with Python script."""</span><br><span class="line-numbers"> 6</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span>    <span class="comment"># Define training job</span><br><span class="line-numbers"> 9</span>    job = CustomTrainingJob(<br><span class="line-numbers">10</span>        display_name=<span class="string">"custom-pytorch-training"</span>,<br><span class="line-numbers">11</span>        script_path=training_script,<br><span class="line-numbers">12</span>        container_uri=<span class="string">"gcr.io/cloud-aiplatform/training/pytorch-gpu.1-12:latest"</span>,<br><span class="line-numbers">13</span>        requirements=[<span class="string">"torch==1.12.0"</span>, <span class="string">"torchvision"</span>, <span class="string">"transformers"</span>],<br><span class="line-numbers">14</span>        model_serving_container_image_uri=<span class="string">"gcr.io/cloud-aiplatform/prediction/pytorch-gpu.1-12:latest"</span><br><span class="line-numbers">15</span>    )<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span>    <span class="comment"># Run training</span><br><span class="line-numbers">18</span>    model = job.run(<br><span class="line-numbers">19</span>        dataset=None,<br><span class="line-numbers">20</span>        model_display_name=<span class="string">"custom-pytorch-model"</span>,<br><span class="line-numbers">21</span>        machine_type=<span class="string">"n1-standard-8"</span>,<br><span class="line-numbers">22</span>        accelerator_type=<span class="string">"NVIDIA_TESLA_V100"</span>,<br><span class="line-numbers">23</span>        accelerator_count=<span class="string">1</span>,<br><span class="line-numbers">24</span>        replica_count=<span class="string">1</span>,<br><span class="line-numbers">25</span>        args=[<br><span class="line-numbers">26</span>            <span class="string">"--epochs"</span>, <span class="string">"10"</span>,<br><span class="line-numbers">27</span>            <span class="string">"--batch-size"</span>, <span class="string">"32"</span>,<br><span class="line-numbers">28</span>            <span class="string">"--learning-rate"</span>, <span class="string">"0.001"</span><br><span class="line-numbers">28</span>        ]<br><span class="line-numbers">29</span>    )<br><span class="line-numbers">30</span><br><span class="line-numbers">31</span>    <span class="keyword">print</span>(<span class="string">f"Custom training completed. Model: {model.resource_name}"</span>)<br><span class="line-numbers">32</span>    <span class="keyword">return</span> model<br><span class="line-numbers">33</span><br><span class="line-numbers">34</span><span class="comment"># Usage</span><br><span class="line-numbers">35</span>model = create_custom_training_job(<br><span class="line-numbers">36</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">37</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">38</span>    training_script=<span class="string">"gs://my-bucket/training/train.py"</span>,<br><span class="line-numbers">39</span>    requirements_file=<span class="string">"gs://my-bucket/training/requirements.txt"</span><br><span class="line-numbers">40</span>)</code>
+                        </div>
+                        <div id="custom-yaml" class="code-block">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Custom training job specification</span><br><span class="line-numbers"> 2</span>trainingJob:<br><span class="line-numbers"> 3</span>  displayName: custom-tensorflow-training<br><span class="line-numbers"> 4</span>  pythonPackageSpec:<br><span class="line-numbers"> 5</span>    executorImageUri: gcr.io/cloud-aiplatform/training/tf-gpu.2-11:latest<br><span class="line-numbers"> 6</span>    packageUris:<br><span class="line-numbers"> 7</span>      - gs://my-bucket/training/trainer-0.1.tar.gz<br><span class="line-numbers"> 8</span>    pythonModule: trainer.task<br><span class="line-numbers"> 9</span>  workerPoolSpecs:<br><span class="line-numbers">10</span>    - machineSpec:<br><span class="line-numbers">11</span>      machineType: n1-standard-8<br><span class="line-numbers">12</span>      acceleratorType: NVIDIA_TESLA_V100<br><span class="line-numbers">13</span>      acceleratorCount: 1<br><span class="line-numbers">14</span>    replicaCount: 1<br><span class="line-numbers">15</span>    pythonPackageSpec:<br><span class="line-numbers">16</span>      executorImageUri: gcr.io/cloud-aiplatform/training/tf-gpu.2-11:latest<br><span class="line-numbers">17</span>      packageUris:<br><span class="line-numbers">18</span>        - gs://my-bucket/training/trainer-0.1.tar.gz<br><span class="line-numbers">19</span>      pythonModule: trainer.task<br><span class="line-numbers">20</span>  baseOutputDirectory:<br><span class="line-numbers">21</span>    outputUriPrefix: gs://my-bucket/training-output/<br><span class="line-numbers">22</span>  args:<br><span class="line-numbers">23</span>    - --epochs=10<br><span class="line-numbers">24</span>    - --batch-size=32<br><span class="line-numbers">25</span>    - --learning-rate=0.001</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hyperparameter Tuning Section -->
+        <div id="hyperparameter-tuning" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🎛️</span>
+                <h2 class="section-title">Hyperparameter Tuning - Automated Optimization</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Hyperparameter tuning automatically finds the best model configuration by testing different
+                    combinations of hyperparameters. Vertex AI uses Bayesian optimization and parallel execution
+                    for efficient tuning.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🎛️ Tuning Strategies</div>
+                    <ul>
+                        <li><strong>Bayesian Optimization:</strong> Intelligent search using probabilistic models</li>
+                        <li><strong>Grid Search:</strong> Exhaustive search over specified parameter values</li>
+                        <li><strong>Random Search:</strong> Random sampling from parameter distributions</li>
+                        <li><strong>Parallel Execution:</strong> Run multiple trials simultaneously</li>
+                        <li><strong>Early Stopping:</strong> Stop unpromising trials early</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'tuning-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="tuning-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><span class="keyword">from</span> google.cloud.aiplatform <span class="keyword">import</span> hyperparameter_tuning <span class="keyword">as</span> hpt<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="keyword">def</span> <span class="keyword">create_hyperparameter_tuning_job</span>(project_id, location, training_script):<br><span class="line-numbers"> 5</span>    <span class="string">"""Create a hyperparameter tuning job."""</span><br><span class="line-numbers"> 6</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span>    <span class="comment"># Define hyperparameter tuning job</span><br><span class="line-numbers"> 9</span>    tuning_job = aiplatform.HyperparameterTuningJob(<br><span class="line-numbers">10</span>        display_name=<span class="string">"pytorch-hyperparameter-tuning"</span>,<br><span class="line-numbers">11</span>        custom_job=aiplatform.CustomTrainingJob(<br><span class="line-numbers">12</span>            display_name=<span class="string">"pytorch-training"</span>,<br><span class="line-numbers">13</span>            script_path=training_script,<br><span class="line-numbers">14</span>            container_uri=<span class="string">"gcr.io/cloud-aiplatform/training/pytorch-gpu.1-12:latest"</span>,<br><span class="line-numbers">15</span>            requirements=[<span class="string">"torch==1.12.0"</span>, <span class="string">"torchvision"</span>]<br><span class="line-numbers">16</span>        ),<br><span class="line-numbers">17</span>        metric_spec={<br><span class="line-numbers">18</span>            <span class="string">"accuracy"</span>: <span class="string">"maximize"</span><br><span class="line-numbers">19</span>        },<br><span class="line-numbers">20</span>        parameter_spec={<br><span class="line-numbers">21</span>            <span class="string">"learning-rate"</span>: hpt.DoubleParameterSpec(min=<span class="string">0.001</span>, max=<span class="string">0.1</span>, scale=<span class="string">"log"</span>),<br><span class="line-numbers">22</span>            <span class="string">"batch-size"</span>: hpt.DiscreteParameterSpec(values=[<span class="string">16</span>, <span class="string">32</span>, <span class="string">64</span>], scale=<span class="string">"linear"</span>),<br><span class="line-numbers">23</span>            <span class="string">"num-layers"</span>: hpt.IntegerParameterSpec(min=<span class="string">2</span>, max=<span class="string">5</span>, scale=<span class="string">"linear"</span>)<br><span class="line-numbers">24</span>        },<br><span class="line-numbers">25</span>        max_trial_count=<span class="string">20</span>,<br><span class="line-numbers">26</span>        parallel_trial_count=<span class="string">5</span>,<br><span class="line-numbers">27</span>        max_failed_trial_count=<span class="string">3</span><br><span class="line-numbers">28</span>    )<br><span class="line-numbers">29</span><br><span class="line-numbers">30</span>    <span class="comment"># Run tuning job</span><br><span class="line-numbers">31</span>    tuning_job.run()<br><span class="line-numbers">32</span><br><span class="line-numbers">33</span>    <span class="comment"># Get best trial</span><br><span class="line-numbers">34</span>    best_trial = tuning_job.trials[<span class="string">0</span>]<br><span class="line-numbers">35</span>    <span class="keyword">for</span> trial <span class="keyword">in</span> tuning_job.trials[<span class="string">1</span>:]:<br><span class="line-numbers">36</span>        <span class="keyword">if</span> trial.final_measurement.metrics[<span class="string">0</span>].value > best_trial.final_measurement.metrics[<span class="string">0</span>].value:<br><span class="line-numbers">37</span>            best_trial = trial<br><span class="line-numbers">38</span><br><span class="line-numbers">39</span>    <span class="keyword">print</span>(<span class="string">f"Best trial parameters: {best_trial.parameters}"</span>)<br><span class="line-numbers">40</span>    <span class="keyword">print</span>(<span class="string">f"Best accuracy: {best_trial.final_measurement.metrics[0].value}"</span>)<br><span class="line-numbers">41</span><br><span class="line-numbers">42</span>    <span class="keyword">return</span> tuning_job<br><span class="line-numbers">43</span><br><span class="line-numbers">44</span><span class="comment"># Usage</span><br><span class="line-numbers">45</span>tuning_job = create_hyperparameter_tuning_job(<br><span class="line-numbers">46</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">47</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">48</span>    training_script=<span class="string">"gs://my-bucket/training/train_with_params.py"</span><br><span class="line-numbers">49</span>)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Monitoring Section -->
+        <div id="model-monitoring" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📊</span>
+                <h2 class="section-title">Model Monitoring - Production Model Health</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Model monitoring continuously tracks your deployed models for performance degradation,
+                    data drift, and anomalies. Get alerts when models need retraining or attention.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">📊 Monitoring Capabilities</div>
+                    <ul>
+                        <li><strong>Performance Monitoring:</strong> Track accuracy, latency, and throughput</li>
+                        <li><strong>Data Drift Detection:</strong> Identify changes in input data distribution</li>
+                        <li><strong>Feature Attribution:</strong> Monitor feature importance over time</li>
+                        <li><strong>Alerting:</strong> Get notified when models need attention</li>
+                        <li><strong>Automated Retraining:</strong> Trigger retraining based on monitoring</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active"
+                                onclick="switchTab(this, 'monitoring-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="monitoring-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><span class="keyword">from</span> google.cloud.aiplatform <span class="keyword">import</span> model_monitoring<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="keyword">def</span> <span class="keyword">create_model_monitoring_job</span>(project_id, location, endpoint_id, dataset):<br><span class="line-numbers"> 5</span>    <span class="string">"""Create a model monitoring job for an endpoint."""</span><br><span class="line-numbers"> 6</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span>    <span class="comment"># Get endpoint</span><br><span class="line-numbers"> 9</span>    endpoint = aiplatform.Endpoint(endpoint_id)<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span>    <span class="comment"># Create monitoring job</span><br><span class="line-numbers">12</span>    monitoring_job = aiplatform.ModelDeploymentMonitoringJob.create(<br><span class="line-numbers">13</span>        display_name=<span class="string">"model-monitoring-job"</span>,<br><span class="line-numbers">14</span>        endpoint=endpoint,<br><span class="line-numbers">15</span>        logging_sampling_strategy=model_monitoring.SamplingStrategy(<br><span class="line-numbers">16</span>            sampling_rate=<span class="string">0.8</span>,<br><span class="line-numbers">17</span>            random_sample_config=model_monitoring.RandomSampleConfig()<br><span class="line-numbers">18</span>        ),<br><span class="line-numbers">19</span>        schedule_config=model_monitoring.ScheduleConfig(<br><span class="line-numbers">20</span>            monitor_interval=<span class="string">1</span>  <span class="comment"># hours</span><br><span class="line-numbers">21</span>        ),<br><span class="line-numbers">22</span>        alert_config=model_monitoring.EmailAlertConfig(<br><span class="line-numbers">23</span>            user_emails=[<span class="string">"ml-team@example.com"</span>]<br><span class="line-numbers">24</span>        ),<br><span class="line-numbers">25</span>        objective_configs=[<br><span class="line-numbers">26</span>            model_monitoring.ObjectiveConfig(<br><span class="line-numbers">27</span>                training_dataset=dataset,<br><span class="line-numbers">28</span>                training_prediction_skew_detection_config=model_monitoring.SkewDetectionConfig(<br><span class="line-numbers">29</span>                    data_source=<span class="string">"gs://my-bucket/training-data/"</span>,<br><span class="line-numbers">30</span>                    skew_thresholds={<br><span class="line-numbers">31</span>                        <span class="string">"age"</span>: <span class="string">0.3</span>,<br><span class="line-numbers">32</span>                        <span class="string">"income"</span>: <span class="string">0.3</span><br><span class="line-numbers">33</span>                    }<br><span class="line-numbers">34</span>                ),<br><span class="line-numbers">35</span>                training_prediction_drift_detection_config=model_monitoring.DriftDetectionConfig(<br><span class="line-numbers">36</span>                    drift_thresholds={<br><span class="line-numbers">37</span>                        <span class="string">"age"</span>: <span class="string">0.3</span>,<br><span class="line-numbers">38</span>                        <span class="string">"income"</span>: <span class="string">0.3</span><br><span class="line-numbers">39</span>                    }<br><span class="line-numbers">40</span>                )<br><span class="line-numbers">41</span>            )<br><span class="line-numbers">42</span>        ]<br><span class="line-numbers">43</span>    )<br><span class="line-numbers">44</span><br><span class="line-numbers">45</span>    <span class="keyword">print</span>(<span class="string">f"Monitoring job created: {monitoring_job.resource_name}"</span>)<br><span class="line-numbers">46</span>    <span class="keyword">return</span> monitoring_job<br><span class="line-numbers">47</span><br><span class="line-numbers">48</span><span class="comment"># Usage</span><br><span class="line-numbers">49</span>dataset = aiplatform.TabularDataset(<span class="string">"projects/my-project/locations/us-central1/datasets/123456789"</span>)<br><span class="line-numbers">50</span><br><span class="line-numbers">51</span>monitoring_job = create_model_monitoring_job(<br><span class="line-numbers">52</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">53</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">54</span>    endpoint_id=<span class="string">"1234567890123456789"</span>,<br><span class="line-numbers">55</span>    dataset=dataset<br><span class="line-numbers">56</span>)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Store Section -->
+        <div id="feature-store" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">💎</span>
+                <h2 class="section-title">Feature Store - Centralized Feature Management</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Feature Store provides centralized storage and serving of ML features. Reuse features across
+                    models, ensure consistency, and reduce training-serving skew with managed feature pipelines.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">💎 Feature Store Benefits</div>
+                    <ul>
+                        <li><strong>Feature Reuse:</strong> Use the same features across multiple models</li>
+                        <li><strong>Consistency:</strong> Ensure training and serving use identical features</li>
+                        <li><strong>Performance:</strong> Low-latency feature serving for online predictions</li>
+                        <li><strong>Governance:</strong> Track feature lineage and metadata</li>
+                        <li><strong>Scalability:</strong> Handle massive feature datasets efficiently</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active"
+                                onclick="switchTab(this, 'featurestore-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="featurestore-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><span class="keyword">from</span> google.cloud.aiplatform <span class="keyword">import</span> Featurestore<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="keyword">def</span> <span class="keyword">create_feature_store</span>(project_id, location, featurestore_name):<br><span class="line-numbers"> 5</span>    <span class="string">"""Create a Vertex AI Feature Store."""</span><br><span class="line-numbers"> 6</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span>    <span class="comment"># Create feature store</span><br><span class="line-numbers"> 9</span>    featurestore = Featurestore.create(<br><span class="line-numbers">10</span>        featurestore_id=featurestore_name,<br><span class="line-numbers">11</span>        online_store_fixed_node_count=<span class="string">1</span>,<br><span class="line-numbers">12</span>        labels={<span class="string">"environment"</span>: <span class="string">"production"</span>}<br><span class="line-numbers">13</span>    )<br><span class="line-numbers">14</span><br><span class="line-numbers">15</span>    <span class="keyword">print</span>(<span class="string">f"Feature store created: {featurestore.resource_name}"</span>)<br><span class="line-numbers">16</span>    <span class="keyword">return</span> featurestore<br><span class="line-numbers">17</span><br><span class="line-numbers">18</span><span class="keyword">def</span> <span class="keyword">create_entity_type</span>(featurestore, entity_type_name):<br><span class="line-numbers">19</span>    <span class="string">"""Create an entity type in the feature store."""</span><br><span class="line-numbers">20</span>    entity_type = featurestore.create_entity_type(<br><span class="line-numbers">21</span>        entity_type_id=entity_type_name,<br><span class="line-numbers">22</span>        description=<span class="string">"Customer entity for ML features"</span><br><span class="line-numbers">23</span>    )<br><span class="line-numbers">24</span><br><span class="line-numbers">25</span>    <span class="keyword">return</span> entity_type<br><span class="line-numbers">26</span><br><span class="keyword">def</span> <span class="keyword">create_feature</span>(entity_type, feature_name, feature_type):<br><span class="line-numbers">27</span>    <span class="string">"""Create a feature in an entity type."""</span><br><span class="line-numbers">28</span>    feature = entity_type.create_feature(<br><span class="line-numbers">29</span>        feature_id=feature_name,<br><span class="line-numbers">30</span>        value_type=feature_type,<br><span class="line-numbers">31</span>        description=<span class="string">f"Feature: {feature_name}"</span><br><span class="line-numbers">32</span>    )<br><span class="line-numbers">33</span><br><span class="line-numbers">34</span>    <span class="keyword">return</span> feature<br><span class="line-numbers">35</span><br><span class="keyword">def</span> <span class="keyword">ingest_features</span>(entity_type, feature_data):<br><span class="line-numbers">36</span>    <span class="string">"""Ingest feature values into the online store."""</span><br><span class="line-numbers">37</span>    entity_type.ingest_from_gcs(<br><span class="line-numbers">38</span>        feature_ids=[<span class="string">"age"</span>, <span class="string">"income"</span>, <span class="string">"purchases"</span>],<br><span class="line-numbers">39</span>        feature_time=<span class="string">"2024-01-01T00:00:00Z"</span>,<br><span class="line-numbers">40</span>        gcs_source_uris=[feature_data],<br><span class="line-numbers">41</span>        gcs_source_type=<span class="string">"csv"</span>,<br><span class="line-numbers">42</span>        entity_id_field=<span class="string">"customer_id"</span><br><span class="line-numbers">43</span>    )<br><span class="line-numbers">44</span><br><span class="keyword">def</span> <span class="keyword">serve_features</span>(featurestore, entity_ids):<br><span class="line-numbers">45</span>    <span class="string">"""Serve features for online prediction."""</span><br><span class="line-numbers">46</span>    response = featurestore.serve_entity_type(<br><span class="line-numbers">47</span>        entity_type_id=<span class="string">"customer"</span>,<br><span class="line-numbers">48</span>        entity_ids=entity_ids,<br><span class="line-numbers">49</span>        feature_ids=[<span class="string">"age"</span>, <span class="string">"income"</span>, <span class="string">"purchases"</span><br><span class="line-numbers">50</span>    )<br><span class="line-numbers">51</span><br><span class="line-numbers">52</span>    <span class="keyword">return</span> response<br><span class="line-numbers">53</span><br><span class="line-numbers">54</span><span class="comment"># Usage</span><br><span class="line-numbers">55</span>featurestore = create_feature_store(<span class="string">"my-project"</span>, <span class="string">"us-central1"</span>, <span class="string">"customer-features"</span>)<br><span class="line-numbers">56</span>entity_type = create_entity_type(featurestore, <span class="string">"customer"</span>)<br><span class="line-numbers">57</span><br><span class="line-numbers">58</span><span class="comment"># Create features</span><br><span class="line-numbers">59</span>create_feature(entity_type, <span class="string">"age"</span>, <span class="string">"INT64"</span>)<br><span class="line-numbers">60</span>create_feature(entity_type, <span class="string">"income"</span>, <span class="string">"DOUBLE"</span>)<br><span class="line-numbers">61</span>create_feature(entity_type, <span class="string">"purchases"</span>, <span class="string">"INT64"</span>)<br><span class="line-numbers">62</span><br><span class="line-numbers">63</span><span class="comment"># Ingest data</span><br><span class="line-numbers">64</span>ingest_features(entity_type, <span class="string">"gs://my-bucket/features/customer_features.csv"</span>)<br><span class="line-numbers">65</span><br><span class="line-numbers">66</span><span class="comment"># Serve features</span><br><span class="line-numbers">67</span>features = serve_features(featurestore, [<span class="string">"customer_123"</span>, <span class="string">"customer_456"</span>])<br><span class="line-numbers">68</span><span class="keyword">print</span>(features)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Experiments & Tracking Section -->
+        <div id="experiments" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🧪</span>
+                <h2 class="section-title">Experiments & Tracking - ML Experiment Management</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Vertex AI Experiments provides comprehensive experiment tracking and management.
+                    Log parameters, metrics, and artifacts to compare experiments and reproduce results.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🧪 Experiment Tracking Features</div>
+                    <ul>
+                        <li><strong>Parameter Logging:</strong> Track hyperparameters and configuration</li>
+                        <li><strong>Metric Recording:</strong> Log training and evaluation metrics</li>
+                        <li><strong>Artifact Storage:</strong> Store models, datasets, and visualizations</li>
+                        <li><strong>Experiment Comparison:</strong> Compare results across experiments</li>
+                        <li><strong>Reproducibility:</strong> Capture complete experiment context</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active"
+                                onclick="switchTab(this, 'experiments-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="experiments-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">import</span> vertexai<br><span class="line-numbers"> 2</span><span class="keyword">from</span> vertexai.experiments <span class="keyword">import</span> experiment<br><span class="line-numbers"> 3</span><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier<br><span class="line-numbers"> 4</span><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score<br><span class="line-numbers"> 5</span><span class="keyword">import</span> joblib<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span><span class="keyword">def</span> <span class="keyword">run_experiment</span>(project_id, location, experiment_name):<br><span class="line-numbers"> 8</span>    <span class="string">"""Run an ML experiment with tracking."""</span><br><span class="line-numbers"> 9</span>    vertexai.init(project=project_id, location=location)<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span>    <span class="comment"># Start experiment</span><br><span class="line-numbers">12</span>    experiment.start_run(<br><span class="line-numbers">13</span>        experiment=experiment_name,<br><span class="line-numbers">14</span>        run_name=<span class="string">"rf-experiment-run-1"</span><br><span class="line-numbers">15</span>    )<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span>    <span class="comment"># Log parameters</span><br><span class="line-numbers">18</span>    experiment.log_params({<br><span class="line-numbers">19</span>        <span class="string">"n_estimators"</span>: <span class="string">100</span>,<br><span class="line-numbers">20</span>        <span class="string">"max_depth"</span>: <span class="string">10</span>,<br><span class="line-numbers">21</span>        <span class="string">"random_state"</span>: <span class="string">42</span><br><span class="line-numbers">22</span>    })<br><span class="line-numbers">23</span><br><span class="line-numbers">24</span>    <span class="comment"># Simulate training data (replace with real data)</span><br><span class="line-numbers">25</span>    <span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_classification<br><span class="line-numbers">26</span>    X, y = make_classification(n_samples=<span class="string">1000</span>, n_features=<span class="string">20</span>, random_state=<span class="string">42</span>)<br><span class="line-numbers">27</span><br><span class="line-numbers">28</span>    <span class="comment"># Train model</span><br><span class="line-numbers">29</span>    model = RandomForestClassifier(<br><span class="line-numbers">30</span>        n_estimators=<span class="string">100</span>,<br><span class="line-numbers">31</span>        max_depth=<span class="string">10</span>,<br><span class="line-numbers">32</span>        random_state=<span class="string">42</span><br><span class="line-numbers">33</span>    )<br><span class="line-numbers">34</span>    model.fit(X, y)<br><span class="line-numbers">35</span><br><span class="line-numbers">36</span>    <span class="comment"># Make predictions</span><br><span class="line-numbers">37</span>    predictions = model.predict(X)<br><span class="line-numbers">38</span>    accuracy = accuracy_score(y, predictions)<br><span class="line-numbers">39</span><br><span class="line-numbers">40</span>    <span class="comment"># Log metrics</span><br><span class="line-numbers">41</span>    experiment.log_metrics({<br><span class="line-numbers">42</span>        <span class="string">"accuracy"</span>: accuracy,<br><span class="line-numbers">43</span>        <span class="string">"precision"</span>: <span class="string">0.85</span>,<br><span class="line-numbers">44</span>        <span class="string">"recall"</span>: <span class="string">0.82</span><br><span class="line-numbers">45</span>    })<br><span class="line-numbers">46</span><br><span class="line-numbers">47</span>    <span class="comment"># Save and log model artifact</span><br><span class="line-numbers">48</span>    model_path = <span class="string">"/tmp/model.pkl"</span><br><span class="line-numbers">49</span>    joblib.dump(model, model_path)<br><span class="line-numbers">50</span>    experiment.log_model(<br><span class="line-numbers">51</span>        model=model,<br><span class="line-numbers">52</span>        artifact_id=<span class="string">"rf-model"</span><br><span class="line-numbers">53</span>    )<br><span class="line-numbers">54</span><br><span class="line-numbers">55</span>    <span class="comment"># End experiment run</span><br><span class="line-numbers">56</span>    experiment.end_run()<br><span class="line-numbers">57</span><br><span class="line-numbers">58</span>    <span class="keyword">print</span>(<span class="string">f"Experiment completed. Accuracy: {accuracy:.4f}"</span>)<br><span class="line-numbers">59</span><br><span class="line-numbers">60</span><span class="comment"># Usage</span><br><span class="line-numbers">61</span>run_experiment(<br><span class="line-numbers">62</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">63</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">64</span>    experiment_name=<span class="string">"customer-churn-experiments"</span><br><span class="line-numbers">65</span>)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vector Search Section -->
+        <div id="matching-engine" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">Vector Search - Similarity Search at Scale</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Vertex AI Vector Search (formerly Matching Engine) provides high-performance vector similarity
+                    search for recommendation systems, image search, and semantic search applications.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🎯 Vector Search Capabilities</div>
+                    <ul>
+                        <li><strong>High Performance:</strong> Sub-millisecond query latency at massive scale</li>
+                        <li><strong>Multiple Indexes:</strong> Tree-based, IVF, and brute force indexing</li>
+                        <li><strong>Filtering:</strong> Metadata filtering for refined search results</li>
+                        <li><strong>Batch & Streaming:</strong> Support for both batch and real-time updates</li>
+                        <li><strong>Embeddings:</strong> Integration with Vertex AI embeddings</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'vector-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="vector-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 2</span><span class="keyword">from</span> google.cloud.aiplatform.matching_engine <span class="keyword">import</span> MatchingEngineIndex<br><span class="line-numbers"> 3</span><span class="keyword">import</span> numpy <span class="keyword">as</span> np<br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span><span class="keyword">def</span> <span class="keyword">create_vector_index</span>(project_id, location, index_name, embeddings):<br><span class="line-numbers"> 6</span>    <span class="string">"""Create a vector search index."""</span><br><span class="line-numbers"> 7</span>    aiplatform.init(project=project_id, location=location)<br><span class="line-numbers"> 8</span><br><span class="line-numbers"> 9</span>    <span class="comment"># Create index</span><br><span class="line-numbers">10</span>    index = MatchingEngineIndex.create_tree_ah_index(<br><span class="line-numbers">11</span>        display_name=index_name,<br><span class="line-numbers">12</span>        contents_delta_uri=<span class="string">"gs://my-bucket/embeddings/"</span>,<br><span class="line-numbers">13</span>        dimensions=<span class="string">768</span>,  <span class="comment"># Dimension of embeddings</span><br><span class="line-numbers">14</span>        approximate_neighbors_count=<span class="string">150</span>,<br><span class="line-numbers">15</span>        distance_measure_type=<span class="string">"DOT_PRODUCT_DISTANCE"</span>,<br><span class="line-numbers">16</span>        leaf_node_embedding_count=<span class="string">500</span>,<br><span class="line-numbers">17</span>        leaf_nodes_to_search_percent=<span class="string">7</span>,<br><span class="line-numbers">18</span>        description=<span class="string">"Vector index for semantic search"</span><br><span class="line-numbers">19</span>    )<br><span class="line-numbers">20</span><br><span class="line-numbers">21</span>    <span class="keyword">print</span>(<span class="string">f"Index created: {index.resource_name}"</span>)<br><span class="line-numbers">22</span>    <span class="keyword">return</span> index<br><br><span class="line-numbers">23</span><span class="keyword">def</span> <span class="keyword">create_index_endpoint</span>(project_id, location, endpoint_name):<br><span class="line-numbers">24</span>    <span class="string">"""Create an index endpoint for serving."""</span><br><span class="line-numbers">25</span>    endpoint = aiplatform.MatchingEngineIndexEndpoint.create(<br><span class="line-numbers">26</span>        display_name=endpoint_name,<br><span class="line-numbers">27</span>        description=<span class="string">"Endpoint for vector search"</span>,<br><span class="line-numbers">28</span>        public_endpoint_enabled=<span class="string">False</span><br><span class="line-numbers">29</span>    )<br><span class="line-numbers">30</span><br><span class="line-numbers">31</span>    <span class="keyword">return</span> endpoint<br><br><span class="line-numbers">32</span><span class="keyword">def</span> <span class="keyword">deploy_index</span>(index, endpoint):<br><span class="line-numbers">33</span>    <span class="string">"""Deploy index to endpoint."""</span><br><span class="line-numbers">34</span>    deployed_index = endpoint.deploy_index(<br><span class="line-numbers">35</span>        index=index,<br><span class="line-numbers">36</span>        deployed_index_id=<span class="string">"deployed-vector-index"</span><br><span class="line-numbers">37</span>    )<br><span class="line-numbers">38</span><br><span class="line-numbers">39</span>    <span class="keyword">return</span> deployed_index<br><br><span class="line-numbers">40</span><span class="keyword">def</span> <span class="keyword">search_similar</span>(endpoint, query_embedding, num_neighbors=10):<br><span class="line-numbers">41</span>    <span class="string">"""Search for similar vectors."""</span><br><span class="line-numbers">42</span>    <span class="comment"># Perform similarity search</span><br><span class="line-numbers">43</span>    response = endpoint.find_neighbors(<br><span class="line-numbers">44</span>        deployed_index_id=<span class="string">"deployed-vector-index"</span>,<br><span class="line-numbers">45</span>        queries=[query_embedding],<br><span class="line-numbers">46</span>        num_neighbors=num_neighbors<br><span class="line-numbers">47</span>    )<br><span class="line-numbers">48</span><br><span class="line-numbers">49</span>    <span class="keyword">return</span> response<br><br><span class="line-numbers">50</span><span class="comment"># Usage</span><br><span class="line-numbers">51</span><span class="comment"># Create sample embeddings (replace with real embeddings)</span><br><span class="line-numbers">52</span>embeddings = np.random.rand(<span class="string">1000</span>, <span class="string">768</span>)<br><span class="line-numbers">53</span><br><span class="line-numbers">54</span>index = create_vector_index(<br><span class="line-numbers">55</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">56</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">57</span>    index_name=<span class="string">"semantic-search-index"</span>,<br><span class="line-numbers">58</span>    embeddings=embeddings<br><span class="line-numbers">59</span>)<br><span class="line-numbers">60</span><br><span class="line-numbers">61</span>endpoint = create_index_endpoint(<span class="string">"my-project"</span>, <span class="string">"us-central1"</span>, <span class="string">"vector-search-endpoint"</span>)<br><span class="line-numbers">62</span>deployed_index = deploy_index(index, endpoint)<br><span class="line-numbers">63</span><br><span class="line-numbers">64</span><span class="comment"># Search with a query embedding</span><br><span class="line-numbers">65</span>query_embedding = np.random.rand(<span class="string">768</span>)<br><span class="line-numbers">66</span>results = search_similar(endpoint, query_embedding)<br><span class="line-numbers">67</span><span class="keyword">print</span>(<span class="string">f"Search results: {results}"</span>)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RAG Applications Section -->
+        <div id="rag" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📚</span>
+                <h2 class="section-title">RAG Applications - Retrieval-Augmented Generation</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Retrieval-Augmented Generation (RAG) combines the power of large language models with
+                    information retrieval to provide accurate, up-to-date responses based on your documents.
+                </p>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">📚 RAG Architecture</div>
+                    <ul>
+                        <li><strong>Document Ingestion:</strong> Process and chunk documents for retrieval</li>
+                        <li><strong>Vector Embeddings:</strong> Convert text to semantic vectors</li>
+                        <li><strong>Similarity Search:</strong> Find relevant documents for queries</li>
+                        <li><strong>Context Generation:</strong> Use retrieved docs to enhance LLM responses</li>
+                        <li><strong>Source Attribution:</strong> Cite sources for generated answers</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'rag-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="rag-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> vertexai.language_models <span class="keyword">import</span> TextEmbeddingModel, TextGenerationModel<br><span class="line-numbers"> 2</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> aiplatform<br><span class="line-numbers"> 3</span><span class="keyword">from</span> sklearn.metrics.pairwise <span class="keyword">import</span> cosine_similarity<br><span class="line-numbers"> 4</span><span class="keyword">import</span> numpy <span class="keyword">as</span> np<br><span class="line-numbers"> 5</span><br><span class="line-numbers"> 6</span><span class="keyword">class</span> <span class="class">RAGSystem</span>:<br><span class="line-numbers"> 7</span>    <span class="string">"""Simple RAG system using Vertex AI."""</span><br><span class="line-numbers"> 8</span><br><span class="line-numbers"> 9</span>    <span class="keyword">def</span> <span class="method">__init__</span>(<span class="variable">self</span>, project_id, location):<br><span class="line-numbers">10</span>        vertexai.init(project=project_id, location=location)<br><span class="line-numbers">11</span>        <span class="variable">self</span>.embedding_model = TextEmbeddingModel.from_pretrained(<span class="string">"textembedding-gecko@003"</span>)<br><span class="line-numbers">12</span>        <span class="variable">self</span>.generation_model = TextGenerationModel.from_pretrained(<span class="string">"text-bison@001"</span>)<br><span class="line-numbers">13</span>        <span class="variable">self</span>.documents = []<br><span class="line-numbers">14</span>        <span class="variable">self</span>.embeddings = []<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span>    <span class="keyword">def</span> <span class="method">add_documents</span>(<span class="variable">self</span>, documents):<br><span class="line-numbers">17</span>        <span class="string">"""Add documents to the knowledge base."""</span><br><span class="line-numbers">18</span>        <span class="variable">self</span>.documents.extend(documents)<br><span class="line-numbers">19</span>        <span class="comment"># Generate embeddings for new documents</span><br><span class="line-numbers">20</span>        new_embeddings = <span class="variable">self</span>.embedding_model.get_embeddings(documents)<br><span class="line-numbers">21</span>        new_embedding_vectors = [embedding.values <span class="keyword">for</span> embedding <span class="keyword">in</span> new_embeddings]<br><span class="line-numbers">22</span>        <span class="variable">self</span>.embeddings.extend(new_embedding_vectors)<br><span class="line-numbers">23</span><br><span class="line-numbers">24</span>    <span class="keyword">def</span> <span class="method">retrieve_relevant_docs</span>(<span class="variable">self</span>, query, top_k=3):<br><span class="line-numbers">25</span>        <span class="string">"""Retrieve most relevant documents for a query."""</span><br><span class="line-numbers">26</span>        <span class="comment"># Generate embedding for query</span><br><span class="line-numbers">27</span>        query_embedding = <span class="variable">self</span>.embedding_model.get_embeddings([query])[<span class="string">0</span>].values<br><span class="line-numbers">28</span><br><span class="line-numbers">29</span>        <span class="comment"># Calculate similarities</span><br><span class="line-numbers">30</span>        similarities = cosine_similarity([query_embedding], <span class="variable">self</span>.embeddings)[<span class="string">0</span>]<br><span class="line-numbers">31</span><br><span class="line-numbers">32</span>        <span class="comment"># Get top-k most similar documents</span><br><span class="line-numbers">33</span>        top_indices = np.argsort(similarities)[::-<span class="string">1</span>][:top_k]<br><span class="line-numbers">34</span>        relevant_docs = [<span class="variable">self</span>.documents[i] <span class="keyword">for</span> i <span class="keyword">in</span> top_indices]<br><span class="line-numbers">35</span><br><span class="line-numbers">36</span>        <span class="keyword">return</span> relevant_docs<br><span class="line-numbers">37</span><br><span class="line-numbers">38</span>    <span class="keyword">def</span> <span class="method">generate_answer</span>(<span class="variable">self</span>, query):<br><span class="line-numbers">39</span>        <span class="string">"""Generate an answer using RAG."""</span><br><span class="line-numbers">40</span>        <span class="comment"># Retrieve relevant documents</span><br><span class="line-numbers">41</span>        relevant_docs = <span class="variable">self</span>.retrieve_relevant_docs(query)<br><span class="line-numbers">42</span><br><span class="line-numbers">43</span>        <span class="comment"># Create context from retrieved documents</span><br><span class="line-numbers">44</span>        context = <span class="string">"\n\n"</span>.join(relevant_docs)<br><span class="line-numbers">45</span><br><span class="line-numbers">46</span>        <span class="comment"># Create prompt with context</span><br><span class="line-numbers">47</span>        prompt = <span class="string">f"""</span><br><span class="line-numbers">48</span><span class="string">Based on the following context, answer the question accurately.</span><br><span class="line-numbers">49</span><span class="string">If you cannot find the answer in the context, say so.</span><br><span class="line-numbers">50</span><span class="string"></span><br><span class="line-numbers">51</span><span class="string">Context:</span><br><span class="line-numbers">52</span><span class="string">{context}</span><br><span class="line-numbers">53</span><span class="string"></span><br><span class="line-numbers">54</span><span class="string">Question: {query}</span><br><span class="line-numbers">55</span><span class="string"></span><br><span class="line-numbers">56</span><span class="string">Answer:</span><br><span class="line-numbers">57</span><span class="string">"""</span><br><span class="line-numbers">58</span><br><span class="line-numbers">59</span>        <span class="comment"># Generate answer</span><br><span class="line-numbers">60</span>        response = <span class="variable">self</span>.generation_model.predict(<br><span class="line-numbers">61</span>            prompt=prompt,<br><span class="line-numbers">62</span>            max_output_tokens=<span class="string">256</span>,<br><span class="line-numbers">63</span>            temperature=<span class="string">0.1</span><br><span class="line-numbers">64</span>        )<br><span class="line-numbers">65</span><br><span class="line-numbers">66</span>        <span class="keyword">return</span> response.text<br><br><span class="line-numbers">67</span><span class="comment"># Usage</span><br><span class="line-numbers">68</span>rag_system = RAGSystem(<span class="string">"my-project"</span>, <span class="string">"us-central1"</span>)<br><span class="line-numbers">69</span><br><span class="line-numbers">70</span><span class="comment"># Add documents to knowledge base</span><br><span class="line-numbers">71</span>documents = [<br><span class="line-numbers">72</span>    <span class="string">"Vertex AI is Google's unified ML platform that provides AutoML and custom training."</span>,<br><span class="line-numbers">73</span>    <span class="string">"AutoML automatically finds the best model architecture without ML expertise."</span>,<br><span class="line-numbers">74</span>    <span class="string">"Custom training jobs give full control over ML training with any framework."</span><br><span class="line-numbers">75</span>]<br><span class="line-numbers">76</span><br><span class="line-numbers">77</span>rag_system.add_documents(documents)<br><span class="line-numbers">78</span><br><span class="line-numbers">79</span><span class="comment"># Ask a question</span><br><span class="line-numbers">80</span>answer = rag_system.generate_answer(<span class="string">"What is AutoML in Vertex AI?"</span>)<br><span class="line-numbers">81</span><span class="keyword">print</span>(answer)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="pipelines" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🔧</span>
+                <h2 class="section-title">Vertex Pipelines - MLOps Automation</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Vertex Pipelines enables you to orchestrate complex ML workflows as reusable, scalable pipelines.
+                    Define your ML processes as code and execute them reliably in production environments.
+                </p>
+
+                <div class="ml-pipeline">
+                    <div class="pipeline-title">🔄 Complete ML Pipeline: Data → Training → Deployment</div>
+                    <div class="pipeline-diagram">
+                        <div class="pipeline-stage stage-data">
+                            <div>📊 Data Prep</div>
+                            <div style="font-size: 9px;">Clean & Transform</div>
+                        </div>
+                        <div class="pipeline-stage stage-training">
+                            <div>🎯 Training</div>
+                            <div style="font-size: 9px;">Model Training</div>
+                        </div>
+                        <div class="pipeline-stage stage-model">
+                            <div>🚀 Deployment</div>
+                            <div style="font-size: 9px;">Model Serving</div>
+                        </div>
+
+                        <!-- Animated data flow -->
+                        <div class="data-flow"></div>
+                        <div class="data-flow"></div>
+                        <div class="data-flow"></div>
+
+                        <!-- Flow visualization -->
+                        <div class="pipeline-arrow"></div>
+                        <div class="pipeline-label">Automated ML Pipeline</div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'pipeline-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="pipeline-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> kfp <span class="keyword">import</span> dsl<br><span class="line-numbers"> 2</span><span class="keyword">from</span> kfp.v2 <span class="keyword">import</span> compiler<br><span class="line-numbers"> 3</span><span class="keyword">from</span> google.cloud.aiplatform <span class="keyword">import</span> pipeline_jobs<br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span><span class="comment"># Define pipeline components</span><br><span class="line-numbers"> 6</span>@dsl.component<br><span class="line-numbers"> 7</span><span class="keyword">def</span> <span class="keyword">preprocess_data</span>(input_data: str, output_data: str):<br><span class="line-numbers"> 8</span>    <span class="string">"""Preprocess input data."""</span><br><span class="line-numbers"> 9</span>    <span class="keyword">import</span> pandas <span class="keyword">as</span> pd<br><span class="line-numbers">10</span>    <span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> StandardScaler<br><span class="line-numbers">11</span><br><span class="line-numbers">12</span>    df = pd.read_csv(input_data)<br><span class="line-numbers">13</span>    scaler = StandardScaler()<br><span class="line-numbers">14</span>    numeric_cols = df.select_dtypes(include=[<span class="string">'number'</span>]).columns<br><span class="line-numbers">15</span>    df[numeric_cols] = scaler.fit_transform(df[numeric_cols])<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span>    df.to_csv(output_data, index=<span class="string">False</span>)<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span>@dsl.component<br><span class="line-numbers">20</span><span class="keyword">def</span> <span class="keyword">train_model</span>(training_data: str, model_output: str):<br><span class="line-numbers">21</span>    <span class="string">"""Train ML model."""</span><br><span class="line-numbers">22</span>    <span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier<br><span class="line-numbers">23</span>    <span class="keyword">import</span> joblib<br><span class="line-numbers">24</span><br><span class="line-numbers">25</span>    df = pd.read_csv(training_data)<br><span class="line-numbers">26</span>    X = df.drop(<span class="string">'target'</span>, axis=<span class="string">1</span>)<br><span class="line-numbers">27</span>    y = df[<span class="string">'target'</span>]<br><span class="line-numbers">28</span><br><span class="line-numbers">29</span>    model = RandomForestClassifier(n_estimators=<span class="string">100</span>)<br><span class="line-numbers">30</span>    model.fit(X, y)<br><span class="line-numbers">31</span><br><span class="line-numbers">32</span>    joblib.dump(model, model_output)<br><span class="line-numbers">33</span><br><span class="line-numbers">34</span><span class="comment"># Define pipeline</span><br><span class="line-numbers">35</span>@dsl.pipeline(name=<span class="string">'ml-training-pipeline'</span>)<br><span class="line-numbers">36</span><span class="keyword">def</span> <span class="keyword">ml_pipeline</span>(input_data: str):<br><span class="line-numbers">37</span>    preprocess_task = preprocess_data(input_data=input_data, output_data=<span class="string">'/tmp/processed_data.csv'</span>)<br><span class="line-numbers">38</span>    train_task = train_model(training_data=preprocess_task.output, model_output=<span class="string">'/tmp/model.pkl'</span>)<br><span class="line-numbers">39</span><br><span class="line-numbers">40</span><span class="comment"># Compile and run pipeline</span><br><span class="line-numbers">41</span>compiler.Compiler().compile(ml_pipeline, <span class="string">'pipeline.json'</span>)<br><span class="line-numbers">42</span><br><span class="line-numbers">43</span>job = pipeline_jobs.PipelineJob(<br><span class="line-numbers">44</span>    display_name=<span class="string">'ml-pipeline-job'</span>,<br><span class="line-numbers">45</span>    template_path=<span class="string">'pipeline.json'</span>,<br><span class="line-numbers">46</span>    parameter_values={<span class="string">'input_data'</span>: <span class="string">'gs://my-bucket/data.csv'</span>}<br><span class="line-numbers">47</span>)<br><span class="line-numbers">48</span><br><span class="line-numbers">49</span>job.run()</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🔄 Pipeline Benefits</div>
+                    <ul>
+                        <li><strong>Reproducible:</strong> Same pipeline produces consistent results</li>
+                        <li><strong>Scalable:</strong> Run on any infrastructure automatically</li>
+                        <li><strong>Versioned:</strong> Track changes and rollbacks</li>
+                        <li><strong>Monitored:</strong> Built-in logging and error handling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generative AI Section -->
+        <div id="generative-ai" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">✨</span>
+                <h2 class="section-title">Generative AI with Foundation Models</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Vertex AI provides access to powerful foundation models for generative AI applications.
+                    Use pre-trained models for text generation, code completion, and multimodal tasks.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active"
+                                onclick="switchTab(this, 'generative-python')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="generative-python" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> vertexai.language_models <span class="keyword">import</span> TextGenerationModel<br><span class="line-numbers"> 2</span><span class="keyword">import</span> vertexai<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="keyword">def</span> <span class="keyword">generate_text</span>(project_id, location, prompt):<br><span class="line-numbers"> 5</span>    <span class="string">"""Generate text using PaLM API."""</span><br><span class="line-numbers"> 6</span>    vertexai.init(project=project_id, location=location)<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span>    <span class="comment"># Load pre-trained model</span><br><span class="line-numbers"> 9</span>    model = TextGenerationModel.from_pretrained(<span class="string">"text-bison@001"</span>)<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span>    <span class="comment"># Generate response</span><br><span class="line-numbers">12</span>    response = model.predict(<br><span class="line-numbers">13</span>        prompt=prompt,<br><span class="line-numbers">14</span>        temperature=<span class="string">0.7</span>,<br><span class="line-numbers">15</span>        max_output_tokens=<span class="string">256</span>,<br><span class="line-numbers">16</span>        top_k=<span class="string">40</span>,<br><span class="line-numbers">17</span>        top_p=<span class="string">0.8</span><br><span class="line-numbers">18</span>    )<br><span class="line-numbers">19</span><br><span class="line-numbers">20</span>    <span class="keyword">return</span> response.text<br><span class="line-numbers">21</span><br><span class="line-numbers">22</span><span class="comment"># Example usage</span><br><span class="line-numbers">23</span>prompt = <span class="string">"""</span><br><span class="line-numbers">24</span><span class="string">Write a Python function that calculates the fibonacci sequence up to n terms.</span><br><span class="line-numbers">25</span><span class="string">Include proper documentation and error handling.</span><br><span class="line-numbers">26</span><span class="string">"""</span><br><span class="line-numbers">27</span><br><span class="line-numbers">28</span>response = generate_text(<br><span class="line-numbers">29</span>    project_id=<span class="string">"my-project"</span>,<br><span class="line-numbers">30</span>    location=<span class="string">"us-central1"</span>,<br><span class="line-numbers">31</span>    prompt=prompt<br><span class="line-numbers">32</span>)<br><span class="line-numbers">33</span><br><span class="line-numbers">34</span><span class="keyword">print</span>(response)</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🤖 Available Foundation Models</div>
+                    <ul>
+                        <li><strong>PaLM 2:</strong> Large language model for text generation and understanding</li>
+                        <li><strong>Codey:</strong> Specialized for code generation and completion</li>
+                        <li><strong>Imagen:</strong> Text-to-image generation with high quality</li>
+                        <li><strong>Chirp:</strong> Speech recognition and generation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.content-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                        section.classList.remove('visible');
+                    });
+
+                    // Show selected section
+                    const sectionId = this.dataset.section;
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        setTimeout(() => {
+                            targetSection.classList.add('visible');
+                        }, 100);
+
+                        // Smooth scroll to section
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Show first section by default
+            const firstSection = document.getElementById('overview');
+            if (firstSection) {
+                firstSection.style.display = 'block';
+                setTimeout(() => {
+                    firstSection.classList.add('visible');
+                }, 100);
+            }
+
+            // Intersection Observer for animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Create ML pipeline animation
+            function createMLDataFlow() {
+                const diagram = document.querySelector('.pipeline-diagram');
+                if (!diagram) return;
+
+                for (let i = 0; i < 4; i++) {
+                    const dataParticle = document.createElement('div');
+                    dataParticle.className = 'data-flow';
+                    dataParticle.style.left = '75px';
+                    dataParticle.style.top = '180px';
+                    dataParticle.style.animationDelay = (i * 1.2) + 's';
+                    diagram.appendChild(dataParticle);
+                }
+            }
+
+            createMLDataFlow();
+        });
+
+        // Tab switching functionality
+        function switchTab(clickedTab, targetId) {
+            const container = clickedTab.closest('.code-container');
+            const tabs = container.querySelectorAll('.code-tab');
+            const codeBlocks = container.querySelectorAll('.code-block');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            codeBlocks.forEach(block => block.classList.remove('active'));
+
+            clickedTab.classList.add('active');
+            document.getElementById(targetId).classList.add('active');
+        }
+
+        // Toggle code functionality
+        function toggleCode(button) {
+            const container = button.closest('.code-container');
+            const codeContent = container.querySelector('.code-content');
+            const isCollapsed = codeContent.classList.contains('collapsed');
+
+            if (isCollapsed) {
+                codeContent.classList.remove('collapsed');
+                codeContent.classList.add('expanded');
+                button.textContent = '🔽 Hide Code';
+            } else {
+                codeContent.classList.remove('expanded');
+                codeContent.classList.add('collapsed');
+                button.textContent = '▶️ Show Code';
+            }
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const container = button.closest('.code-container');
+            const activeCodeBlock = container.querySelector('.code-block.active code');
+            if (activeCodeBlock) {
+                const textToCopy = activeCodeBlock.textContent || activeCodeBlock.innerText;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = button.textContent;
+                    button.textContent = '✅ Copied!';
+                    button.style.background = '#4CAF50';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

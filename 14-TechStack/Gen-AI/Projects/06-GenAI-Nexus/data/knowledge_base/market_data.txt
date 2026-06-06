@@ -1,0 +1,78 @@
+LEGAL TECH MARKET DATA 2024-2030
+==================================
+
+TOTAL MARKET SIZE:
+TAM: $45.2 billion (2024) — Grand View Research
+SAM: $8.1 billion (AI-powered document analysis + CLM)
+SOM: $810 million (realistic 3-year capture at 10% SAM)
+CAGR: 18.9% (2024-2030)
+2030 Projection: $127.8 billion
+
+AI LEGAL TECH SPECIFICALLY:
+2024 Market: $1.2 billion
+2030 Projection: $16.1 billion
+CAGR: 44.4% (fastest growing legal tech segment)
+
+INVESTMENT TRENDS:
+2023: $2.1 billion invested in legal tech (Crunchbase)
+2022: $1.6 billion
+2021: $2.4 billion (peak, COVID era)
+YoY Growth: +31% (2022 to 2023)
+Top deals: Harvey AI ($100M), Ironclad ($100M), Filevine ($108M)
+
+SEGMENT BREAKDOWN (% of total market):
+- Contract Management (CLM): 28% — $12.7B
+- eDiscovery: 22% — $9.9B
+- Legal Research: 18% — $8.1B
+- Compliance Management: 15% — $6.8B
+- Billing & Timekeeping: 12% — $5.4B
+- Document Management: 5% — $2.3B
+
+GEOGRAPHIC DISTRIBUTION:
+- North America: 42% ($18.9B) — US dominant, UK growing
+- Europe: 31% ($14.0B) — GDPR driving compliance tooling
+- Asia Pacific: 17% ($7.7B) — Singapore, Australia leading
+- Rest of World: 10% ($4.5B)
+
+BUYER SEGMENTS:
+┌─────────────────┬──────────┬──────────┬──────────────┐
+│ Segment         │ % Firms  │ % Spend  │ AI Readiness │
+├─────────────────┼──────────┼──────────┼──────────────┤
+│ BigLaw (500+)   │ 8%       │ 45%      │ Early adopter│
+│ Mid-mkt (50-500)│ 12%      │ 30%      │ Laggard      │
+│ Small (<50)     │ 80%      │ 25%      │ Underserved  │
+└─────────────────┴──────────┴──────────┴──────────────┘
+
+KEY INSIGHT: Small + mid-market = 92% of firms but only 55% of spend.
+AI at accessible price points could 2-3x their per-firm spend.
+
+TECHNOLOGY ADOPTION TRENDS:
+- AI/ML in legal: 73% plan adoption by 2025 (Thomson Reuters 2023)
+- Cloud migration: 89% now cloud-first for new tools
+- API-first purchases: 64% require API access before buying
+- Security requirements: SOC2 Type II required by 78% of enterprise buyers
+- AI ethics concerns: 45% worried about attorney-client privilege
+
+PAIN POINTS (Survey: 500 attorneys, 2023):
+1. Manual contract review: 40% of time (biggest pain)
+2. Legal research: 25% of time
+3. Document drafting: 20% of time
+4. Client communication: 10%
+5. Billing/admin: 5%
+
+ROI DATA FOR AI LEGAL TOOLS:
+- Contract review time reduction: 88% (McKinsey)
+- Error rate reduction: 77% (Harvard Law Review study)
+- Attorney productivity gain: 4.3 hours/week per attorney
+- Average attorney billing rate: $350-500/hour
+- Annual ROI at 5-attorney firm: $380,000 in recovered time
+
+PRICING BENCHMARKS (existing tools):
+- Clio: $49-149/user/month (practice management)
+- MyCase: $49-89/user/month
+- PracticePanther: $49-79/user/month
+- Harvey AI: $5,000-20,000/month (enterprise, per firm)
+- Ironclad: $30,000-200,000/year (enterprise CLM)
+
+GAP: No AI-native solution at $199-999/month for small/mid firms.
+This is the opportunity.

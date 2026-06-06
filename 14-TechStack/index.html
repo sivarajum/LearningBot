@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStack Interactive Learning Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4285F4;
+            --secondary-color: #34A853;
+            --accent-color: #4CAF50;
+            --warning-color: #FF9800;
+            --info-color: #2196F3;
+            --dark-color: #2C3E50;
+            --light-color: #ECF0F1;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 15px; /* slightly smaller base text */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--dark-color);
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 3rem; /* was 3.5rem */
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.05rem; /* was 1.3rem */
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 1.6rem; /* was 2rem */
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .category-header i {
+            font-size: 2rem;
+        }
+
+        .category-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: white;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool-card {
+            background: var(--light-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: var(--dark-color);
+            display: block;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-color);
+            text-decoration: none;
+            color: var(--dark-color);
+        }
+
+        .tool-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .tool-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .tool-path {
+            font-size: 0.85rem;
+            color: #666;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .stats {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1><i class="fas fa-graduation-cap"></i> TechStack Interactive Learning Hub</h1>
+            <p>Explore interactive demos and tutorials for modern technologies</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalTools">96</span>
+                    <span class="stat-label">Interactive Tools</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">15</span>
+                    <span class="stat-label">Categories</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Coverage</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search for tools, technologies, or categories...">
+            <i class="fas fa-search"></i>
+        </div>
+
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-category="all">All Tools</button>
+            <button class="filter-btn" data-category="tools">Tools</button>
+            <button class="filter-btn" data-category="data">Data Engineering</button>
+            <button class="filter-btn" data-category="genai">Gen-AI</button>
+            <button class="filter-btn" data-category="frontend">Frontend</button>
+            <button class="filter-btn" data-category="backend">Backend</button>
+            <button class="filter-btn" data-category="gcp">GCP</button>
+            <button class="filter-btn" data-category="devops">DevOps</button>
+            <button class="filter-btn" data-category="learning">Learning & Docs</button>
+            <button class="filter-btn" data-category="projects">Projects</button>
+        </div>
+
+        <!-- Tools & Libraries -->
+        <div class="category-section" data-category="tools">
+            <div class="category-header">
+                <i class="fas fa-tools"></i>
+                <h2>Tools & Libraries</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="Tools/Git/interactive-tools-git.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-git-alt"></i></div>
+                    <div class="tool-name">Git</div>
+                    <div class="tool-path">Tools/Git</div>
+                </a>
+                <a href="Tools/Jupyter/interactive-tools-jupyter.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-book"></i></div>
+                    <div class="tool-name">Jupyter</div>
+                    <div class="tool-path">Tools/Jupyter</div>
+                </a>
+                <a href="Tools/Matplotlib/interactive-tools-matplotlib.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="tool-name">Matplotlib</div>
+                    <div class="tool-path">Tools/Matplotlib</div>
+                </a>
+                <a href="Tools/NumPy/interactive-tools-numpy.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-calculator"></i></div>
+                    <div class="tool-name">NumPy</div>
+                    <div class="tool-path">Tools/NumPy</div>
+                </a>
+                <a href="Tools/Pandas/interactive-tools-pandas.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-table"></i></div>
+                    <div class="tool-name">Pandas</div>
+                    <div class="tool-path">Tools/Pandas</div>
+                </a>
+                <a href="Tools/Plotly/interactive-tools-plotly.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div class="tool-name">Plotly</div>
+                    <div class="tool-path">Tools/Plotly</div>
+                </a>
+                <a href="Tools/Seaborn/interactive-tools-seaborn.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-palette"></i></div>
+                    <div class="tool-name">Seaborn</div>
+                    <div class="tool-path">Tools/Seaborn</div>
+                </a>
+                <a href="Tools/VS-Code/interactive-tools-vs-code.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-code"></i></div>
+                    <div class="tool-name">VS Code</div>
+                    <div class="tool-path">Tools/VS-Code</div>
+                </a>
+                <a href="Tools/spark-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="tool-name">Apache Spark (Advanced)</div>
+                    <div class="tool-path">Tools</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Data Engineering -->
+        <div class="category-section" data-category="data">
+            <div class="category-header">
+                <i class="fas fa-database"></i>
+                <h2>Data Engineering</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="DataEngineering/ApacheAirflow/interactive-airflow.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-wind"></i></div>
+                    <div class="tool-name">Apache Airflow</div>
+                    <div class="tool-path">DataEngineering/ApacheAirflow</div>
+                </a>
+                <a href="DataEngineering/ApacheSpark/interactive-apache-spark.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="tool-name">Apache Spark</div>
+                    <div class="tool-path">DataEngineering/ApacheSpark</div>
+                </a>
+                <a href="DataEngineering/Java/interactive-dataengineering-java.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-java"></i></div>
+                    <div class="tool-name">Java</div>
+                    <div class="tool-path">DataEngineering/Java</div>
+                </a>
+                <a href="DataEngineering/Kafka/interactive-dataengineering-kafka.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-stream"></i></div>
+                    <div class="tool-name">Kafka</div>
+                    <div class="tool-path">DataEngineering/Kafka</div>
+                </a>
+                <a href="DataEngineering/Python/interactive-dataengineering-python.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-python"></i></div>
+                    <div class="tool-name">Python</div>
+                    <div class="tool-path">DataEngineering/Python</div>
+                </a>
+                <a href="DataEngineering/Scala/interactive-dataengineering-scala.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-code"></i></div>
+                    <div class="tool-name">Scala</div>
+                    <div class="tool-path">DataEngineering/Scala</div>
+                </a>
+                <a href="DataEngineering/SQL/interactive-dataengineering-sql.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-database"></i></div>
+                    <div class="tool-name">SQL</div>
+                    <div class="tool-path">DataEngineering/SQL</div>
+                </a>
+                <a href="ApacheKafka/interactive-apachekafka.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-stream"></i></div>
+                    <div class="tool-name">Apache Kafka</div>
+                    <div class="tool-path">ApacheKafka</div>
+                </a>
+                <a href="DataModeling/interactive-datamodeling.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-project-diagram"></i></div>
+                    <div class="tool-name">Data Modeling</div>
+                    <div class="tool-path">DataModeling</div>
+                </a>
+                <a href="DataPipelines/interactive-datapipelines.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-project-diagram"></i></div>
+                    <div class="tool-name">Data Pipelines</div>
+                    <div class="tool-path">DataPipelines</div>
+                </a>
+                <a href="DataWarehousing/interactive-datawarehousing.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-warehouse"></i></div>
+                    <div class="tool-name">Data Warehousing</div>
+                    <div class="tool-path">DataWarehousing</div>
+                </a>
+                <a href="Real-TimeProcessing/interactive-real-timeprocessing.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-clock"></i></div>
+                    <div class="tool-name">Real-Time Processing</div>
+                    <div class="tool-path">Real-TimeProcessing</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Gen-AI -->
+        <div class="category-section" data-category="genai">
+            <div class="category-header">
+                <i class="fas fa-robot"></i>
+                <h2>Generative AI & LLMs</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="Gen-AI/Embeddings/interactive-gen-ai-embeddings.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-brain"></i></div>
+                    <div class="tool-name">Embeddings</div>
+                    <div class="tool-path">Gen-AI/Embeddings</div>
+                </a>
+                <a href="Gen-AI/LangChain/interactive-gen-ai-langchain.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-link"></i></div>
+                    <div class="tool-name">LangChain</div>
+                    <div class="tool-path">Gen-AI/LangChain</div>
+                </a>
+                <a href="Gen-AI/OpenAI-GPT/interactive-gen-ai-openai-gpt.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-comments"></i></div>
+                    <div class="tool-name">OpenAI GPT</div>
+                    <div class="tool-path">Gen-AI/OpenAI-GPT</div>
+                </a>
+                <a href="Gen-AI/Vector-Databases/interactive-gen-ai-vector-databases.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-vector-square"></i></div>
+                    <div class="tool-name">Vector Databases</div>
+                    <div class="tool-path">Gen-AI/Vector-Databases</div>
+                </a>
+                <a href="LLMs/interactive-llms.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-language"></i></div>
+                    <div class="tool-name">Large Language Models</div>
+                    <div class="tool-path">LLMs</div>
+                </a>
+                <a href="LLMOps/interactive-llmops.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cogs"></i></div>
+                    <div class="tool-name">LLMOps</div>
+                    <div class="tool-path">LLMOps</div>
+                </a>
+                <a href="RAG/interactive-rag.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-search"></i></div>
+                    <div class="tool-name">RAG (Retrieval-Augmented Generation)</div>
+                    <div class="tool-path">RAG</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Frontend -->
+        <div class="category-section" data-category="frontend">
+            <div class="category-header">
+                <i class="fas fa-laptop-code"></i>
+                <h2>Frontend Technologies</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="Frontend/D3.js/interactive-d3.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-chart-pie"></i></div>
+                    <div class="tool-name">D3.js</div>
+                    <div class="tool-path">Frontend/D3.js</div>
+                </a>
+                <a href="Frontend/Material-UI/interactive-material-ui.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-paint-brush"></i></div>
+                    <div class="tool-name">Material-UI</div>
+                    <div class="tool-path">Frontend/Material-UI</div>
+                </a>
+                <a href="Frontend/React/interactive-react.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-react"></i></div>
+                    <div class="tool-name">React</div>
+                    <div class="tool-path">Frontend/React</div>
+                </a>
+                <a href="Frontend/Streamlit/interactive-streamlit.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-stream"></i></div>
+                    <div class="tool-name">Streamlit</div>
+                    <div class="tool-path">Frontend/Streamlit</div>
+                </a>
+                <a href="Frontend/TypeScript/interactive-typescript.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-file-code"></i></div>
+                    <div class="tool-name">TypeScript</div>
+                    <div class="tool-path">Frontend/TypeScript</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Backend -->
+        <div class="category-section" data-category="backend">
+            <div class="category-header">
+                <i class="fas fa-server"></i>
+                <h2>Backend Technologies</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="Backend/FastAPI/interactive-fastapi.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="tool-name">FastAPI</div>
+                    <div class="tool-path">Backend/FastAPI</div>
+                </a>
+                <a href="Backend/Node.js/interactive-nodejs.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-node-js"></i></div>
+                    <div class="tool-name">Node.js</div>
+                    <div class="tool-path">Backend/Node.js</div>
+                </a>
+                <a href="Backend/Python/interactive-python-backend.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-python"></i></div>
+                    <div class="tool-name">Python Backend</div>
+                    <div class="tool-path">Backend/Python</div>
+                </a>
+                <a href="Backend/Redis/interactive-redis.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-memory"></i></div>
+                    <div class="tool-name">Redis</div>
+                    <div class="tool-path">Backend/Redis</div>
+                </a>
+                <a href="Backend/SQLite/interactive-sqlite.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-database"></i></div>
+                    <div class="tool-name">SQLite</div>
+                    <div class="tool-path">Backend/SQLite</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Databases -->
+        <div class="category-section" data-category="backend">
+            <div class="category-header">
+                <i class="fas fa-database"></i>
+                <h2>Databases</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="Databases/Elasticsearch/interactive-elasticsearch.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-search"></i></div>
+                    <div class="tool-name">Elasticsearch</div>
+                    <div class="tool-path">Databases/Elasticsearch</div>
+                </a>
+                <a href="Databases/MongoDB/interactive-mongodb.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-leaf"></i></div>
+                    <div class="tool-name">MongoDB</div>
+                    <div class="tool-path">Databases/MongoDB</div>
+                </a>
+                <a href="Databases/Neo4j/interactive-neo4j.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-project-diagram"></i></div>
+                    <div class="tool-name">Neo4j</div>
+                    <div class="tool-path">Databases/Neo4j</div>
+                </a>
+                <a href="Databases/PostgreSQL/interactive-postgresql.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-elephant"></i></div>
+                    <div class="tool-name">PostgreSQL</div>
+                    <div class="tool-path">Databases/PostgreSQL</div>
+                </a>
+                <a href="BigQuery/interactive-bigquery.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cloud"></i></div>
+                    <div class="tool-name">BigQuery</div>
+                    <div class="tool-path">BigQuery</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- GCP Services -->
+        <div class="category-section" data-category="gcp">
+            <div class="category-header">
+                <i class="fab fa-google"></i>
+                <h2>Google Cloud Platform (GCP)</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="GCP/Build/interactive-cloud-build.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-hammer"></i></div>
+                    <div class="tool-name">Cloud Build</div>
+                    <div class="tool-path">GCP/Build</div>
+                </a>
+                <a href="GCP/Run/interactive-cloud-run.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-rocket"></i></div>
+                    <div class="tool-name">Cloud Run</div>
+                    <div class="tool-path">GCP/Run</div>
+                </a>
+                <a href="GCP/Storage/interactive-cloud-storage.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <div class="tool-name">Cloud Storage</div>
+                    <div class="tool-path">GCP/Storage</div>
+                </a>
+                <a href="GCP/CloudBuild/interactive-cloud-build.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-tools"></i></div>
+                    <div class="tool-name">Cloud Build (Alt)</div>
+                    <div class="tool-path">GCP/CloudBuild</div>
+                </a>
+                <a href="GCP/Cloud-Run/interactive-cloud-run.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-running"></i></div>
+                    <div class="tool-name">Cloud Run (Alt)</div>
+                    <div class="tool-path">GCP/Cloud-Run</div>
+                </a>
+                <a href="GCP/Cloud-Storage/interactive-cloud-storage.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-hdd"></i></div>
+                    <div class="tool-name">Cloud Storage (Alt)</div>
+                    <div class="tool-path">GCP/Cloud-Storage</div>
+                </a>
+                <a href="GCP/Cloud-Functions/interactive-cloud-functions.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="tool-name">Cloud Functions</div>
+                    <div class="tool-path">GCP/Cloud-Functions</div>
+                </a>
+                <a href="GCP/CloudSQL/interactive-cloud-sql.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-database"></i></div>
+                    <div class="tool-name">Cloud SQL</div>
+                    <div class="tool-path">GCP/CloudSQL</div>
+                </a>
+                <a href="GCP/ComputeEngine/interactive-compute-engine.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-server"></i></div>
+                    <div class="tool-name">Compute Engine</div>
+                    <div class="tool-path">GCP/ComputeEngine</div>
+                </a>
+                <a href="GCP/GKE/interactive-gke.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cubes"></i></div>
+                    <div class="tool-name">Google Kubernetes Engine</div>
+                    <div class="tool-path">GCP/GKE</div>
+                </a>
+                <a href="GCP/PubSub/interactive-cloud-pubsub.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="tool-name">Pub/Sub</div>
+                    <div class="tool-path">GCP/PubSub</div>
+                </a>
+                <a href="GCP/Spanner/interactive-cloud-spanner.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-globe"></i></div>
+                    <div class="tool-name">Cloud Spanner</div>
+                    <div class="tool-path">GCP/Spanner</div>
+                </a>
+                <a href="GCP/Vertex-AI/interactive-vertex-ai.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-brain"></i></div>
+                    <div class="tool-name">Vertex AI</div>
+                    <div class="tool-path">GCP/Vertex-AI</div>
+                </a>
+                <a href="GCP/BigQuery/interactive-bigquery.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div class="tool-name">BigQuery</div>
+                    <div class="tool-path">GCP/BigQuery</div>
+                </a>
+                <a href="VertexAI/interactive-vertexai.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-robot"></i></div>
+                    <div class="tool-name">Vertex AI (Root)</div>
+                    <div class="tool-path">VertexAI</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- GCP Advanced -->
+        <div class="category-section" data-category="gcp">
+            <div class="category-header">
+                <i class="fas fa-graduation-cap"></i>
+                <h2>GCP Advanced Learning Hub</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="GCP/pro/bigquery-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="tool-name">BigQuery Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/cloud-build-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-hammer"></i></div>
+                    <div class="tool-name">Cloud Build Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/cloud-functions-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="tool-name">Cloud Functions Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/cloud-run-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-rocket"></i></div>
+                    <div class="tool-name">Cloud Run Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/cloud-storage-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cloud"></i></div>
+                    <div class="tool-name">Cloud Storage Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/compute-engine-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-server"></i></div>
+                    <div class="tool-name">Compute Engine Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/dataflow-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-stream"></i></div>
+                    <div class="tool-name">Dataflow Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/dataproc-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cogs"></i></div>
+                    <div class="tool-name">Dataproc Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/gcp-learning-hub.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-university"></i></div>
+                    <div class="tool-name">GCP Learning Hub</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/iam-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="tool-name">IAM Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/kubernetes-engine-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cubes"></i></div>
+                    <div class="tool-name">Kubernetes Engine Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/load-balancing-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-balance-scale"></i></div>
+                    <div class="tool-name">Load Balancing Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/vpc-network-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-network-wired"></i></div>
+                    <div class="tool-name">VPC Network Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/vertex-ai-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-brain"></i></div>
+                    <div class="tool-name">Vertex AI Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/cloud-armor-advanced.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-shield"></i></div>
+                    <div class="tool-name">Cloud Armor Advanced</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/beginner-path.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-route"></i></div>
+                    <div class="tool-name">Beginner Learning Path</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/data-flow-animation.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-project-diagram"></i></div>
+                    <div class="tool-name">Data Flow Animation</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/educational-services-explained.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-book"></i></div>
+                    <div class="tool-name">Educational Services</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+                <a href="GCP/pro/interactive-architecture.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-sitemap"></i></div>
+                    <div class="tool-name">Interactive Architecture</div>
+                    <div class="tool-path">GCP/pro</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- DevOps -->
+        <div class="category-section" data-category="devops">
+            <div class="category-header">
+                <i class="fas fa-cogs"></i>
+                <h2>DevOps & Infrastructure</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="DevOps/Docker/interactive-docker.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-docker"></i></div>
+                    <div class="tool-name">Docker</div>
+                    <div class="tool-path">DevOps/Docker</div>
+                </a>
+                <a href="DevOps/GitHub-Actions/interactive-github-actions.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-github"></i></div>
+                    <div class="tool-name">GitHub Actions</div>
+                    <div class="tool-path">DevOps/GitHub-Actions</div>
+                </a>
+                <a href="DevOps/Jenkins/interactive-jenkins.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-jenkins"></i></div>
+                    <div class="tool-name">Jenkins</div>
+                    <div class="tool-path">DevOps/Jenkins</div>
+                </a>
+                <a href="DevOps/Kubernetes/interactive-kubernetes.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-kubernetes"></i></div>
+                    <div class="tool-name">Kubernetes</div>
+                    <div class="tool-path">DevOps/Kubernetes</div>
+                </a>
+                <a href="DevOps/Kubernetes/interactive-cluster.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-network-wired"></i></div>
+                    <div class="tool-name">Kubernetes Cluster</div>
+                    <div class="tool-path">DevOps/Kubernetes</div>
+                </a>
+                <a href="DevOps/Monitoring/interactive-monitoring.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="tool-name">Monitoring</div>
+                    <div class="tool-path">DevOps/Monitoring</div>
+                </a>
+                <a href="DevOps/Terraform/interactive-terraform.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-mountain"></i></div>
+                    <div class="tool-name">Terraform</div>
+                    <div class="tool-path">DevOps/Terraform</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- AI/ML -->
+        <div class="category-section" data-category="genai">
+            <div class="category-header">
+                <i class="fas fa-brain"></i>
+                <h2>AI & Machine Learning</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="AI-ML/Jupyter/interactive-jupyter.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-book"></i></div>
+                    <div class="tool-name">Jupyter</div>
+                    <div class="tool-path">AI-ML/Jupyter</div>
+                </a>
+                <a href="AI-ML/MLflow/interactive-mlflow.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="tool-name">MLflow</div>
+                    <div class="tool-path">AI-ML/MLflow</div>
+                </a>
+                <a href="AI-ML/PyTorch/interactive-pytorch.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-fire"></i></div>
+                    <div class="tool-name">PyTorch</div>
+                    <div class="tool-path">AI-ML/PyTorch</div>
+                </a>
+                <a href="AI-ML/scikit-learn/interactive-ml.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-robot"></i></div>
+                    <div class="tool-name">scikit-learn</div>
+                    <div class="tool-path">AI-ML/scikit-learn</div>
+                </a>
+                <a href="AI-ML/TensorFlow/interactive-neural-networks.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-network-wired"></i></div>
+                    <div class="tool-name">TensorFlow</div>
+                    <div class="tool-path">AI-ML/TensorFlow</div>
+                </a>
+                <a href="AI-ML/Weights-Biases/interactive-wandb.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-weight"></i></div>
+                    <div class="tool-name">Weights & Biases</div>
+                    <div class="tool-path">AI-ML/Weights-Biases</div>
+                </a>
+                <a href="MachineLearning/interactive-machinelearning.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-brain"></i></div>
+                    <div class="tool-name">Machine Learning</div>
+                    <div class="tool-path">MachineLearning</div>
+                </a>
+                <a href="MLOps/interactive-mlops.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cogs"></i></div>
+                    <div class="tool-name">MLOps</div>
+                    <div class="tool-path">MLOps</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Programming Languages -->
+        <div class="category-section" data-category="tools">
+            <div class="category-header">
+                <i class="fas fa-code"></i>
+                <h2>Programming Languages</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="Java/interactive-java.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-java"></i></div>
+                    <div class="tool-name">Java</div>
+                    <div class="tool-path">Java</div>
+                </a>
+                <a href="Python/interactive-python.html" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-python"></i></div>
+                    <div class="tool-name">Python</div>
+                    <div class="tool-path">Python</div>
+                </a>
+                <a href="Scala/interactive-scala.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-code"></i></div>
+                    <div class="tool-name">Scala</div>
+                    <div class="tool-path">Scala</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Other Tools -->
+        <div class="category-section" data-category="tools">
+            <div class="category-header">
+                <i class="fas fa-wrench"></i>
+                <h2>Other Tools</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="dbt/interactive-dbt.html" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-database"></i></div>
+                    <div class="tool-name">dbt (Data Build Tool)</div>
+                    <div class="tool-path">dbt</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Observability -->
+        <div class="category-section" data-category="devops">
+            <div class="category-header">
+                <i class="fas fa-chart-pie"></i>
+                <h2>Observability & Reliability</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="Observability/rubrics.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-clipboard-check"></i></div>
+                    <div class="tool-name">Observability Rubrics</div>
+                    <div class="tool-path">Observability/rubrics.md</div>
+                </a>
+                <a href="Observability/progress-template.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <div class="tool-name">Progress Template</div>
+                    <div class="tool-path">Observability/progress-template.md</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Learning Guides & Documentation -->
+        <div class="category-section" data-category="learning">
+            <div class="category-header">
+                <i class="fas fa-book-open"></i>
+                <h2>Learning Guides & Documentation</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="QUICK-START.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="tool-name">Quick Start</div>
+                    <div class="tool-path">QUICK-START.md</div>
+                </a>
+                <a href="LEARNING_PATHS.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-route"></i></div>
+                    <div class="tool-name">Learning Paths Map</div>
+                    <div class="tool-path">LEARNING_PATHS.md</div>
+                </a>
+                <a href="guide.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-compass"></i></div>
+                    <div class="tool-name">Guide Overview</div>
+                    <div class="tool-path">guide.md</div>
+                </a>
+                <a href="IMPLEMENTATION_PLAN.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-project-diagram"></i></div>
+                    <div class="tool-name">Implementation Plan</div>
+                    <div class="tool-path">IMPLEMENTATION_PLAN.md</div>
+                </a>
+                <a href="DOCUMENTATION_PLAN.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-list-alt"></i></div>
+                    <div class="tool-name">Documentation Plan</div>
+                    <div class="tool-path">DOCUMENTATION_PLAN.md</div>
+                </a>
+                <a href="DOCUMENTATION_STATUS_ACCURATE.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-clipboard-check"></i></div>
+                    <div class="tool-name">Documentation Status</div>
+                    <div class="tool-path">DOCUMENTATION_STATUS_ACCURATE.md</div>
+                </a>
+                <a href="COMPLETION_REPORT.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-flag-checkered"></i></div>
+                    <div class="tool-name">Completion Report</div>
+                    <div class="tool-path">COMPLETION_REPORT.md</div>
+                </a>
+                <a href="WEBSITE-SUMMARY.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="tool-name">Website Summary</div>
+                    <div class="tool-path">WEBSITE-SUMMARY.md</div>
+                </a>
+                <a href="README-WEBSITE.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-globe"></i></div>
+                    <div class="tool-name">Website README</div>
+                    <div class="tool-path">README-WEBSITE.md</div>
+                </a>
+                <a href="README.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-book"></i></div>
+                    <div class="tool-name">TechStack README</div>
+                    <div class="tool-path">README.md</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Retention & Mastery -->
+        <div class="category-section" data-category="learning">
+            <div class="category-header">
+                <i class="fas fa-brain"></i>
+                <h2>Retention & Mastery Drills</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="Retention/spaced-review.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="tool-name">Spaced Review</div>
+                    <div class="tool-path">Retention/spaced-review.md</div>
+                </a>
+                <a href="Retention/daily-drills.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-dumbbell"></i></div>
+                    <div class="tool-name">Daily Drills</div>
+                    <div class="tool-path">Retention/daily-drills.md</div>
+                </a>
+                <a href="Mastery/Airflow/flashcards.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-wind"></i></div>
+                    <div class="tool-name">Airflow Flashcards</div>
+                    <div class="tool-path">Mastery/Airflow/flashcards.md</div>
+                </a>
+                <a href="Mastery/Kafka/flashcards.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-stream"></i></div>
+                    <div class="tool-name">Kafka Flashcards</div>
+                    <div class="tool-path">Mastery/Kafka/flashcards.md</div>
+                </a>
+                <a href="Mastery/Kubernetes/flashcards.md" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-kubernetes"></i></div>
+                    <div class="tool-name">Kubernetes Flashcards</div>
+                    <div class="tool-path">Mastery/Kubernetes/flashcards.md</div>
+                </a>
+                <a href="Mastery/Terraform/flashcards.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-mountain"></i></div>
+                    <div class="tool-name">Terraform Flashcards</div>
+                    <div class="tool-path">Mastery/Terraform/flashcards.md</div>
+                </a>
+                <a href="Mastery/RAG-LLMs/flashcards.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-robot"></i></div>
+                    <div class="tool-name">RAG & LLMs Flashcards</div>
+                    <div class="tool-path">Mastery/RAG-LLMs/flashcards.md</div>
+                </a>
+                <a href="Mastery/Vertex-AI/flashcards.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-brain"></i></div>
+                    <div class="tool-name">Vertex AI Flashcards</div>
+                    <div class="tool-path">Mastery/Vertex-AI/flashcards.md</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Projects & Capstones -->
+        <div class="category-section" data-category="projects">
+            <div class="category-header">
+                <i class="fas fa-rocket"></i>
+                <h2>Projects & Capstones</h2>
+            </div>
+            <div class="tools-grid">
+                <a href="Projects/Data-Engineering/starter/01-spark-batch.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-database"></i></div>
+                    <div class="tool-name">Data Engineering Starter</div>
+                    <div class="tool-path">Projects/Data-Engineering/starter</div>
+                </a>
+                <a href="Projects/Data-Engineering/intermediate/01-kappa-architecture.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-project-diagram"></i></div>
+                    <div class="tool-name">Data Engineering Intermediate</div>
+                    <div class="tool-path">Projects/Data-Engineering/intermediate</div>
+                </a>
+                <a href="Projects/DevOps-Full/starter/01-docker-multistage.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cogs"></i></div>
+                    <div class="tool-name">DevOps Starter</div>
+                    <div class="tool-path">Projects/DevOps-Full/starter</div>
+                </a>
+                <a href="Projects/DevOps-Full/intermediate/01-gitops-k8s.md" class="tool-card">
+                    <div class="tool-icon"><i class="fab fa-git-alt"></i></div>
+                    <div class="tool-name">DevOps Intermediate</div>
+                    <div class="tool-path">Projects/DevOps-Full/intermediate</div>
+                </a>
+                <a href="Projects/GCP-Backend/starter/01-cloud-build-ci.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cloud"></i></div>
+                    <div class="tool-name">GCP Backend Starter</div>
+                    <div class="tool-path">Projects/GCP-Backend/starter</div>
+                </a>
+                <a href="Projects/GCP-Backend/intermediate/01-canary-rollouts.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-server"></i></div>
+                    <div class="tool-name">GCP Backend Intermediate</div>
+                    <div class="tool-path">Projects/GCP-Backend/intermediate</div>
+                </a>
+                <a href="Projects/GCP-DataEngineer/starter/01-gcs-to-bq.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <div class="tool-name">GCP Data Engineer Starter</div>
+                    <div class="tool-path">Projects/GCP-DataEngineer/starter</div>
+                </a>
+                <a href="Projects/GCP-DataEngineer/intermediate/01-lakehouse-batch.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-stream"></i></div>
+                    <div class="tool-name">GCP Data Engineer Intermediate</div>
+                    <div class="tool-path">Projects/GCP-DataEngineer/intermediate</div>
+                </a>
+                <a href="Projects/GCP-MLOps/starter/01-automl-train.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-robot"></i></div>
+                    <div class="tool-name">GCP MLOps Starter</div>
+                    <div class="tool-path">Projects/GCP-MLOps/starter</div>
+                </a>
+                <a href="Projects/GCP-MLOps/intermediate/01-ci-cd-ml.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-vial"></i></div>
+                    <div class="tool-name">GCP MLOps Intermediate</div>
+                    <div class="tool-path">Projects/GCP-MLOps/intermediate</div>
+                </a>
+                <a href="Projects/Integrated/backend-gcp-capstone.md" class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-medal"></i></div>
+                    <div class="tool-name">Integrated Capstones</div>
+                    <div class="tool-path">Projects/Integrated</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;"></i>
+            <p>No tools found matching your search.</p>
+        </div>
+    </div>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const categorySections = document.querySelectorAll('.category-section');
+        const toolCards = document.querySelectorAll('.tool-card');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const noResults = document.getElementById('noResults');
+
+        function filterTools() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const activeFilter = document.querySelector('.filter-btn.active')?.dataset.category || 'all';
+            let visibleCount = 0;
+
+            categorySections.forEach(section => {
+                const sectionCategory = section.dataset.category;
+                const tools = section.querySelectorAll('.tool-card');
+                let sectionVisible = false;
+
+                tools.forEach(card => {
+                    const toolName = card.querySelector('.tool-name').textContent.toLowerCase();
+                    const toolPath = card.querySelector('.tool-path').textContent.toLowerCase();
+                    const matchesSearch = toolName.includes(searchTerm) || toolPath.includes(searchTerm);
+                    const matchesFilter = activeFilter === 'all' || sectionCategory === activeFilter;
+
+                    if (matchesSearch && matchesFilter) {
+                        card.style.display = 'block';
+                        sectionVisible = true;
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (sectionVisible) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+
+        searchInput.addEventListener('input', filterTools);
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterTools();
+            });
+        });
+
+        // Update total tools count
+        document.getElementById('totalTools').textContent = toolCards.length;
+    </script>
+</body>
+
+</html>
+

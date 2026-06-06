@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamlit Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js@2.27.0/dist/plotly.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --streamlit-red: #FF4B4B;
+            --streamlit-blue: #1F77B4;
+            --streamlit-green: #2E8B57;
+            --streamlit-orange: #FF7F0E;
+            --streamlit-purple: #9467BD;
+            --streamlit-dark: #0E1117;
+            --streamlit-light: #FFFFFF;
+            --streamlit-gray: #F0F2F6;
+            --primary-color: #FF4B4B;
+            --secondary-color: #1F77B4;
+            --accent-color: #2E8B57;
+            --warning-color: #FF7F0E;
+            --info-color: #9467BD;
+            --dark-color: #0E1117;
+            --light-color: #F0F2F6;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF4B4B 0%, #1F77B4 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--streamlit-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 200px;
+            border: 1px solid #dee2e6;
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 75, 75, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 75, 75, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .streamlit-preview {
+            background: var(--streamlit-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 400px;
+            position: relative;
+            border: 2px solid var(--streamlit-red);
+        }
+
+        .streamlit-widget {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 150px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .streamlit-widget:hover {
+            transform: scale(1.05);
+        }
+
+        .widget-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .widget-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .data-viz-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .perf-metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .widget-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .builder-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .builder-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .builder-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-builder {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-builder-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            min-height: 300px;
+        }
+
+        .streamlit-sidebar {
+            background: var(--streamlit-dark);
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .streamlit-main {
+            background: var(--streamlit-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useContext, createContext } = React;
+
+        // Streamlit context
+        const StreamlitContext = createContext();
+
+        // Main App Component
+        const App = () => {
+            const [currentCode, setCurrentCode] = useState(`import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.title("My First Streamlit App")
+
+st.write("Hello, World!")
+
+# Create a simple dataframe
+df = pd.DataFrame({
+    'Column 1': [1, 2, 3, 4],
+    'Column 2': [10, 20, 30, 40]
+})
+
+st.dataframe(df)
+
+# Add a slider
+number = st.slider("Select a number", 0, 100, 50)
+st.write(f"You selected: {number}")
+
+# Add a button
+if st.button("Click me!"):
+    st.success("Button clicked!")`);
+            const [output, setOutput] = useState('');
+            const [isRunning, setIsRunning] = useState(false);
+            const [activeTab, setActiveTab] = useState('widgets');
+            const [widgetType, setWidgetType] = useState('button');
+            const [widgetLabel, setWidgetLabel] = useState('Click Me');
+            const [widgetOptions, setWidgetOptions] = useState('Option 1,Option 2,Option 3');
+            const [chartType, setChartType] = useState('line');
+            const [dataPoints, setDataPoints] = useState(10);
+            const [customWidgets, setCustomWidgets] = useState([
+                {
+                    type: 'Interactive Chart',
+                    name: 'SalesChart',
+                    code: `import streamlit as st
+import plotly.express as px
+import pandas as pd
+
+# Create sample data
+data = pd.DataFrame({
+    'Month': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    'Sales': [100, 120, 140, 110, 160, 180]
+})
+
+fig = px.line(data, x='Month', y='Sales', title='Monthly Sales')
+st.plotly_chart(fig)`
+                }
+            ]);
+            const [newWidgetType, setNewWidgetType] = useState('');
+
+            // Performance metrics
+            const [performance, setPerformance] = useState({
+                loadTime: 2.3,
+                memoryUsage: 45,
+                renderCount: 8,
+                widgetCount: 12
+            });
+
+            // Widget usage stats
+            const [widgetStats, setWidgetStats] = useState([
+                { name: 'Button', count: 5, icon: 'touch_app' },
+                { name: 'Slider', count: 3, icon: 'tune' },
+                { name: 'Text Input', count: 4, icon: 'text_fields' },
+                { name: 'Selectbox', count: 2, icon: 'arrow_drop_down' },
+                { name: 'Checkbox', count: 6, icon: 'check_box' },
+                { name: 'Dataframe', count: 3, icon: 'table_chart' }
+            ]);
+
+            // Current app state
+            const [appState, setAppState] = useState({
+                title: 'Streamlit Demo App',
+                theme: 'light',
+                sidebar: true,
+                caching: false
+            });
+
+            // Update performance metrics
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setPerformance(prev => ({
+                        loadTime: (Math.random() * 2 + 1).toFixed(1),
+                        memoryUsage: Math.floor(Math.random() * 20 + 30),
+                        renderCount: Math.floor(Math.random() * 5 + 5),
+                        widgetCount: Math.floor(Math.random() * 5 + 10)
+                    }));
+                }, 5000);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            const runCode = async () => {
+                setIsRunning(true);
+                setOutput('Starting Streamlit app...\n\n');
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 800));
+
+                    // Simulate Streamlit execution
+                    const result = simulateStreamlitExecution(currentCode);
+                    setOutput(result);
+
+                } catch (error) {
+                    setOutput('Error: ' + error.message);
+                } finally {
+                    setIsRunning(false);
+                }
+            };
+
+            const simulateStreamlitExecution = (code) => {
+                let result = 'Streamlit App Execution Result:\n\n';
+
+                if (code.includes('st.title')) {
+                    result += '✅ Title displayed successfully\n';
+                }
+                if (code.includes('st.write')) {
+                    result += '✅ Text content rendered\n';
+                }
+                if (code.includes('st.dataframe') || code.includes('st.table')) {
+                    result += '✅ Data table displayed\n';
+                }
+                if (code.includes('st.slider')) {
+                    result += '✅ Slider widget created\n';
+                }
+                if (code.includes('st.button')) {
+                    result += '✅ Button widget created\n';
+                }
+                if (code.includes('st.selectbox') || code.includes('st.multiselect')) {
+                    result += '✅ Selection widget created\n';
+                }
+                if (code.includes('st.sidebar')) {
+                    result += '✅ Sidebar configured\n';
+                }
+                if (code.includes('st.cache') || code.includes('@st.cache')) {
+                    result += '✅ Caching enabled\n';
+                }
+                if (code.includes('plotly') || code.includes('matplotlib') || code.includes('st.plotly_chart')) {
+                    result += '✅ Chart visualization created\n';
+                }
+
+                result += '\n🚀 App running at: http://localhost:8501\n';
+                result += '📊 Performance: ' + performance.loadTime + 's load time\n';
+                result += '💾 Memory usage: ' + performance.memoryUsage + 'MB\n';
+                result += '🔄 Renders: ' + performance.renderCount + '\n';
+                result += '🎛️  Widgets: ' + performance.widgetCount + '\n\n';
+
+                result += 'Streamlit app is ready! Open the URL above to view your app.';
+
+                return result;
+            };
+
+            const createWidget = () => {
+                if (!widgetType) return;
+
+                const widgetTemplates = {
+                    'button': `if st.button("${widgetLabel}"):
+    st.success("Button clicked!")`,
+                    'slider': `value = st.slider("${widgetLabel}", 0, 100, 50)
+st.write(f"Selected value: {value}")`,
+                    'text_input': `text = st.text_input("${widgetLabel}", "Enter text here")
+st.write(f"You entered: {text}")`,
+                    'selectbox': `option = st.selectbox("${widgetLabel}", [${widgetOptions.split(',').map(opt => `"${opt.trim()}"`).join(', ')}])
+st.write(f"You selected: {option}")`,
+                    'checkbox': `agree = st.checkbox("${widgetLabel}")
+if agree:
+    st.write("Great! You agreed.")`,
+                    'radio': `choice = st.radio("${widgetLabel}", [${widgetOptions.split(',').map(opt => `"${opt.trim()}"`).join(', ')}])
+st.write(f"You chose: {choice}")`,
+                    'multiselect': `options = st.multiselect("${widgetLabel}", [${widgetOptions.split(',').map(opt => `"${opt.trim()}"`).join(', ')}])
+st.write(f"You selected: {options}")`,
+                    'number_input': `number = st.number_input("${widgetLabel}", min_value=0, max_value=100, value=50)
+st.write(f"Number: {number}")`,
+                    'text_area': `text = st.text_area("${widgetLabel}", "Enter your text here")
+st.write(f"Text length: {len(text)} characters")`,
+                    'file_uploader': `uploaded_file = st.file_uploader("${widgetLabel}")
+if uploaded_file is not None:
+    st.write("File uploaded successfully!")`
+                };
+
+                const widgetCode = widgetTemplates[widgetType] || `# ${widgetType} widget`;
+                setCurrentCode(`import streamlit as st
+
+st.title("Widget Demo")
+
+${widgetCode}`);
+            };
+
+            const createChart = () => {
+                const chartTemplates = {
+                    'line': `import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.title("Line Chart Demo")
+
+# Generate sample data
+data = pd.DataFrame({
+    'x': range(${dataPoints}),
+    'y': np.random.randn(${dataPoints})
+})
+
+st.line_chart(data)`,
+                    'bar': `import streamlit as st
+import pandas as pd
+
+st.title("Bar Chart Demo")
+
+data = pd.DataFrame({
+    'Category': ['A', 'B', 'C', 'D', 'E'],
+    'Value': [23, 45, 56, 78, 32]
+})
+
+st.bar_chart(data.set_index('Category'))`,
+                    'area': `import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.title("Area Chart Demo")
+
+data = pd.DataFrame({
+    'x': range(${dataPoints}),
+    'y1': np.random.randn(${dataPoints}),
+    'y2': np.random.randn(${dataPoints})
+})
+
+st.area_chart(data)`,
+                    'scatter': `import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.title("Scatter Plot Demo")
+
+data = pd.DataFrame({
+    'x': np.random.randn(${dataPoints}),
+    'y': np.random.randn(${dataPoints})
+})
+
+st.scatter_chart(data)`,
+                    'map': `import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.title("Map Visualization")
+
+# Sample location data
+data = pd.DataFrame({
+    'lat': [37.76, 40.71, 34.05, 41.88],
+    'lon': [-122.4, -74.0, -118.2, -87.6],
+    'name': ['San Francisco', 'New York', 'Los Angeles', 'Chicago']
+})
+
+st.map(data)`,
+                    'dataframe': `import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.title("DataFrame Display")
+
+# Create sample dataframe
+df = pd.DataFrame(
+    np.random.randn(${dataPoints}, 4),
+    columns=['A', 'B', 'C', 'D']
+)
+
+st.dataframe(df)
+st.write("DataFrame shape:", df.shape)`
+                };
+
+                setCurrentCode(chartTemplates[chartType] || chartTemplates.line);
+            };
+
+            const addCustomWidget = () => {
+                if (!newWidgetType) return;
+
+                const templates = {
+                    'Interactive Chart': {
+                        name: 'InteractiveChart',
+                        code: `import streamlit as st
+import plotly.express as px
+import pandas as pd
+
+st.title("Interactive Chart")
+
+# Create sample data
+data = pd.DataFrame({
+    'x': range(10),
+    'y': [1, 4, 2, 5, 3, 6, 4, 7, 5, 8]
+})
+
+fig = px.line(data, x='x', y='y', title='Interactive Line Chart')
+st.plotly_chart(fig)`
+                    },
+                    'Data Explorer': {
+                        name: 'DataExplorer',
+                        code: `import streamlit as st
+import pandas as pd
+
+st.title("Data Explorer")
+
+uploaded_file = st.file_uploader("Choose a CSV file")
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+    st.write("Data Preview:")
+    st.dataframe(df.head())
+
+    st.write("Data Summary:")
+    st.write(df.describe())`
+                    },
+                    'ML Predictor': {
+                        name: 'MLPredictor',
+                        code: `import streamlit as st
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+
+st.title("ML Prediction App")
+
+# Sample features
+features = st.columns(3)
+with features[0]:
+    feature1 = st.slider("Feature 1", 0.0, 10.0, 5.0)
+with features[1]:
+    feature2 = st.slider("Feature 2", 0.0, 10.0, 3.0)
+with features[2]:
+    feature3 = st.slider("Feature 3", 0.0, 10.0, 7.0)
+
+if st.button("Predict"):
+    # Simple mock prediction
+    prediction = feature1 * 0.3 + feature2 * 0.5 + feature3 * 0.2
+    st.success(f"Prediction: {prediction:.2f}")`
+                    }
+                };
+
+                const template = templates[newWidgetType];
+                if (template) {
+                    setCustomWidgets([...customWidgets, {
+                        type: newWidgetType,
+                        name: template.name,
+                        code: template.code
+                    }]);
+                }
+
+                setNewWidgetType('');
+            };
+
+            const removeCustomWidget = (index) => {
+                setCustomWidgets(customWidgets.filter((_, i) => i !== index));
+            };
+
+            const loadWidgetExample = (widget) => {
+                const examples = {
+                    'button': `import streamlit as st
+
+st.title("Button Examples")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if st.button("Primary Button"):
+        st.success("Primary button clicked!")
+
+with col2:
+    if st.button("Secondary", key="secondary"):
+        st.info("Secondary button clicked!")
+
+with col3:
+    if st.button("Danger", key="danger"):
+        st.error("Danger button clicked!")`,
+                    'input': `import streamlit as st
+
+st.title("Input Widgets")
+
+# Text input
+name = st.text_input("Enter your name", "John Doe")
+st.write(f"Hello, {name}!")
+
+# Number input
+age = st.number_input("Enter your age", min_value=0, max_value=120, value=25)
+st.write(f"You are {age} years old.")
+
+# Text area
+bio = st.text_area("Tell us about yourself", "I am a Streamlit user!")
+st.write(f"Bio length: {len(bio)} characters")`,
+                    'selection': `import streamlit as st
+
+st.title("Selection Widgets")
+
+# Selectbox
+option = st.selectbox(
+    "Choose your favorite color",
+    ["Red", "Green", "Blue", "Yellow", "Purple"]
+)
+st.write(f"Your favorite color is {option}.")
+
+# Multiselect
+options = st.multiselect(
+    "Choose multiple options",
+    ["Option 1", "Option 2", "Option 3", "Option 4"],
+    ["Option 1", "Option 3"]
+)
+st.write(f"You selected: {options}")
+
+# Radio buttons
+choice = st.radio("Pick one", ["Choice 1", "Choice 2", "Choice 3"])
+st.write(f"You picked: {choice}")`,
+                    'layout': `import streamlit as st
+
+st.title("Layout Examples")
+
+# Sidebar
+with st.sidebar:
+    st.header("Sidebar")
+    sidebar_option = st.selectbox("Choose option", ["A", "B", "C"])
+    st.write(f"Selected: {sidebar_option}")
+
+# Columns
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.header("Column 1")
+    st.write("This is the first column")
+
+with col2:
+    st.header("Column 2")
+    st.write("This is the second column")
+
+with col3:
+    st.header("Column 3")
+    st.write("This is the third column")
+
+# Tabs
+tab1, tab2, tab3 = st.tabs(["Tab 1", "Tab 2", "Tab 3"])
+
+with tab1:
+    st.header("First Tab")
+    st.write("Content for first tab")
+
+with tab2:
+    st.header("Second Tab")
+    st.write("Content for second tab")
+
+with tab3:
+    st.header("Third Tab")
+    st.write("Content for third tab")`,
+                    'data': `import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.title("Data Display")
+
+# Create sample data
+df = pd.DataFrame({
+    'Name': ['Alice', 'Bob', 'Charlie', 'Diana'],
+    'Age': [25, 30, 35, 28],
+    'City': ['NYC', 'LA', 'Chicago', 'Miami'],
+    'Score': [85, 92, 78, 96]
+})
+
+# Display dataframe
+st.header("DataFrame")
+st.dataframe(df)
+
+# Display metrics
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.metric("Average Age", f"{df['Age'].mean():.1f}")
+with col2:
+    st.metric("Max Score", df['Score'].max())
+with col3:
+    st.metric("Total Records", len(df))
+with col4:
+    st.metric("Avg Score", f"{df['Score'].mean():.1f}")
+
+# Display chart
+st.header("Score Distribution")
+st.bar_chart(df.set_index('Name')['Score'])`
+                };
+
+                setCurrentCode(examples[widget] || examples.button);
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-stream"></i> Streamlit Interactive Demo</h1>
+                        <p>Build data apps with Python - no frontend experience required</p>
+                    </div>
+
+                    {/* Streamlit Features Overview */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-star"></i> Streamlit Key Features</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="feature-grid">
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-code"></i></div>
+                                    <div className="feature-title">Python Native</div>
+                                    <div className="feature-description">Write beautiful data apps entirely in Python. No HTML, CSS, or JavaScript required.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-bolt"></i></div>
+                                    <div className="feature-title">Rapid Development</div>
+                                    <div className="feature-description">Turn data scripts into shareable web apps in minutes with simple, intuitive APIs.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-chart-line"></i></div>
+                                    <div className="feature-title">Data Visualization</div>
+                                    <div className="feature-description">Built-in support for charts, graphs, and interactive visualizations with minimal code.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-share-alt"></i></div>
+                                    <div className="feature-title">Easy Deployment</div>
+                                    <div className="feature-description">Deploy apps to the cloud with one command. Share with stakeholders instantly.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-mobile-alt"></i></div>
+                                    <div className="feature-title">Responsive Design</div>
+                                    <div className="feature-description">Apps automatically adapt to different screen sizes and devices.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-brain"></i></div>
+                                    <div className="feature-title">ML Integration</div>
+                                    <div className="feature-description">Seamlessly integrate machine learning models and create interactive ML demos.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* App Preview */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-eye"></i> Streamlit App Preview</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="streamlit-preview">
+                                <div style={{ textAlign: 'center', padding: '40px' }}>
+                                    <i className="fas fa-stream" style={{ fontSize: '3rem', color: '#FF4B4B' }}></i>
+                                    <h3>Streamlit App Preview</h3>
+                                    <p>Your Streamlit app will appear here</p>
+                                    <div style={{ marginTop: '20px' }}>
+                                        <div className="streamlit-sidebar" style={{ display: 'inline-block', width: '200px', marginRight: '20px' }}>
+                                            <h5>Sidebar</h5>
+                                            <p>Navigation & Controls</p>
+                                        </div>
+                                        <div className="streamlit-main" style={{ display: 'inline-block', width: '400px' }}>
+                                            <h5>Main Content</h5>
+                                            <p>App Interface</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Code Editor */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-code"></i> Streamlit Code Editor</h3>
+                        </div>
+                        <div className="card-body">
+                            <textarea
+                                className="code-editor"
+                                value={currentCode}
+                                onChange={(e) => setCurrentCode(e.target.value)}
+                                placeholder="Write your Streamlit code here..."
+                            />
+                            <div style={{ marginTop: '15px' }}>
+                                <button className="run-btn" onClick={runCode} disabled={isRunning}>
+                                    <i className="fas fa-play"></i> Run App
+                                </button>
+                                <button className="run-btn" onClick={() => setCurrentCode(`import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.title("🎉 Welcome to Streamlit!")
+
+st.write("This is your first Streamlit app!")
+
+# Create some sample data
+df = pd.DataFrame({
+    'Column A': [1, 2, 3, 4, 5],
+    'Column B': [10, 20, 30, 40, 50],
+    'Column C': ['A', 'B', 'C', 'D', 'E']
+})
+
+st.dataframe(df)
+
+# Add interactive elements
+name = st.text_input("Enter your name", "Streamlit User")
+st.write(f"Hello, {name}!")
+
+number = st.slider("Pick a number", 0, 100, 50)
+st.write(f"You picked: {number}")
+
+if st.button("Click me!"):
+    st.balloons()`)} style={{ marginLeft: '10px' }}>
+                                    <i className="fas fa-file-import"></i> Load Template
+                                </button>
+                            </div>
+                            {output && <div className="output-panel">{output}</div>}
+                        </div>
+                    </div>
+
+                    {/* Streamlit Operations */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-cogs"></i> Streamlit Operations</h3>
+                        </div>
+                        <div className="card-body">
+                            {/* Operation Tabs */}
+                            <div className="operation-tabs">
+                                <button className={`operation-tab ${activeTab === 'widgets' ? 'active' : ''}`} onClick={() => setActiveTab('widgets')}>
+                                    <i className="fas fa-sliders-h"></i> Widgets
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'charts' ? 'active' : ''}`} onClick={() => setActiveTab('charts')}>
+                                    <i className="fas fa-chart-bar"></i> Charts
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'layout' ? 'active' : ''}`} onClick={() => setActiveTab('layout')}>
+                                    <i className="fas fa-layer-group"></i> Layout
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'deployment' ? 'active' : ''}`} onClick={() => setActiveTab('deployment')}>
+                                    <i className="fas fa-cloud-upload-alt"></i> Deployment
+                                </button>
+                            </div>
+
+                            {/* Widgets Tab */}
+                            {activeTab === 'widgets' && (
+                                <div className="interactive-demo">
+                                    <h4>Widget Creator</h4>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Widget Type:</label>
+                                                <select className="form-control" value={widgetType} onChange={(e) => setWidgetType(e.target.value)}>
+                                                    <option value="button">Button</option>
+                                                    <option value="slider">Slider</option>
+                                                    <option value="text_input">Text Input</option>
+                                                    <option value="selectbox">Select Box</option>
+                                                    <option value="checkbox">Checkbox</option>
+                                                    <option value="radio">Radio Buttons</option>
+                                                    <option value="multiselect">Multi-select</option>
+                                                    <option value="number_input">Number Input</option>
+                                                    <option value="text_area">Text Area</option>
+                                                    <option value="file_uploader">File Uploader</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Label:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={widgetLabel}
+                                                    onChange={(e) => setWidgetLabel(e.target.value)}
+                                                    placeholder="Widget label"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Options (for select/multiselect/radio):</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={widgetOptions}
+                                                    onChange={(e) => setWidgetOptions(e.target.value)}
+                                                    placeholder="Option 1,Option 2,Option 3"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className="run-btn" onClick={createWidget}>
+                                        <i className="fas fa-plus"></i> Create Widget
+                                    </button>
+                                    <button className="run-btn" onClick={() => loadWidgetExample('button')} style={{ marginLeft: '10px' }}>
+                                        <i className="fas fa-eye"></i> Load Example
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Charts Tab */}
+                            {activeTab === 'charts' && (
+                                <div className="interactive-demo">
+                                    <h4>Chart Creator</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Chart Type:</label>
+                                                <select className="form-control" value={chartType} onChange={(e) => setChartType(e.target.value)}>
+                                                    <option value="line">Line Chart</option>
+                                                    <option value="bar">Bar Chart</option>
+                                                    <option value="area">Area Chart</option>
+                                                    <option value="scatter">Scatter Plot</option>
+                                                    <option value="map">Map</option>
+                                                    <option value="dataframe">DataFrame</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Data Points:</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    value={dataPoints}
+                                                    onChange={(e) => setDataPoints(parseInt(e.target.value))}
+                                                    min="5"
+                                                    max="50"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className="run-btn" onClick={createChart}>
+                                        <i className="fas fa-chart-line"></i> Create Chart
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Layout Tab */}
+                            {activeTab === 'layout' && (
+                                <div className="interactive-demo">
+                                    <h4>Layout Components</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Layout Type:</label>
+                                                <select className="form-control" id="layout-type">
+                                                    <option value="columns">Columns</option>
+                                                    <option value="sidebar">Sidebar</option>
+                                                    <option value="tabs">Tabs</option>
+                                                    <option value="expander">Expander</option>
+                                                    <option value="container">Container</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Columns Count:</label>
+                                                <input type="number" className="form-control" id="columns-count" value="3" min="1" max="6" />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Sidebar Position:</label>
+                                                <select className="form-control" id="sidebar-pos">
+                                                    <option value="left">Left</option>
+                                                    <option value="right">Right</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Responsive:</label>
+                                                <select className="form-control" id="responsive">
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className="run-btn" id="create-layout">
+                                        <i className="fas fa-layer-group"></i> Create Layout
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Deployment Tab */}
+                            {activeTab === 'deployment' && (
+                                <div className="interactive-demo">
+                                    <h4>Deployment Options</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Platform:</label>
+                                                <select className="form-control" id="deploy-platform">
+                                                    <option value="streamlit-cloud">Streamlit Cloud</option>
+                                                    <option value="heroku">Heroku</option>
+                                                    <option value="aws">AWS</option>
+                                                    <option value="gcp">Google Cloud</option>
+                                                    <option value="azure">Azure</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>App Name:</label>
+                                                <input type="text" className="form-control" id="app-name" placeholder="my-streamlit-app" />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Requirements:</label>
+                                                <textarea className="form-control" id="requirements" rows="4" placeholder="streamlit==1.25.0&#10;pandas&#10;plotly"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className="run-btn" id="deploy-app">
+                                        <i className="fas fa-cloud-upload-alt"></i> Deploy App
+                                    </button>
+                                    <button className="run-btn" id="generate-requirements" style={{ marginLeft: '10px' }}>
+                                        <i className="fas fa-file-code"></i> Generate requirements.txt
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Widget Usage Stats */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-chart-bar"></i> Widget Usage</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="data-viz-demo">
+                                {widgetStats.map((widget, index) => (
+                                    <div key={index} className="streamlit-widget">
+                                        <div className="widget-value">{widget.count}</div>
+                                        <div className="widget-label">{widget.name}</div>
+                                        <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '5px' }}>
+                                            <i className="material-icons">{widget.icon}</i>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div style={{ position: 'absolute', bottom: '20px', right: '20px' }}>
+                                    <button className="run-btn" onClick={() => {
+                                        setWidgetStats(prev => prev.map(stat => ({
+                                            ...stat,
+                                            count: Math.floor(Math.random() * 10) + 1
+                                        })));
+                                    }}>
+                                        <i className="fas fa-sync"></i> Update Stats
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Widget Builder */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tools"></i> Custom Widget Builder</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="widget-builder">
+                                <h5>Build Advanced Streamlit Components</h5>
+                                {customWidgets.map((widget, index) => (
+                                    <div key={index} className="builder-row">
+                                        <div className="builder-header">
+                                            <span className="builder-type">{widget.type}: {widget.name}</span>
+                                            <button className="remove-builder" onClick={() => removeCustomWidget(index)}>
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <pre style={{ fontSize: '12px', margin: '10px 0' }}>{widget.code}</pre>
+                                    </div>
+                                ))}
+
+                                <div className="form-group">
+                                    <label>Add Widget Type:</label>
+                                    <select className="form-control" value={newWidgetType} onChange={(e) => setNewWidgetType(e.target.value)}>
+                                        <option value="">Select widget type...</option>
+                                        <option value="Interactive Chart">Interactive Chart</option>
+                                        <option value="Data Explorer">Data Explorer</option>
+                                        <option value="ML Predictor">ML Predictor</option>
+                                    </select>
+                                </div>
+
+                                <button className="add-builder-btn" onClick={addCustomWidget} disabled={!newWidgetType}>
+                                    <i className="fas fa-plus"></i> Add Widget
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Performance Metrics */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tachometer-alt"></i> Streamlit Performance</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="performance-metrics">
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.loadTime}s</div>
+                                    <div className="perf-metric-label">Load Time</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.memoryUsage}MB</div>
+                                    <div className="perf-metric-label">Memory</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.renderCount}</div>
+                                    <div className="perf-metric-label">Renders</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.widgetCount}</div>
+                                    <div className="perf-metric-label">Widgets</div>
+                                </div>
+                            </div>
+
+                            <div className="execution-stats">
+                                <div className="stat-item">
+                                    <span className="stat-label">Streamlit Version:</span>
+                                    <span className="stat-value">1.25.0</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Python Version:</span>
+                                    <span className="stat-value">3.9+</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Caching:</span>
+                                    <span className="stat-value">Enabled</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Theme:</span>
+                                    <span className="stat-value">Light</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-book"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://streamlit.io/" target="_blank"><i className="fas fa-external-link-alt"></i> Streamlit Official Site</a></li>
+                                        <li><a href="https://docs.streamlit.io/" target="_blank"><i className="fas fa-external-link-alt"></i> Documentation</a></li>
+                                        <li><a href="https://github.com/streamlit/streamlit" target="_blank"><i className="fas fa-external-link-alt"></i> GitHub Repository</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://docs.streamlit.io/library/api-reference" target="_blank"><i className="fas fa-external-link-alt"></i> API Reference</a></li>
+                                        <li><a href="https://discuss.streamlit.io/" target="_blank"><i className="fas fa-external-link-alt"></i> Community Forum</a></li>
+                                        <li><a href="https://share.streamlit.io/" target="_blank"><i className="fas fa-external-link-alt"></i> App Gallery</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+
+</html>

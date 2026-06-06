@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technology Guide - TechStack Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="tech-page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <a href="website.html" style="color: white; text-decoration: none;">
+                    <span>TechStack Learning Hub</span>
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="website.html#home">Home</a></li>
+                <li><a href="website.html#categories">Categories</a></li>
+                <li><a href="website.html#tools">All Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="website.html">Home</a>
+                <span>/</span>
+                <span id="breadcrumb-path">Technology</span>
+            </div>
+            <h1 id="page-title">Technology Guide</h1>
+            <div class="page-actions">
+                <a href="#" id="visual-link" class="btn btn-primary">
+                    <i class="fas fa-diagram-project"></i> Visual Guide
+                </a>
+                <a href="#" id="guide-link" class="btn btn-secondary">
+                    <i class="fas fa-book"></i> Full Guide
+                </a>
+                <a href="#" id="interview-link" class="btn btn-secondary">
+                    <i class="fas fa-comments"></i> Interview Q&A
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="tech-content">
+        <div class="container">
+            <div class="content-wrapper">
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="sidebar-section">
+                        <h3>Documentation</h3>
+                        <ul class="sidebar-menu">
+                            <li><a href="#" data-doc="visual" class="active">Visual Guide</a></li>
+                            <li><a href="#" data-doc="what">What is it?</a></li>
+                            <li><a href="#" data-doc="guide">Practical Guide</a></li>
+                            <li><a href="#" data-doc="interview">Interview Q&A</a></li>
+                            <li><a href="#" data-doc="roadmap">Learning Roadmap</a></li>
+                        </ul>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Quick Links</h3>
+                        <ul class="sidebar-menu">
+                            <li><a href="website.html">All Technologies</a></li>
+                            <li><a href="website.html#categories">Categories</a></li>
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- Main Content Area -->
+                <article class="main-article">
+                    <div id="loading" class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading documentation...</p>
+                    </div>
+                    <div id="content-area" class="markdown-content" style="display: none;">
+                        <!-- Content will be loaded here -->
+                    </div>
+                    <div id="error-message" class="error-message" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Documentation not found</h3>
+                        <p>The requested documentation file could not be loaded.</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TechStack Learning Hub</h3>
+                    <p>Comprehensive technology reference guide.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TechStack Learning Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="tech-page.js"></script>
+</body>
+</html>
+

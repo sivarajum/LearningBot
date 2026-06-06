@@ -1,0 +1,186 @@
+{
+  "_comment": "DQ rule configuration per dataset. Loaded by src/api.py and main.py.",
+  "_version": "1.0.0",
+
+  "customers": [
+    {
+      "rule": "NotNullRule",
+      "name": "customer_id_not_null",
+      "column": "customer_id",
+      "severity": "error"
+    },
+    {
+      "rule": "UniqueRule",
+      "name": "customer_id_unique",
+      "column": "customer_id",
+      "severity": "error"
+    },
+    {
+      "rule": "NotNullRule",
+      "name": "email_not_null",
+      "column": "email",
+      "severity": "warning"
+    },
+    {
+      "rule": "RegexRule",
+      "name": "email_format",
+      "column": "email",
+      "pattern": "^[^@]+@[^@]+\\.[^@]+$",
+      "severity": "warning"
+    },
+    {
+      "rule": "ValueRangeRule",
+      "name": "age_valid_range",
+      "column": "age",
+      "min_val": 0,
+      "max_val": 120,
+      "severity": "error"
+    },
+    {
+      "rule": "AllowedValuesRule",
+      "name": "status_allowed",
+      "column": "status",
+      "allowed_values": ["active", "inactive", "pending"],
+      "severity": "error"
+    },
+    {
+      "rule": "CompletenessRatioRule",
+      "name": "phone_completeness",
+      "column": "phone",
+      "threshold": 0.15,
+      "severity": "info"
+    },
+    {
+      "rule": "NotNullRule",
+      "name": "first_name_not_null",
+      "column": "first_name",
+      "severity": "warning"
+    },
+    {
+      "rule": "TypeRule",
+      "name": "age_is_int",
+      "column": "age",
+      "expected_type": "int",
+      "severity": "error"
+    },
+    {
+      "rule": "DataFreshnessRule",
+      "name": "signup_date_freshness",
+      "column": "signup_date",
+      "max_age_hours": 8760,
+      "severity": "info"
+    }
+  ],
+
+  "transactions": [
+    {
+      "rule": "NotNullRule",
+      "name": "transaction_id_not_null",
+      "column": "transaction_id",
+      "severity": "error"
+    },
+    {
+      "rule": "UniqueRule",
+      "name": "transaction_id_unique",
+      "column": "transaction_id",
+      "severity": "error"
+    },
+    {
+      "rule": "NotNullRule",
+      "name": "amount_not_null",
+      "column": "amount",
+      "severity": "error"
+    },
+    {
+      "rule": "ValueRangeRule",
+      "name": "amount_positive",
+      "column": "amount",
+      "min_val": 0.01,
+      "max_val": 1000000,
+      "severity": "error"
+    },
+    {
+      "rule": "AllowedValuesRule",
+      "name": "currency_allowed",
+      "column": "currency",
+      "allowed_values": ["USD", "EUR", "GBP", "CAD", "AUD", "JPY", "CHF"],
+      "severity": "warning"
+    },
+    {
+      "rule": "AllowedValuesRule",
+      "name": "transaction_type_allowed",
+      "column": "transaction_type",
+      "allowed_values": ["purchase", "refund", "transfer", "withdrawal", "deposit"],
+      "severity": "warning"
+    },
+    {
+      "rule": "NotNullRule",
+      "name": "customer_id_not_null",
+      "column": "customer_id",
+      "severity": "error"
+    },
+    {
+      "rule": "DataFreshnessRule",
+      "name": "transaction_date_freshness",
+      "column": "transaction_date",
+      "max_age_hours": 24,
+      "severity": "warning"
+    },
+    {
+      "rule": "TypeRule",
+      "name": "amount_is_float",
+      "column": "amount",
+      "expected_type": "float",
+      "severity": "error"
+    }
+  ],
+
+  "products": [
+    {
+      "rule": "NotNullRule",
+      "name": "product_code_not_null",
+      "column": "product_code",
+      "severity": "error"
+    },
+    {
+      "rule": "UniqueRule",
+      "name": "product_code_unique",
+      "column": "product_code",
+      "severity": "error"
+    },
+    {
+      "rule": "NotNullRule",
+      "name": "product_name_not_null",
+      "column": "product_name",
+      "severity": "error"
+    },
+    {
+      "rule": "ValueRangeRule",
+      "name": "price_positive",
+      "column": "price",
+      "min_val": 0.01,
+      "severity": "error"
+    },
+    {
+      "rule": "AllowedValuesRule",
+      "name": "category_allowed",
+      "column": "category",
+      "allowed_values": ["Electronics", "Clothing", "Books", "Home", "Sports", "Food"],
+      "severity": "error"
+    },
+    {
+      "rule": "CompletenessRatioRule",
+      "name": "stock_completeness",
+      "column": "stock_quantity",
+      "threshold": 0.10,
+      "severity": "warning"
+    },
+    {
+      "rule": "UniquenessRatioRule",
+      "name": "sku_mostly_unique",
+      "column": "sku",
+      "threshold": 0.98,
+      "severity": "warning"
+    }
+  ]
+}

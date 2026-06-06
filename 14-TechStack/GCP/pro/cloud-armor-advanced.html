@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Armor Advanced - GCP Learning Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --warning-color: #fbbc04;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #e8eaed;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--background-color) 0%, #f1f3f4 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--card-background);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, var(--primary-color), #3367d6);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(66, 133, 244, 0.4);
+        }
+
+        /* Navigation */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .nav-card {
+            background: var(--card-background);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-color);
+        }
+
+        .nav-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .nav-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .content-section h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .content-section h3 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+
+        .content-section p {
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            border-left: 4px solid var(--secondary-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0, #fff8e1);
+            border-left: 4px solid var(--warning-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* Architecture Diagram */
+        .architecture-diagram {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .architecture-diagram h4 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .flow-step {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            min-width: 120px;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '→';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        /* Code Blocks */
+        .code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .code-tab {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #cccccc;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #555;
+            color: white;
+        }
+
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .code-block {
+            display: none;
+        }
+
+        .code-block.active {
+            display: block;
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #d4d4d4;
+        }
+
+        .code-block .line-numbers {
+            display: inline-block;
+            width: 30px;
+            color: #858585;
+            margin-right: 10px;
+            user-select: none;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9ff, #e8f2ff);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, var(--primary-color), #3367d6);
+            color: white;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-diagram {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .flow-step::after {
+                content: '↓';
+                right: 50%;
+                top: 100%;
+                transform: translateX(50%);
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header fade-in-up">
+            <div>
+                <h1><i class="fas fa-shield-alt"></i> Cloud Armor Advanced</h1>
+                <p>Master Google Cloud's web application firewall and DDoS protection service. Learn advanced security
+                    configurations, custom rules, and threat mitigation strategies.</p>
+            </div>
+            <a href="gcp-learning-hub.html" class="home-btn">
+                <i class="fas fa-home"></i> Back to Hub
+            </a>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-grid">
+            <a href="#overview" class="nav-card">
+                <h3><i class="fas fa-info-circle"></i> Overview</h3>
+                <p>Understanding Cloud Armor's role in GCP security</p>
+            </a>
+            <a href="#architecture" class="nav-card">
+                <h3><i class="fas fa-sitemap"></i> Architecture</h3>
+                <p>How Cloud Armor integrates with your infrastructure</p>
+            </a>
+            <a href="#security-policies" class="nav-card">
+                <h3><i class="fas fa-lock"></i> Security Policies</h3>
+                <p>Creating and managing security rules</p>
+            </a>
+            <a href="#threat-mitigation" class="nav-card">
+                <h3><i class="fas fa-bug"></i> Threat Mitigation</h3>
+                <p>Advanced threat detection and response</p>
+            </a>
+            <a href="#monitoring" class="nav-card">
+                <h3><i class="fas fa-chart-line"></i> Monitoring</h3>
+                <p>Security monitoring and alerting</p>
+            </a>
+            <a href="#best-practices" class="nav-card">
+                <h3><i class="fas fa-check-circle"></i> Best Practices</h3>
+                <p>Security optimization and compliance</p>
+            </a>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="content-section fade-in-up">
+            <h2><i class="fas fa-info-circle"></i> Overview</h2>
+            <p>Cloud Armor is Google Cloud's web application firewall (WAF) and DDoS protection service that helps
+                protect your applications and websites from various types of attacks. It provides enterprise-grade
+                security with global threat intelligence and automatic mitigation.</p>
+
+            <div class="highlight-box">
+                <h4><i class="fas fa-star"></i> Key Capabilities</h4>
+                <ul>
+                    <li><strong>DDoS Protection:</strong> Automatic mitigation of Layer 3, 4, and 7 DDoS attacks</li>
+                    <li><strong>WAF Rules:</strong> Pre-configured and custom security rules</li>
+                    <li><strong>Threat Intelligence:</strong> Google's global threat intelligence feeds</li>
+                    <li><strong>Adaptive Protection:</strong> AI-powered attack detection and mitigation</li>
+                    <li><strong>Edge Security:</strong> Protection at Google's global edge network</li>
+                </ul>
+            </div>
+
+            <h3>Security Policy Types</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4><i class="fas fa-globe"></i> Global Security Policies</h4>
+                    <p>Applied to external HTTP(S) load balancers for internet-facing applications</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-network-wired"></i> Regional Security Policies</h4>
+                    <p>Applied to internal and regional load balancers for internal traffic protection</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-shield-alt"></i> Backend Security Policies</h4>
+                    <p>Applied directly to backend services for fine-grained control</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture Section -->
+        <div id="architecture" class="content-section fade-in-up">
+            <h2><i class="fas fa-sitemap"></i> Architecture & Integration</h2>
+
+            <div class="architecture-diagram">
+                <h4>Cloud Armor Integration Architecture</h4>
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <strong>Internet Traffic</strong><br>
+                        <small>Global entry point</small>
+                    </div>
+                    <div class="flow-step">
+                        <strong>Google Edge</strong><br>
+                        <small>DDoS scrubbing</small>
+                    </div>
+                    <div class="flow-step">
+                        <strong>Cloud Armor</strong><br>
+                        <small>WAF & Rules</small>
+                    </div>
+                    <div class="flow-step">
+                        <strong>Load Balancer</strong><br>
+                        <small>Traffic distribution</small>
+                    </div>
+                    <div class="flow-step">
+                        <strong>Backend Services</strong><br>
+                        <small>Your applications</small>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Integration Points</h3>
+            <p>Cloud Armor integrates seamlessly with various GCP services to provide comprehensive security coverage:
+            </p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4><i class="fas fa-balance-scale"></i> HTTP(S) Load Balancing</h4>
+                    <p>Primary integration point for external traffic protection</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-cloud"></i> Cloud CDN</h4>
+                    <p>Enhanced security for cached content delivery</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-route"></i> Cloud Router</h4>
+                    <p>Network-level DDoS protection coordination</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-eye"></i> Cloud Monitoring</h4>
+                    <p>Security metrics and alerting integration</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Policies Section -->
+        <div id="security-policies" class="content-section fade-in-up">
+            <h2><i class="fas fa-lock"></i> Security Policies & Rules</h2>
+
+            <h3>Creating Security Policies</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'gcloud-policy')">gcloud</button>
+                        <button class="code-tab" onclick="switchTab(this, 'terraform-policy')">Terraform</button>
+                        <button class="code-tab" onclick="switchTab(this, 'api-policy')">REST API</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode('policy-code')">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="code-content">
+                    <div id="gcloud-policy" class="code-block active">
+                        <code><span class="line-numbers"> 1</span># Create a global security policy<br><span class="line-numbers"> 2</span>gcloud compute security-policies create my-security-policy \<br><span class="line-numbers"> 3</span>  --description "WAF policy for web application" \<br><span class="line-numbers"> 4</span>  --type CLOUD_ARMOR<br><span class="line-numbers"> 5</span><br><span class="line-numbers"> 6</span># Add a rule to block SQL injection attempts<br><span class="line-numbers"> 7</span>gcloud compute security-policies rules create 1000 \<br><span class="line-numbers"> 8</span>  --security-policy my-security-policy \<br><span class="line-numbers"> 9</span>  --expression "evaluatePreconfiguredExpr('sqli-stable')" \<br><span class="line-numbers">10</span>  --action deny-403 \<br><span class="line-numbers">11</span>  --description "Block SQL injection"<br><span class="line-numbers">12</span><br><span class="line-numbers">13</span># Add rate limiting rule<br><span class="line-numbers">14</span>gcloud compute security-policies rules create 2000 \<br><span class="line-numbers">15</span>  --security-policy my-security-policy \<br><span class="line-numbers">16</span>  --expression "rateLimit(requestCount, 100, PT1M)" \<br><span class="line-numbers">17</span>  --action throttle \<br><span class="line-numbers">18</span>  --description "Rate limit to 100 requests per minute"<br><span class="line-numbers">19</span><br><span class="line-numbers">20</span># Attach policy to backend service<br><span class="line-numbers">21</span>gcloud compute backend-services update my-backend-service \<br><span class="line-numbers">22</span>  --security-policy my-security-policy</code>
+                    </div>
+                    <div id="terraform-policy" class="code-block">
+                        <code><span class="line-numbers"> 1</span>resource "google_compute_security_policy" "policy" {<br><span class="line-numbers"> 2</span>  name        = "my-security-policy"<br><span class="line-numbers"> 3</span>  description = "WAF policy for web application"<br><span class="line-numbers">  4</span>  type        = "CLOUD_ARMOR"<br><span class="line-numbers"> 5</span><br><span class="line-numbers">  6</span>  rule {<br><span class="line-numbers">  7</span>    action   = "deny(403)"<br><span class="line-numbers">  8</span>    priority = "1000"<br><span class="line-numbers">  9</span>    match {<br><span class="line-numbers"> 10</span>      expr {<br><span class="line-numbers"> 11</span>        expression = "evaluatePreconfiguredExpr('sqli-stable')"<br><span class="line-numbers"> 12</span>      }<br><span class="line-numbers"> 13</span>    }<br><span class="line-numbers"> 14</span>    description = "Block SQL injection"<br><span class="line-numbers"> 15</span>  }<br><span class="line-numbers"> 16</span><br><span class="line-numbers"> 17</span>  rule {<br><span class="line-numbers"> 18</span>    action   = "throttle"<br><span class="line-numbers"> 19</span>    priority = "2000"<br><span class="line-numbers"> 20</span>    match {<br><span class="line-numbers"> 21</span>      expr {<br><span class="line-numbers"> 22</span>        expression = "rateLimit(requestCount, 100, PT1M)"<br><span class="line-numbers"> 23</span>      }<br><span class="line-numbers">  24</span>    }<br><span class="line-numbers"> 25</span>    description = "Rate limit to 100 requests per minute"<br><span class="line-numbers">  26</span>  }<br><span class="line-numbers"> 27</span>}<br><span class="line-numbers"> 28</span><br><span class="line-numbers"> 29</span>resource "google_compute_backend_service" "backend" {<br><span class="line-numbers"> 30</span>  name          = "my-backend-service"<br><span class="line-numbers"> 31</span>  security_policy = google_compute_security_policy.policy.self_link<br><span class="line-numbers"> 32</span>}</code>
+                    </div>
+                    <div id="api-policy" class="code-block">
+                        <code><span class="line-numbers"> 1</span>POST https://compute.googleapis.com/compute/v1/projects/PROJECT_ID/global/securityPolicies<br><span class="line-numbers"> 2</span>{<br><span class="line-numbers">  3</span>  "name": "my-security-policy",<br><span class="line-numbers">  4</span>  "description": "WAF policy for web application",<br><span class="line-numbers">  5</span>  "type": "CLOUD_ARMOR",<br><span class="line-numbers">  6</span>  "rules": [<br><span class="line-numbers">  7</span>    {<br><span class="line-numbers">  8</span>      "priority": 1000,<br><span class="line-numbers">  9</span>      "action": "deny(403)",<br><span class="line-numbers"> 10</span>      "match": {<br><span class="line-numbers"> 11</span>        "expr": {<br><span class="line-numbers"> 12</span>          "expression": "evaluatePreconfiguredExpr('sqli-stable')"<br><span class="line-numbers"> 13</span>        }<br><span class="line-numbers"> 14</span>      },<br><span class="line-numbers"> 15</span>      "description": "Block SQL injection"<br><span class="line-numbers">  16</span>    },<br><span class="line-numbers"> 17</span>    {<br><span class="line-numbers"> 18</span>      "priority": 2000,<br><span class="line-numbers"> 19</span>      "action": "throttle",<br><span class="line-numbers"> 20</span>      "match": {<br><span class="line-numbers"> 21</span>        "expr": {<br><span class="line-numbers"> 22</span>          "expression": "rateLimit(requestCount, 100, PT1M)"<br><span class="line-numbers"> 23</span>        }<br><span class="line-numbers">  24</span>      },<br><span class="line-numbers"> 25</span>      "description": "Rate limit to 100 requests per minute"<br><span class="line-numbers"> 26</span>    }<br><span class="line-numbers"> 27</span>  ]<br><span class="line-numbers"> 28</span>}</code>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Pre-configured Rules</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Rule Type</th>
+                        <th>Description</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>sqli-stable</code></td>
+                        <td>SQL Injection protection</td>
+                        <td>Database-driven applications</td>
+                    </tr>
+                    <tr>
+                        <td><code>xss-stable</code></td>
+                        <td>Cross-site scripting protection</td>
+                        <td>Web applications with user input</td>
+                    </tr>
+                    <tr>
+                        <td><code>lfi-stable</code></td>
+                        <td>Local file inclusion protection</td>
+                        <td>File upload/download features</td>
+                    </tr>
+                    <tr>
+                        <td><code>rfi-stable</code></td>
+                        <td>Remote file inclusion protection</td>
+                        <td>Dynamic content loading</td>
+                    </tr>
+                    <tr>
+                        <td><code>rce-stable</code></td>
+                        <td>Remote code execution protection</td>
+                        <td>Server-side processing</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Threat Mitigation Section -->
+        <div id="threat-mitigation" class="content-section fade-in-up">
+            <h2><i class="fas fa-bug"></i> Advanced Threat Mitigation</h2>
+
+            <h3>Adaptive Protection</h3>
+            <p>Cloud Armor's Adaptive Protection uses machine learning to detect and mitigate sophisticated attacks that
+                traditional rules might miss.</p>
+
+            <div class="highlight-box">
+                <h4><i class="fas fa-brain"></i> How Adaptive Protection Works</h4>
+                <ul>
+                    <li><strong>Traffic Analysis:</strong> Analyzes traffic patterns and identifies anomalies</li>
+                    <li><strong>ML Models:</strong> Uses Google's threat intelligence and ML algorithms</li>
+                    <li><strong>Automatic Rules:</strong> Generates custom rules based on detected threats</li>
+                    <li><strong>Confidence Scoring:</strong> Assigns confidence levels to detected threats</li>
+                    <li><strong>Graduated Response:</strong> Applies appropriate mitigation based on threat severity
+                    </li>
+                </ul>
+            </div>
+
+            <h3>Custom Rules with Common Expression Language (CEL)</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'custom-rules')">Custom Rules</button>
+                        <button class="code-tab" onclick="switchTab(this, 'rate-limiting')">Rate Limiting</button>
+                        <button class="code-tab" onclick="switchTab(this, 'geo-blocking')">Geo Blocking</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode('custom-code')">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="code-content">
+                    <div id="custom-rules" class="code-block active">
+                        <code><span class="line-numbers"> 1</span># Block requests with suspicious headers<br><span class="line-numbers"> 2</span>request.headers['user-agent'].matches('.*sqlmap.*') ||<br><span class="line-numbers"> 3</span>request.headers['user-agent'].matches('.*nmap.*')<br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span># Block access to admin paths<br><span class="line-numbers"> 6</span>request.path.matches('/admin/.*') &&<br><span class="line-numbers"> 7</span>!request.headers['x-internal'].exists()<br><span class="line-numbers"> 8</span><br><span class="line-numbers"> 9</span># Block requests from known bad IPs<br><span class="line-numbers">10</span>request.origin.ip().inIpRange('192.168.1.0/24')<br><span class="line-numbers">11</span><br><span class="line-numbers">12</span># Allow only specific HTTP methods<br><span class="line-numbers">13</span>!request.method.in(['GET', 'POST', 'PUT', 'DELETE'])<br><span class="line-numbers">14</span><br><span class="line-numbers">15</span># Block requests with large payloads<br><span class="line-numbers">16</span>request.size > 1000000</code>
+                    </div>
+                    <div id="rate-limiting" class="code-block">
+                        <code><span class="line-numbers"> 1</span># Rate limit by IP address<br><span class="line-numbers"> 2</span>rateLimit(request.origin.ip(), 100, PT1M)<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span># Rate limit by user session<br><span class="line-numbers"> 5</span>rateLimit(request.cookies['session_id'], 50, PT5M)<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span># Rate limit API endpoints<br><span class="line-numbers"> 8</span>request.path.matches('/api/.*') &&<br><span class="line-numbers"> 9</span>rateLimit(request.origin.ip(), 1000, PT1H)<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span># Rate limit by country<br><span class="line-numbers">12</span>request.origin.region_code() == 'US' &&<br><span class="line-numbers">13</span>rateLimit(request.origin.ip(), 500, PT1M)</code>
+                    </div>
+                    <div id="geo-blocking" class="code-block">
+                        <code><span class="line-numbers"> 1</span># Block traffic from specific countries<br><span class="line-numbers"> 2</span>request.origin.region_code().in(['CN', 'RU', 'KP'])<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span># Allow only specific countries<br><span class="line-numbers"> 5</span>!request.origin.region_code().in(['US', 'CA', 'GB', 'DE', 'FR'])<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span># Block by ASN (Autonomous System Number)<br><span class="line-numbers"> 8</span>request.origin.asn() == 12345<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span># Allow corporate IP ranges<br><span class="line-numbers">11</span>request.origin.ip().inIpRange('203.0.113.0/24') ||<br><span class="line-numbers">12</span>request.origin.ip().inIpRange('198.51.100.0/24')</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitoring Section -->
+        <div id="monitoring" class="content-section fade-in-up">
+            <h2><i class="fas fa-chart-line"></i> Monitoring & Alerting</h2>
+
+            <h3>Security Metrics</h3>
+            <p>Cloud Armor provides comprehensive monitoring through Cloud Monitoring with security-specific metrics and
+                dashboards.</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4><i class="fas fa-shield-alt"></i> Security Policy Metrics</h4>
+                    <p>Requests blocked, allowed, and rate-limited by security policies</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-chart-bar"></i> DDoS Attack Metrics</h4>
+                    <p>Attack volume, duration, and mitigation effectiveness</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-brain"></i> Adaptive Protection</h4>
+                    <p>ML-detected threats and auto-generated rules</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-globe"></i> Geographic Insights</h4>
+                    <p>Traffic patterns and attack sources by region</p>
+                </div>
+            </div>
+
+            <h3>Creating Alerts</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'alert-policy')">Alert Policy</button>
+                        <button class="code-tab" onclick="switchTab(this, 'dashboard')">Dashboard</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode('monitoring-code')">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="code-content">
+                    <div id="alert-policy" class="code-block active">
+                        <code><span class="line-numbers"> 1</span>gcloud alpha monitoring policies create security-alert \<br><span class="line-numbers"> 2</span>  --display-name="Cloud Armor Security Alert" \<br><span class="line-numbers"> 3</span>  --conditions="condition.json"<br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span># condition.json content:<br><span class="line-numbers"> 6</span>{<br><span class="line-numbers">  7</span>  "displayName": "High blocked requests",<br><span class="line-numbers">  8</span>  "conditionThreshold": {<br><span class="line-numbers">  9</span>    "filter": "metric.type=\"cloudarmor.googleapis.com/security_policy/count\" AND metric.labels.response_code=\"403\"",<br><span class="line-numbers"> 10</span>    "aggregations": [{<br><span class="line-numbers"> 11</span>      "alignmentPeriod": "300s",<br><span class="line-numbers"> 12</span>      "crossSeriesReducer": "REDUCE_SUM",<br><span class="line-numbers"> 13</span>      "perSeriesAligner": "ALIGN_RATE"<br><span class="line-numbers"> 14</span>    }],<br><span class="line-numbers"> 15</span>    "comparison": "COMPARISON_GT",<br><span class="line-numbers"> 16</span>    "thresholdValue": 100,<br><span class="line-numbers"> 17</span>    "duration": "300s"<br><span class="line-numbers"> 18</span>  }<br><span class="line-numbers"> 19</span>}<br><span class="line-numbers"> 20</span><br><span class="line-numbers"> 21</span>gcloud alpha monitoring channels create email-channel \<br><span class="line-numbers"> 22</span>  --display-name="Security Team" \<br><span class="line-numbers"> 23</span>  --type=email \<br><span class="line-numbers"> 24</span>  --email-address="security@company.com"</code>
+                    </div>
+                    <div id="dashboard" class="code-block">
+                        <code><span class="line-numbers"> 1</span># Create a custom dashboard for Cloud Armor metrics<br><span class="line-numbers"> 2</span>gcloud monitoring dashboards create \<br><span class="line-numbers"> 3</span>  --config-from-file=dashboard.json<br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span># dashboard.json content:<br><span class="line-numbers"> 6</span>{<br><span class="line-numbers">  7</span>  "displayName": "Cloud Armor Security Dashboard",<br><span class="line-numbers">  8</span>  "gridLayout": {<br><span class="line-numbers">  9</span>    "columns": "2",<br><span class="line-numbers"> 10</span>    "widgets": [<br><span class="line-numbers"> 11</span>      {<br><span class="line-numbers"> 12</span>        "title": "Blocked Requests",<br><span class="line-numbers"> 13</span>        "xyChart": {<br><span class="line-numbers"> 14</span>          "dataSets": [{<br><span class="line-numbers"> 15</span>            "timeSeriesQuery": {<br><span class="line-numbers"> 16</span>              "timeSeriesFilter": {<br><span class="line-numbers"> 17</span>                "filter": "metric.type=\"cloudarmor.googleapis.com/security_policy/count\" AND metric.labels.response_code=\"403\""<br><span class="line-numbers"> 18</span>              }<br><span class="line-numbers"> 19</span>            }<br><span class="line-numbers"> 20</span>          }]<br><span class="line-numbers"> 21</span>        }<br><span class="line-numbers"> 22</span>      },<br><span class="line-numbers"> 23</span>      {<br><span class="line-numbers"> 24</span>        "title": "DDoS Attack Volume",<br><span class="line-numbers"> 25</span>        "xyChart": {<br><span class="line-numbers"> 26</span>          "dataSets": [{<br><span class="line-numbers"> 27</span>            "timeSeriesQuery": {<br><span class="line-numbers"> 28</span>              "timeSeriesFilter": {<br><span class="line-numbers"> 29</span>                "filter": "metric.type=\"cloudarmor.googleapis.com/security_policy/dropped_packets_count\""<br><span class="line-numbers"> 30</span>              }<br><span class="line-numbers"> 31</span>            }<br><span class="line-numbers"> 32</span>          }]<br><span class="line-numbers"> 33</span>        }<br><span class="line-numbers"> 34</span>      }<br><span class="line-numbers"> 35</span>    ]<br><span class="line-numbers"> 36</span>  }<br><span class="line-numbers"> 37</span>}</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Practices Section -->
+        <div id="best-practices" class="content-section fade-in-up">
+            <h2><i class="fas fa-check-circle"></i> Best Practices & Common Mistakes</h2>
+
+            <h3>Security Best Practices</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4><i class="fas fa-layer-group"></i> Defense in Depth</h4>
+                    <p>Combine Cloud Armor with other security services like VPC Service Controls and Identity-Aware
+                        Proxy</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-vial"></i> Test in Staging</h4>
+                    <p>Always test security policies in staging environments before production deployment</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-clock"></i> Regular Reviews</h4>
+                    <p>Regularly review and update security policies based on threat intelligence</p>
+                </div>
+                <div class="feature-card">
+                    <h4><i class="fas fa-balance-scale"></i> Rule Prioritization</h4>
+                    <p>Use appropriate rule priorities (lower numbers = higher priority) for proper evaluation order</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4><i class="fas fa-exclamation-triangle"></i> Common Mistakes to Avoid</h4>
+                <ul>
+                    <li><strong>Overly Broad Rules:</strong> Don't create rules that block legitimate traffic</li>
+                    <li><strong>Ignoring Monitoring:</strong> Always monitor the impact of new security rules</li>
+                    <li><strong>Missing Precedence:</strong> Lower priority numbers take precedence over higher ones
+                    </li>
+                    <li><strong>No Testing:</strong> Deploying untested rules can cause application outages</li>
+                    <li><strong>Static Rules Only:</strong> Relying only on static rules misses evolving threats</li>
+                    <li><strong>Ignoring Logs:</strong> Security logs contain valuable threat intelligence</li>
+                </ul>
+            </div>
+
+            <h3>Performance Optimization</h3>
+            <div class="highlight-box">
+                <h4><i class="fas fa-tachometer-alt"></i> Optimization Tips</h4>
+                <ul>
+                    <li><strong>Rule Ordering:</strong> Place frequently matched rules with higher priorities</li>
+                    <li><strong>Pre-configured Rules:</strong> Use pre-configured rules when possible for better
+                        performance</li>
+                    <li><strong>Regional Policies:</strong> Use regional policies for internal traffic when global isn't
+                        needed</li>
+                    <li><strong>Rule Consolidation:</strong> Combine similar rules to reduce evaluation overhead</li>
+                    <li><strong>Monitoring Thresholds:</strong> Set appropriate alert thresholds to avoid noise</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function switchTab(button, tabId) {
+            const container = button.closest('.code-container');
+            const tabs = container.querySelectorAll('.code-tab');
+            const blocks = container.querySelectorAll('.code-block');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            blocks.forEach(block => block.classList.remove('active'));
+
+            button.classList.add('active');
+            container.querySelector(`#${tabId}`).classList.add('active');
+        }
+
+        // Copy code functionality
+        function copyCode(containerId) {
+            const container = document.getElementById(containerId);
+            const activeBlock = container.querySelector('.code-block.active');
+            const code = activeBlock.textContent;
+
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target.closest('.copy-btn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btn.style.background = 'var(--secondary-color)';
+                btn.style.color = 'white';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = 'transparent';
+                    btn.style.color = 'var(--text-secondary)';
+                }, 2000);
+            });
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('.nav-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = card.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all content sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(30px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --java-red: #ED1C24;
+            --java-blue: #007ACC;
+            --java-orange: #F89820;
+            --java-green: #4CAF50;
+            --java-purple: #9C27B0;
+            --java-dark: #2C3E50;
+            --java-light: #ECF0F1;
+            --primary-color: #ED1C24;
+            --secondary-color: #007ACC;
+            --accent-color: #4CAF50;
+            --warning-color: #F89820;
+            --info-color: #9C27B0;
+            --dark-color: #2C3E50;
+            --light-color: #ECF0F1;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ED1C24 0%, #007ACC 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--java-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            min-height: 200px;
+        }
+
+        .btn-java {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-java:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-outline-java {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-java:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: var(--java-light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--java-dark);
+        }
+
+        .feature-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .interactive-section {
+            background: var(--java-light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .java-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #ED1C24, #4CAF50);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .method-display {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 2px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .collection-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .collection-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .perf-metric-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .execution-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--java-light);
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--java-dark);
+        }
+
+        .stat-value {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .input-group-custom {
+            margin-bottom: 15px;
+        }
+
+        .input-group-custom label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--java-dark);
+        }
+
+        .input-group-custom input,
+        .input-group-custom select,
+        .input-group-custom textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-group-custom textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .badge-custom {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        .badge-public { background: #28a745; color: white; }
+        .badge-private { background: #dc3545; color: white; }
+        .badge-protected { background: #ffc107; color: black; }
+        .badge-static { background: #6c757d; color: white; }
+
+        .collection-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .collection-item {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .thread-visualization {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .thread-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 2px solid var(--secondary-color);
+            text-align: center;
+        }
+
+        .thread-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .thread-running { background: #28a745; }
+        .thread-waiting { background: #ffc107; }
+        .thread-blocked { background: #dc3545; }
+
+        .memory-visual {
+            background: var(--java-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .memory-bar {
+            background: var(--secondary-color);
+            height: 20px;
+            border-radius: 4px;
+            margin: 5px 0;
+            position: relative;
+        }
+
+        .memory-used {
+            background: var(--primary-color);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [classes, setClasses] = useState([
+                {
+                    name: 'Person',
+                    modifiers: ['public'],
+                    attributes: [
+                        { name: 'name', type: 'String', modifier: 'private' },
+                        { name: 'age', type: 'int', modifier: 'private' }
+                    ],
+                    methods: [
+                        { name: 'getName', returnType: 'String', modifier: 'public', params: [] },
+                        { name: 'setName', returnType: 'void', modifier: 'public', params: ['String name'] },
+                        { name: 'getAge', returnType: 'int', modifier: 'public', params: [] },
+                        { name: 'setAge', returnType: 'void', modifier: 'public', params: ['int age'] }
+                    ]
+                },
+                {
+                    name: 'Calculator',
+                    modifiers: ['public'],
+                    attributes: [
+                        { name: 'memory', type: 'double', modifier: 'private' }
+                    ],
+                    methods: [
+                        { name: 'add', returnType: 'double', modifier: 'public', params: ['double a', 'double b'] },
+                        { name: 'subtract', returnType: 'double', modifier: 'public', params: ['double a', 'double b'] },
+                        { name: 'multiply', returnType: 'double', modifier: 'public', params: ['double a', 'double b'] },
+                        { name: 'divide', returnType: 'double', modifier: 'public', params: ['double a', 'double b'] }
+                    ]
+                }
+            ]);
+            const [collections, setCollections] = useState({
+                list: ['Apple', 'Banana', 'Cherry', 'Date'],
+                set: new Set(['Red', 'Green', 'Blue', 'Yellow']),
+                map: new Map([['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']])
+            });
+            const [threads, setThreads] = useState([
+                { id: 1, name: 'Main Thread', status: 'running', priority: 5 },
+                { id: 2, name: 'Worker Thread-1', status: 'waiting', priority: 3 },
+                { id: 3, name: 'Worker Thread-2', status: 'blocked', priority: 4 },
+                { id: 4, name: 'IO Thread', status: 'running', priority: 2 }
+            ]);
+            const [memory, setMemory] = useState({
+                heap: { used: 256, total: 512 },
+                stack: { used: 64, total: 128 },
+                permGen: { used: 32, total: 64 }
+            });
+            const [streams, setStreams] = useState([
+                { operation: 'filter', description: 'Filter elements based on condition' },
+                { operation: 'map', description: 'Transform elements' },
+                { operation: 'sorted', description: 'Sort elements' },
+                { operation: 'collect', description: 'Collect results into collection' }
+            ]);
+            const [code, setCode] = useState(`// Java Basic Example
+public class HelloWorld {
+    public static void main(String[] args) {
+        // Variables
+        String message = "Hello, Java!";
+        int number = 42;
+
+        // Output
+        System.out.println(message);
+        System.out.println("Number: " + number);
+
+        // Arrays
+        int[] numbers = {1, 2, 3, 4, 5};
+        for (int num : numbers) {
+            System.out.println("Number: " + num);
+        }
+
+        // Object creation
+        Person person = new Person("Alice", 25);
+        System.out.println(person.getName() + " is " + person.getAge() + " years old");
+    }
+}
+
+class Person {
+    private String name;
+    private int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+}`);
+            const [output, setOutput] = useState('');
+            const [isExecuting, setIsExecuting] = useState(false);
+            const [newClass, setNewClass] = useState({ name: '', attributes: '', methods: '' });
+            const [selectedCollection, setSelectedCollection] = useState('list');
+            const [performance, setPerformance] = useState({
+                compilationTime: '1.2s',
+                executionTime: '45ms',
+                memoryUsage: '128 MB',
+                gcCycles: 3
+            });
+
+            const executeCode = async () => {
+                setIsExecuting(true);
+                setOutput('Compiling and executing Java code...\n');
+
+                // Simulate code execution
+                setTimeout(() => {
+                    setOutput(prev => prev + 'Java code executed successfully!\n' +
+                        '✓ Classes compiled\n' +
+                        '✓ Objects instantiated\n' +
+                        '✓ Methods executed\n' +
+                        '✓ Output generated\n\n' +
+                        'Output:\n' +
+                        'Hello, Java!\n' +
+                        'Number: 42\n' +
+                        'Number: 1\n' +
+                        'Number: 2\n' +
+                        'Number: 3\n' +
+                        'Number: 4\n' +
+                        'Number: 5\n' +
+                        'Alice is 25 years old\n');
+                    setIsExecuting(false);
+                }, 2000);
+            };
+
+            const addClass = () => {
+                if (newClass.name) {
+                    const cls = {
+                        name: newClass.name,
+                        modifiers: ['public'],
+                        attributes: [],
+                        methods: []
+                    };
+                    setClasses([...classes, cls]);
+                    setNewClass({ name: '', attributes: '', methods: '' });
+                    setOutput('Class created successfully!');
+                }
+            };
+
+            const runCollectionOp = (operation, collection) => {
+                let result = '';
+                switch(operation) {
+                    case 'add':
+                        result = `Element added to ${collection}`;
+                        break;
+                    case 'remove':
+                        result = `Element removed from ${collection}`;
+                        break;
+                    case 'size':
+                        result = `${collection} size: ${collection === 'list' ? collections.list.length :
+                                                      collection === 'set' ? collections.set.size :
+                                                      collections.map.size}`;
+                        break;
+                    case 'clear':
+                        result = `${collection} cleared`;
+                        break;
+                    default:
+                        result = `${operation} operation performed on ${collection}`;
+                }
+                setOutput(result);
+            };
+
+            const runStreamOp = (operation) => {
+                setOutput(`${operation} stream operation executed successfully!`);
+            };
+
+            const startThread = (threadId) => {
+                setThreads(threads.map(thread =>
+                    thread.id === threadId
+                        ? { ...thread, status: 'running' }
+                        : thread
+                ));
+                setOutput(`Thread ${threadId} started successfully!`);
+            };
+
+            const stopThread = (threadId) => {
+                setThreads(threads.map(thread =>
+                    thread.id === threadId
+                        ? { ...thread, status: 'waiting' }
+                        : thread
+                ));
+                setOutput(`Thread ${threadId} stopped successfully!`);
+            };
+
+            const getStatusColor = (status) => {
+                const colors = {
+                    'running': 'thread-running',
+                    'waiting': 'thread-waiting',
+                    'blocked': 'thread-blocked'
+                };
+                return colors[status] || 'thread-waiting';
+            };
+
+            const getModifierBadge = (modifier) => {
+                const classes = {
+                    'public': 'badge-public',
+                    'private': 'badge-private',
+                    'protected': 'badge-protected',
+                    'static': 'badge-static'
+                };
+                return classes[modifier] || 'badge-secondary';
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fab fa-java"></i> Java</h1>
+                        <p>Object-oriented, platform-independent programming language</p>
+                    </div>
+
+                    {/* Navigation Tabs */}
+                    <ul className="nav nav-tabs justify-content-center mb-4">
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('overview')}>
+                                <i className="fas fa-info-circle"></i> Overview
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'oop' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('oop')}>
+                                <i className="fas fa-cubes"></i> OOP
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'collections' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('collections')}>
+                                <i className="fas fa-list"></i> Collections
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'streams' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('streams')}>
+                                <i className="fas fa-stream"></i> Streams
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'concurrency' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('concurrency')}>
+                                <i className="fas fa-tasks"></i> Concurrency
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'jvm' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('jvm')}>
+                                <i className="fas fa-memory"></i> JVM
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'editor' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('editor')}>
+                                <i className="fas fa-terminal"></i> Code Editor
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'performance' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('performance')}>
+                                <i className="fas fa-tachometer-alt"></i> Performance
+                            </button>
+                        </li>
+                    </ul>
+
+                    {/* Tab Content */}
+                    <div className="tab-content">
+                        {/* Overview Tab */}
+                        {activeTab === 'overview' && (
+                            <div>
+                                <div className="feature-grid">
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div className="feature-title">Platform Independent</div>
+                                        <div className="feature-description">
+                                            Write once, run anywhere with JVM bytecode compilation.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-cubes"></i>
+                                        </div>
+                                        <div className="feature-title">Object-Oriented</div>
+                                        <div className="feature-description">
+                                            Pure OOP with classes, objects, inheritance, and polymorphism.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-lock"></i>
+                                        </div>
+                                        <div className="feature-title">Strongly Typed</div>
+                                        <div className="feature-description">
+                                            Static typing prevents runtime errors and improves reliability.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-users"></i>
+                                        </div>
+                                        <div className="feature-title">Enterprise Ready</div>
+                                        <div className="feature-description">
+                                            Extensive ecosystem with frameworks like Spring, Hibernate, and more.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="java-flow">
+                                    <div className="flow-step">
+                                        <i className="fas fa-file-code"></i>
+                                        <div>Source Code</div>
+                                        <small>.java files</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-cogs"></i>
+                                        <div>Compilation</div>
+                                        <small>javac</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-microchip"></i>
+                                        <div>Bytecode</div>
+                                        <small>.class files</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-play"></i>
+                                        <div>JVM</div>
+                                        <small>Execution</small>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* OOP Tab */}
+                        {activeTab === 'oop' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h3>Object-Oriented Programming</h3>
+                                    <button className="btn btn-java" data-bs-toggle="modal" data-bs-target="#createClassModal">
+                                        <i className="fas fa-plus"></i> Create Class
+                                    </button>
+                                </div>
+
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        {classes.map((cls, index) => (
+                                            <div key={index} className="class-card mb-3">
+                                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                                    <h5>{cls.modifiers.join(' ')} class {cls.name}</h5>
+                                                    <span className="badge badge-info">Class</span>
+                                                </div>
+
+                                                <div className="mb-2">
+                                                    <strong>Attributes:</strong>
+                                                    {cls.attributes.map((attr, i) => (
+                                                        <div key={i} className="method-display">
+                                                            <span>{attr.modifier} {attr.type} {attr.name};</span>
+                                                            <span className={`badge ${getModifierBadge(attr.modifier)}`}>
+                                                                {attr.modifier}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                <div className="mb-2">
+                                                    <strong>Methods:</strong>
+                                                    {cls.methods.map((method, i) => (
+                                                        <div key={i} className="method-display">
+                                                            <span>{method.modifier} {method.returnType} {method.name}({method.params.join(', ')})</span>
+                                                            <span className={`badge ${getModifierBadge(method.modifier)}`}>
+                                                                {method.modifier}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>OOP Concepts</h5>
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <button className="btn btn-outline-java w-100 mb-2">
+                                                        <i className="fas fa-sitemap"></i> Inheritance
+                                                    </button>
+                                                    <button className="btn btn-outline-java w-100 mb-2">
+                                                        <i className="fas fa-clone"></i> Polymorphism
+                                                    </button>
+                                                    <button className="btn btn-outline-java w-100 mb-2">
+                                                        <i className="fas fa-shield-alt"></i> Encapsulation
+                                                    </button>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <button className="btn btn-outline-java w-100 mb-2">
+                                                        <i className="fas fa-cube"></i> Abstraction
+                                                    </button>
+                                                    <button className="btn btn-outline-java w-100 mb-2">
+                                                        <i className="fas fa-code-branch"></i> Interfaces
+                                                    </button>
+                                                    <button className="btn btn-outline-java w-100 mb-2">
+                                                        <i className="fas fa-puzzle-piece"></i> Abstract Classes
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Inheritance Example</h5>
+                                            <div className="code-editor" style={{minHeight: '120px'}}>
+{`class Animal {
+    public void makeSound() {
+        System.out.println("Some sound");
+    }
+}
+
+class Dog extends Animal {
+    @Override
+    public void makeSound() {
+        System.out.println("Woof!");
+    }
+}
+
+class Cat extends Animal {
+    @Override
+    public void makeSound() {
+        System.out.println("Meow!");
+    }
+}
+
+// Usage
+Animal dog = new Dog();
+Animal cat = new Cat();
+dog.makeSound();  // Woof!
+cat.makeSound();  // Meow!`}
+                                            </div>
+                                            <button className="btn btn-java mt-2"
+                                                    onClick={() => setOutput('Inheritance demo executed!\nDog says: Woof!\nCat says: Meow!')}>
+                                                <i className="fas fa-play"></i> Run Demo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Collections Tab */}
+                        {activeTab === 'collections' && (
+                            <div>
+                                <h3>Collections Framework</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="collection-card">
+                                            <h5>ArrayList (List)</h5>
+                                            <div className="collection-visual">
+                                                {collections.list.map((item, index) => (
+                                                    <div key={index} className="collection-item">
+                                                        [{index}] {item}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="mt-2">
+                                                <button className="btn btn-outline-java btn-sm me-2"
+                                                        onClick={() => runCollectionOp('add', 'list')}>
+                                                    Add
+                                                </button>
+                                                <button className="btn btn-outline-java btn-sm me-2"
+                                                        onClick={() => runCollectionOp('remove', 'list')}>
+                                                    Remove
+                                                </button>
+                                                <button className="btn btn-outline-java btn-sm"
+                                                        onClick={() => runCollectionOp('size', 'list')}>
+                                                    Size
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="collection-card">
+                                            <h5>HashSet</h5>
+                                            <div className="collection-visual">
+                                                {Array.from(collections.set).map((item, index) => (
+                                                    <div key={index} className="collection-item">
+                                                        {item}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="mt-2">
+                                                <button className="btn btn-outline-java btn-sm me-2"
+                                                        onClick={() => runCollectionOp('add', 'set')}>
+                                                    Add
+                                                </button>
+                                                <button className="btn btn-outline-java btn-sm me-2"
+                                                        onClick={() => runCollectionOp('remove', 'set')}>
+                                                    Remove
+                                                </button>
+                                                <button className="btn btn-outline-java btn-sm"
+                                                        onClick={() => runCollectionOp('size', 'set')}>
+                                                    Size
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="collection-card">
+                                            <h5>HashMap</h5>
+                                            <div className="collection-visual">
+                                                {Array.from(collections.map.entries()).map(([key, value], index) => (
+                                                    <div key={index} className="collection-item">
+                                                        {key} → {value}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="mt-2">
+                                                <button className="btn btn-outline-java btn-sm me-2"
+                                                        onClick={() => runCollectionOp('put', 'map')}>
+                                                    Put
+                                                </button>
+                                                <button className="btn btn-outline-java btn-sm me-2"
+                                                        onClick={() => runCollectionOp('get', 'map')}>
+                                                    Get
+                                                </button>
+                                                <button className="btn btn-outline-java btn-sm"
+                                                        onClick={() => runCollectionOp('size', 'map')}>
+                                                    Size
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Collection Operations</h5>
+                                            <div className="input-group-custom">
+                                                <label>Select Collection:</label>
+                                                <select value={selectedCollection} onChange={(e) => setSelectedCollection(e.target.value)}>
+                                                    <option value="list">ArrayList</option>
+                                                    <option value="set">HashSet</option>
+                                                    <option value="map">HashMap</option>
+                                                </select>
+                                            </div>
+                                            <button className="btn btn-java w-100 mb-2">
+                                                <i className="fas fa-search"></i> Iterate Collection
+                                            </button>
+                                            <button className="btn btn-java w-100 mb-2">
+                                                <i className="fas fa-sort"></i> Sort Collection
+                                            </button>
+                                            <button className="btn btn-java w-100">
+                                                <i className="fas fa-filter"></i> Filter Collection
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Streams Tab */}
+                        {activeTab === 'streams' && (
+                            <div>
+                                <h3>Streams API</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Stream Operations</h5>
+                                            {streams.map((stream, index) => (
+                                                <div key={index} className="collection-card">
+                                                    <h6>{stream.operation}()</h6>
+                                                    <p className="mb-2">{stream.description}</p>
+                                                    <button className="btn btn-outline-java btn-sm"
+                                                            onClick={() => runStreamOp(stream.operation)}>
+                                                        Execute
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Stream Pipeline Example</h5>
+                                            <div className="code-editor" style={{minHeight: '150px'}}>
+{`List<String> names = Arrays.asList("Alice", "Bob", "Charlie", "Diana");
+
+List<String> result = names.stream()
+    .filter(name -> name.length() > 3)      // Filter names longer than 3 chars
+    .map(String::toUpperCase)               // Convert to uppercase
+    .sorted()                               // Sort alphabetically
+    .collect(Collectors.toList());          // Collect to list
+
+// Result: [ALICE, CHARLIE, DIANA]
+
+// Parallel processing
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+int sum = numbers.parallelStream()
+    .filter(n -> n % 2 == 0)                // Even numbers only
+    .mapToInt(n -> n * n)                   // Square them
+    .sum();                                 // Sum them up`}
+                                            </div>
+                                            <button className="btn btn-java mt-2"
+                                                    onClick={() => setOutput('Stream operations executed!\nFiltered: [ALICE, CHARLIE, DIANA]\nSum of squares: 220')}>
+                                                <i className="fas fa-play"></i> Run Pipeline
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Concurrency Tab */}
+                        {activeTab === 'concurrency' && (
+                            <div>
+                                <h3>Concurrency & Threads</h3>
+                                <div className="thread-visualization">
+                                    {threads.map(thread => (
+                                        <div key={thread.id} className="thread-card">
+                                            <h6>{thread.name}</h6>
+                                            <div className="mb-2">
+                                                <span className={`thread-status ${getStatusColor(thread.status)}`}></span>
+                                                {thread.status.toUpperCase()}
+                                            </div>
+                                            <div className="mb-2">
+                                                <small>Priority: {thread.priority}</small>
+                                            </div>
+                                            <div className="d-flex gap-2">
+                                                <button className="btn btn-sm btn-success"
+                                                        onClick={() => startThread(thread.id)}
+                                                        disabled={thread.status === 'running'}>
+                                                    Start
+                                                </button>
+                                                <button className="btn btn-sm btn-warning"
+                                                        onClick={() => stopThread(thread.id)}
+                                                        disabled={thread.status === 'waiting'}>
+                                                    Stop
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Thread Synchronization</h5>
+                                    <div className="code-editor" style={{minHeight: '120px'}}>
+{`class Counter {
+    private int count = 0;
+
+    public synchronized void increment() {
+        count++;
+    }
+
+    public synchronized int getCount() {
+        return count;
+    }
+}
+
+// Usage with multiple threads
+Counter counter = new Counter();
+
+Runnable task = () -> {
+    for (int i = 0; i < 1000; i++) {
+        counter.increment();
+    }
+};
+
+// Start multiple threads
+Thread t1 = new Thread(task);
+Thread t2 = new Thread(task);
+t1.start();
+t2.start();
+
+// Wait for completion
+t1.join();
+t2.join();
+
+System.out.println("Final count: " + counter.getCount());`}
+                                    </div>
+                                    <button className="btn btn-java mt-2"
+                                            onClick={() => setOutput('Thread synchronization demo executed!\nFinal count: 2000')}>
+                                        <i className="fas fa-play"></i> Run Demo
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* JVM Tab */}
+                        {activeTab === 'jvm' && (
+                            <div>
+                                <h3>JVM Memory Management</h3>
+                                <div className="memory-visual">
+                                    <h5>Heap Memory</h5>
+                                    <div className="memory-bar">
+                                        <div className="memory-used" style={{width: `${(memory.heap.used / memory.heap.total) * 100}%`}}></div>
+                                    </div>
+                                    <small>{memory.heap.used} MB used of {memory.heap.total} MB</small>
+                                </div>
+
+                                <div className="memory-visual">
+                                    <h5>Stack Memory</h5>
+                                    <div className="memory-bar">
+                                        <div className="memory-used" style={{width: `${(memory.stack.used / memory.stack.total) * 100}%`}}></div>
+                                    </div>
+                                    <small>{memory.stack.used} MB used of {memory.stack.total} MB</small>
+                                </div>
+
+                                <div className="memory-visual">
+                                    <h5>PermGen/Metaspace</h5>
+                                    <div className="memory-bar">
+                                        <div className="memory-used" style={{width: `${(memory.permGen.used / memory.permGen.total) * 100}%`}}></div>
+                                    </div>
+                                    <small>{memory.permGen.used} MB used of {memory.permGen.total} MB</small>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Garbage Collection</h5>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <button className="btn btn-outline-java w-100 mb-2">
+                                                <i className="fas fa-broom"></i> Minor GC
+                                            </button>
+                                            <button className="btn btn-outline-java w-100 mb-2">
+                                                <i className="fas fa-trash"></i> Major GC
+                                            </button>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <button className="btn btn-outline-java w-100 mb-2">
+                                                <i className="fas fa-memory"></i> Memory Info
+                                            </button>
+                                            <button className="btn btn-outline-java w-100 mb-2">
+                                                <i className="fas fa-chart-line"></i> GC Stats
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Code Editor Tab */}
+                        {activeTab === 'editor' && (
+                            <div>
+                                <h3>Interactive Java Editor</h3>
+                                <div className="code-editor">
+                                    <pre>{code}</pre>
+                                </div>
+                                <div className="mt-3">
+                                    <button
+                                        className="btn btn-java me-2"
+                                        onClick={executeCode}
+                                        disabled={isExecuting}
+                                    >
+                                        {isExecuting ? (
+                                            <>
+                                                <i className="fas fa-spinner fa-spin"></i> Compiling...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fas fa-play"></i> Compile & Run
+                                            </>
+                                        )}
+                                    </button>
+                                    <button className="btn btn-outline-java">
+                                        <i className="fas fa-download"></i> Download JAR
+                                    </button>
+                                </div>
+                                {output && (
+                                    <div className="code-output">
+                                        {output}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Performance Tab */}
+                        {activeTab === 'performance' && (
+                            <div>
+                                <h3>Performance & Optimization</h3>
+                                <div className="performance-metrics">
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.compilationTime}</div>
+                                        <div className="perf-metric-label">Compilation Time</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.executionTime}</div>
+                                        <div className="perf-metric-label">Execution Time</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.memoryUsage}</div>
+                                        <div className="perf-metric-label">Memory Usage</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.gcCycles}</div>
+                                        <div className="perf-metric-label">GC Cycles</div>
+                                    </div>
+                                </div>
+
+                                <div className="execution-stats">
+                                    <div className="stat-item">
+                                        <span className="stat-label">JVM Version:</span>
+                                        <span className="stat-value">OpenJDK 17</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">JIT Compiler:</span>
+                                        <span className="stat-value">HotSpot</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">GC Algorithm:</span>
+                                        <span className="stat-value">G1GC</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Threading:</span>
+                                        <span className="stat-value">Native</span>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Performance Best Practices</h5>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <h6>Memory Management</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> Use StringBuilder for concatenation</li>
+                                                <li><i className="fas fa-check text-success"></i> Avoid memory leaks in collections</li>
+                                                <li><i className="fas fa-check text-success"></i> Use appropriate data structures</li>
+                                                <li><i className="fas fa-check text-success"></i> Implement proper equals/hashCode</li>
+                                            </ul>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <h6>Concurrency Optimization</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-rocket text-warning"></i> Use concurrent collections</li>
+                                                <li><i className="fas fa-rocket text-warning"></i> Minimize synchronized blocks</li>
+                                                <li><i className="fas fa-rocket text-warning"></i> Use volatile for visibility</li>
+                                                <li><i className="fas fa-rocket text-warning"></i> Consider thread pools</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Modals */}
+                    {/* Create Class Modal */}
+                    <div className="modal fade" id="createClassModal" tabIndex="-1">
+                        <div className="modal-dialog">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Create New Class</h5>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div className="modal-body">
+                                    <div className="input-group-custom">
+                                        <label>Class Name:</label>
+                                        <input
+                                            type="text"
+                                            value={newClass.name}
+                                            onChange={(e) => setNewClass({...newClass, name: e.target.value})}
+                                            placeholder="e.g., MyClass"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" className="btn btn-java" onClick={addClass} data-bs-dismiss="modal">Create Class</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-graduation-cap"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://www.oracle.com/java/" target="_blank"><i className="fas fa-external-link-alt"></i> Oracle Java</a></li>
+                                        <li><a href="https://docs.oracle.com/en/java/" target="_blank"><i className="fas fa-external-link-alt"></i> Java Documentation</a></li>
+                                        <li><a href="https://openjdk.java.net/" target="_blank"><i className="fas fa-external-link-alt"></i> OpenJDK</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://spring.io/" target="_blank"><i className="fas fa-external-link-alt"></i> Spring Framework</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/java" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                        <li><a href="https://www.baeldung.com/" target="_blank"><i className="fas fa-external-link-alt"></i> Baeldung Tutorials</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

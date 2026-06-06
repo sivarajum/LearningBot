@@ -1,0 +1,33 @@
+# Module 05: Generative AI RAG Requirements
+
+# LangChain & LLM
+langchain>=0.1.0
+langchain-community>=0.0.10
+langchain-openai>=0.0.2
+openai>=1.0.0
+
+# Vector Databases
+pinecone-client>=2.2.0
+chromadb>=0.4.0
+
+# Embeddings
+sentence-transformers>=2.2.0
+
+# API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+streamlit>=1.28.0
+pydantic>=2.5.0
+
+# Document Processing
+pypdf>=3.17.0
+python-docx>=1.1.0
+beautifulsoup4>=4.12.0
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Testing
+pytest>=7.4.0
+

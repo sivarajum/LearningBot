@@ -1,0 +1,749 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-18T07:55:12.405485Z",
+    "framework_version": "1.0.0",
+    "dataset_name": "transactions",
+    "framework": "Enterprise Data Quality Framework \u2014 POC-09"
+  },
+  "scorecard": {
+    "dataset_name": "transactions",
+    "scored_at": "2026-05-18T07:55:12.405455Z",
+    "overall_score": 98.46,
+    "overall_grade": "A",
+    "grade_description": "Excellent \u2014 data is production-ready",
+    "total_rules": 10,
+    "passed_rules": 6,
+    "failed_rules": 4,
+    "row_count": 2000,
+    "critical_issues": [
+      "transaction_id_unique (transaction_id): Column 'transaction_id' uniqueness: 1980 distinct values in 2000 non-null rows (uniqueness rate: 99.",
+      "amount_not_null (amount): Column 'amount' has 62 null/empty values out of 2000 rows (96.9% complete).",
+      "amount_positive (amount): Column 'amount' range [0.01, 1000000]: 67 of 2000 rows fail (96.7% pass).",
+      "txn_customer_ref_integrity (customer_id): Column 'customer_id' referential integrity: 109 of 2000 rows reference values not in the reference s"
+    ],
+    "dimensions": {
+      "completeness": {
+        "dimension": "completeness",
+        "weight": 0.3,
+        "rule_count": 3,
+        "score": 98.97,
+        "weighted_contribution": 29.69,
+        "passed_rules": 2,
+        "failed_rules": 1,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "amount_not_null"
+        ]
+      },
+      "validity": {
+        "dimension": "validity",
+        "weight": 0.25,
+        "rule_count": 4,
+        "score": 99.16,
+        "weighted_contribution": 24.79,
+        "passed_rules": 3,
+        "failed_rules": 1,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "amount_positive"
+        ]
+      },
+      "uniqueness": {
+        "dimension": "uniqueness",
+        "weight": 0.2,
+        "rule_count": 1,
+        "score": 99.0,
+        "weighted_contribution": 19.8,
+        "passed_rules": 0,
+        "failed_rules": 1,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "transaction_id_unique"
+        ]
+      },
+      "consistency": {
+        "dimension": "consistency",
+        "weight": 0.15,
+        "rule_count": 1,
+        "score": 94.55,
+        "weighted_contribution": 14.18,
+        "passed_rules": 0,
+        "failed_rules": 1,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "txn_customer_ref_integrity"
+        ]
+      },
+      "freshness": {
+        "dimension": "freshness",
+        "weight": 0.1,
+        "rule_count": 1,
+        "score": 100.0,
+        "weighted_contribution": 10.0,
+        "passed_rules": 1,
+        "failed_rules": 0,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": []
+      }
+    }
+  },
+  "profile": {
+    "dataset_name": "transactions",
+    "profiled_at": "2026-05-18T07:55:12.392277Z",
+    "row_count": 2000,
+    "column_count": 9,
+    "duplicate_rows": 0,
+    "duplicate_rate": 0.0,
+    "columns": [
+      {
+        "column": "transaction_id",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 2000,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 1980,
+        "distinct_rate": 0.99,
+        "min_value": 11,
+        "max_value": 11,
+        "mean_value": 11.0,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "TXN00001181",
+            "count": 2
+          },
+          {
+            "value": "TXN00001624",
+            "count": 2
+          },
+          {
+            "value": "TXN00000040",
+            "count": 2
+          },
+          {
+            "value": "TXN00000948",
+            "count": 2
+          },
+          {
+            "value": "TXN00000586",
+            "count": 2
+          }
+        ],
+        "sample_values": [
+          "TXN00001861",
+          "TXN00000354",
+          "TXN00001334",
+          "TXN00000906",
+          "TXN00001290"
+        ]
+      },
+      {
+        "column": "customer_id",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 2000,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 550,
+        "distinct_rate": 0.275,
+        "min_value": 10,
+        "max_value": 11,
+        "mean_value": 10.05,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "CUST000048",
+            "count": 18
+          },
+          {
+            "value": "CUST000038",
+            "count": 13
+          },
+          {
+            "value": "CUST000018",
+            "count": 12
+          },
+          {
+            "value": "CUST000317",
+            "count": 11
+          },
+          {
+            "value": "CUST000007",
+            "count": 10
+          }
+        ],
+        "sample_values": [
+          "GHOST000132",
+          "GHOST000019",
+          "CUST000262",
+          "CUST000129",
+          "CUST000346"
+        ]
+      },
+      {
+        "column": "amount",
+        "dtype": "float64",
+        "inferred_type": "numeric",
+        "total_count": 2000,
+        "null_count": 62,
+        "null_rate": 0.031,
+        "distinct_count": 1937,
+        "distinct_rate": 0.9995,
+        "min_value": -962.47,
+        "max_value": 4989.75,
+        "mean_value": 2369.3159,
+        "std_dev": 1499.5256,
+        "median_value": 2418.52,
+        "top_values": [
+          {
+            "value": "639.66",
+            "count": 2
+          },
+          {
+            "value": "4735.56",
+            "count": 1
+          },
+          {
+            "value": "2192.33",
+            "count": 1
+          },
+          {
+            "value": "4863.22",
+            "count": 1
+          },
+          {
+            "value": "719.19",
+            "count": 1
+          }
+        ],
+        "sample_values": [
+          "4486.99",
+          "240.07",
+          "1191.59",
+          "1673.85",
+          "3442.22"
+        ]
+      },
+      {
+        "column": "currency",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 2000,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 5,
+        "distinct_rate": 0.0025,
+        "min_value": 3,
+        "max_value": 3,
+        "mean_value": 3.0,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "EUR",
+            "count": 423
+          },
+          {
+            "value": "AUD",
+            "count": 415
+          },
+          {
+            "value": "CAD",
+            "count": 410
+          },
+          {
+            "value": "GBP",
+            "count": 386
+          },
+          {
+            "value": "USD",
+            "count": 366
+          }
+        ],
+        "sample_values": [
+          "AUD",
+          "EUR",
+          "AUD",
+          "EUR",
+          "USD"
+        ]
+      },
+      {
+        "column": "transaction_date",
+        "dtype": "object",
+        "inferred_type": "datetime",
+        "total_count": 2000,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 426,
+        "distinct_rate": 0.213,
+        "min_value": "2025-05-18 07:55:01",
+        "max_value": "2026-08-16 07:55:01",
+        "mean_value": null,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "2025-05-24 07:55:01",
+            "count": 12
+          },
+          {
+            "value": "2025-08-25 07:55:01",
+            "count": 10
+          },
+          {
+            "value": "2025-11-26 07:55:01",
+            "count": 10
+          },
+          {
+            "value": "2025-12-15 07:55:01",
+            "count": 10
+          },
+          {
+            "value": "2025-07-07 07:55:01",
+            "count": 10
+          }
+        ],
+        "sample_values": [
+          "2026-03-04 07:55:01",
+          "2025-06-07 07:55:01",
+          "2026-08-06 07:55:01",
+          "2026-04-17 07:55:01",
+          "2025-05-18 07:55:01"
+        ]
+      },
+      {
+        "column": "transaction_type",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 2000,
+        "null_count": 30,
+        "null_rate": 0.015,
+        "distinct_count": 5,
+        "distinct_rate": 0.0025,
+        "min_value": 6,
+        "max_value": 10,
+        "mean_value": 7.84,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "purchase",
+            "count": 419
+          },
+          {
+            "value": "deposit",
+            "count": 406
+          },
+          {
+            "value": "withdrawal",
+            "count": 402
+          },
+          {
+            "value": "transfer",
+            "count": 384
+          },
+          {
+            "value": "refund",
+            "count": 359
+          }
+        ],
+        "sample_values": [
+          "deposit",
+          "transfer",
+          "refund",
+          "refund",
+          "purchase"
+        ]
+      },
+      {
+        "column": "channel",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 2000,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 4,
+        "distinct_rate": 0.002,
+        "min_value": 3,
+        "max_value": 6,
+        "mean_value": 3.77,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "web",
+            "count": 525
+          },
+          {
+            "value": "mobile",
+            "count": 515
+          },
+          {
+            "value": "api",
+            "count": 492
+          },
+          {
+            "value": "pos",
+            "count": 468
+          }
+        ],
+        "sample_values": [
+          "api",
+          "web",
+          "mobile",
+          "api",
+          "web"
+        ]
+      },
+      {
+        "column": "status",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 2000,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 4,
+        "distinct_rate": 0.002,
+        "min_value": 6,
+        "max_value": 9,
+        "mean_value": 7.53,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "completed",
+            "count": 518
+          },
+          {
+            "value": "reversed",
+            "count": 511
+          },
+          {
+            "value": "failed",
+            "count": 491
+          },
+          {
+            "value": "pending",
+            "count": 480
+          }
+        ],
+        "sample_values": [
+          "pending",
+          "reversed",
+          "pending",
+          "reversed",
+          "completed"
+        ]
+      },
+      {
+        "column": "merchant_id",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 2000,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 1816,
+        "distinct_rate": 0.908,
+        "min_value": 9,
+        "max_value": 9,
+        "mean_value": 9.0,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "MERCH7999",
+            "count": 4
+          },
+          {
+            "value": "MERCH6073",
+            "count": 4
+          },
+          {
+            "value": "MERCH2444",
+            "count": 3
+          },
+          {
+            "value": "MERCH6678",
+            "count": 3
+          },
+          {
+            "value": "MERCH5934",
+            "count": 3
+          }
+        ],
+        "sample_values": [
+          "MERCH4033",
+          "MERCH4764",
+          "MERCH7080",
+          "MERCH5471",
+          "MERCH6294"
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "dataset_name": "transactions",
+    "validated_at": "2026-05-18T07:55:12.401553Z",
+    "row_count": 2000,
+    "total_rules": 10,
+    "passed_rules": 6,
+    "failed_rules": 4,
+    "error_rules": 0,
+    "overall_passed": false,
+    "summary_by_dimension": {
+      "completeness": {
+        "total_rules": 3,
+        "passed": 2,
+        "failed": 1,
+        "avg_score": 0.9897
+      },
+      "validity": {
+        "total_rules": 4,
+        "passed": 3,
+        "failed": 1,
+        "avg_score": 0.9916
+      },
+      "uniqueness": {
+        "total_rules": 1,
+        "passed": 0,
+        "failed": 1,
+        "avg_score": 0.99
+      },
+      "consistency": {
+        "total_rules": 1,
+        "passed": 0,
+        "failed": 1,
+        "avg_score": 0.9455
+      },
+      "freshness": {
+        "total_rules": 1,
+        "passed": 1,
+        "failed": 0,
+        "avg_score": 1.0
+      }
+    },
+    "rule_results": [
+      {
+        "rule_name": "transaction_id_not_null",
+        "column": "transaction_id",
+        "dimension": "completeness",
+        "severity": "error",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 0,
+        "total_count": 2000,
+        "pass_rate": 1.0,
+        "details": "Column 'transaction_id' has 0 null/empty values out of 2000 rows (100.0% complete).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "transaction_id_unique",
+        "column": "transaction_id",
+        "dimension": "uniqueness",
+        "severity": "error",
+        "passed": false,
+        "score": 0.99,
+        "failing_count": 20,
+        "total_count": 2000,
+        "pass_rate": 0.99,
+        "details": "Column 'transaction_id' uniqueness: 1980 distinct values in 2000 non-null rows (uniqueness rate: 99.0%). 20 duplicate rows found.",
+        "failing_values": [
+          "TXN00000079",
+          "TXN00000586",
+          "TXN00001426",
+          "TXN00001562",
+          "TXN00000295",
+          "TXN00001965",
+          "TXN00000948",
+          "TXN00000758",
+          "TXN00001376",
+          "TXN00001431"
+        ]
+      },
+      {
+        "rule_name": "amount_not_null",
+        "column": "amount",
+        "dimension": "completeness",
+        "severity": "error",
+        "passed": false,
+        "score": 0.969,
+        "failing_count": 62,
+        "total_count": 2000,
+        "pass_rate": 0.969,
+        "details": "Column 'amount' has 62 null/empty values out of 2000 rows (96.9% complete).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "amount_positive",
+        "column": "amount",
+        "dimension": "validity",
+        "severity": "error",
+        "passed": false,
+        "score": 0.9665,
+        "failing_count": 67,
+        "total_count": 2000,
+        "pass_rate": 0.9665,
+        "details": "Column 'amount' range [0.01, 1000000]: 67 of 2000 rows fail (96.7% pass).",
+        "failing_values": [
+          "-699.77",
+          "-96.12",
+          "-723.71",
+          "-590.45",
+          "-480.25",
+          "-828.41",
+          "-481.08",
+          "-862.72",
+          "-393.82",
+          "-80.9"
+        ]
+      },
+      {
+        "rule_name": "currency_allowed",
+        "column": "currency",
+        "dimension": "validity",
+        "severity": "warning",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 0,
+        "total_count": 2000,
+        "pass_rate": 1.0,
+        "details": "Column 'currency' allowed values ['AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'USD']: 0 of 2000 rows fail (100.0% pass).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "transaction_type_allowed",
+        "column": "transaction_type",
+        "dimension": "validity",
+        "severity": "warning",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 0,
+        "total_count": 2000,
+        "pass_rate": 1.0,
+        "details": "Column 'transaction_type' allowed values ['deposit', 'purchase', 'refund', 'transfer', 'withdrawal']: 0 of 2000 rows fail (100.0% pass).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "customer_id_not_null",
+        "column": "customer_id",
+        "dimension": "completeness",
+        "severity": "error",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 0,
+        "total_count": 2000,
+        "pass_rate": 1.0,
+        "details": "Column 'customer_id' has 0 null/empty values out of 2000 rows (100.0% complete).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "transaction_date_freshness",
+        "column": "transaction_date",
+        "dimension": "freshness",
+        "severity": "warning",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 1900,
+        "total_count": 2000,
+        "pass_rate": 0.05,
+        "details": "Column 'transaction_date' freshness: most recent value is '2026-08-16 07:55:01' (age: -2160.0h, limit: 24h). PASSED.",
+        "failing_values": [
+          "2026-08-16 07:55:01"
+        ]
+      },
+      {
+        "rule_name": "amount_is_float",
+        "column": "amount",
+        "dimension": "validity",
+        "severity": "error",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 0,
+        "total_count": 2000,
+        "pass_rate": 1.0,
+        "details": "Column 'amount' type check (expected: float): 0 of 2000 rows cannot be cast (100.0% pass).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "txn_customer_ref_integrity",
+        "column": "customer_id",
+        "dimension": "consistency",
+        "severity": "error",
+        "passed": false,
+        "score": 0.9455,
+        "failing_count": 109,
+        "total_count": 2000,
+        "pass_rate": 0.9455,
+        "details": "Column 'customer_id' referential integrity: 109 of 2000 rows reference values not in the reference set (94.5% valid). Reference set size: 482.",
+        "failing_values": [
+          "GHOST000180",
+          "GHOST000092",
+          "GHOST000102",
+          "GHOST000003",
+          "GHOST000125",
+          "GHOST000079",
+          "GHOST000026",
+          "GHOST000004",
+          "GHOST000117",
+          "GHOST000093"
+        ]
+      }
+    ]
+  },
+  "alerts": [
+    {
+      "alert_id": "ALERT-0002",
+      "severity": "error",
+      "dimension": "uniqueness",
+      "rule_name": "transaction_id_unique",
+      "column": "transaction_id",
+      "message": "20 of 2000 rows fail rule 'transaction_id_unique' (pass rate: 99.0%)",
+      "failing_count": 20,
+      "total_count": 2000
+    },
+    {
+      "alert_id": "ALERT-0003",
+      "severity": "error",
+      "dimension": "completeness",
+      "rule_name": "amount_not_null",
+      "column": "amount",
+      "message": "62 of 2000 rows fail rule 'amount_not_null' (pass rate: 96.9%)",
+      "failing_count": 62,
+      "total_count": 2000
+    },
+    {
+      "alert_id": "ALERT-0004",
+      "severity": "error",
+      "dimension": "validity",
+      "rule_name": "amount_positive",
+      "column": "amount",
+      "message": "67 of 2000 rows fail rule 'amount_positive' (pass rate: 96.7%)",
+      "failing_count": 67,
+      "total_count": 2000
+    },
+    {
+      "alert_id": "ALERT-0010",
+      "severity": "error",
+      "dimension": "consistency",
+      "rule_name": "txn_customer_ref_integrity",
+      "column": "customer_id",
+      "message": "109 of 2000 rows fail rule 'txn_customer_ref_integrity' (pass rate: 94.5%)",
+      "failing_count": 109,
+      "total_count": 2000
+    }
+  ],
+  "recommendations": [
+    "Column 'transaction_id' has 20 duplicate values. Add DISTINCT or dedup step in ETL. Investigate upstream system for duplicate record generation.",
+    "Column 'amount' has 3.1% null values. Consider: (1) add NOT NULL constraint at source, (2) impute with domain-appropriate default, (3) review if field is truly required.",
+    "Column 'customer_id' has 109 orphaned references. Ensure parent table is loaded before child table. Add FK constraint or referential check in orchestration."
+  ]
+}

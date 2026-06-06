@@ -1,0 +1,160 @@
+[0m10:19:52.327370 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1056373b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10820aba0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1082b8ec0>]}
+
+
+============================== 10:19:52.334363 | f896fe37-4dc5-4917-aec6-ad9a7ca69982 ==============================
+[0m10:19:52.334363 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:19:52.334765 [debug] [MainThread]: running dbt with arguments {'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'warn_error': 'None', 'partial_parse': 'True', 'version_check': 'True', 'send_anonymous_usage_stats': 'True', 'debug': 'False', 'use_experimental_parser': 'False', 'log_cache_events': 'False', 'log_path': 'logs', 'no_print': 'None', 'fail_fast': 'False', 'indirect_selection': 'eager', 'introspect': 'True', 'static_parser': 'True', 'use_colors': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'cache_selected_only': 'False', 'invocation_command': 'dbt deps --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'empty': 'None', 'target_path': 'None', 'log_format': 'default', 'printer_width': '80', 'write_json': 'True', 'quiet': 'False'}
+[0m10:19:52.335359 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:19:52.336932 [debug] [MainThread]: Resource report: {"command_name": "deps", "command_success": false, "command_wall_clock_time": 0.0701275, "process_in_blocks": "0", "process_kernel_time": 0.123872, "process_mem_max_rss": "135020544", "process_out_blocks": "0", "process_user_time": 3.376352}
+[0m10:19:52.337394 [debug] [MainThread]: Command `dbt deps` failed at 10:19:52.337326 after 0.07 seconds
+[0m10:19:52.337678 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10820af30>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10820aae0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1082b8f80>]}
+[0m10:19:52.337932 [debug] [MainThread]: Flushing usage events
+[0m10:19:56.114857 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:19:59.857252 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1083ddfa0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10b1f49e0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10b1f45c0>]}
+
+
+============================== 10:19:59.864221 | 365630bd-fbe2-4711-b779-6e4733bd34ef ==============================
+[0m10:19:59.864221 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:19:59.864630 [debug] [MainThread]: running dbt with arguments {'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'write_json': 'True', 'quiet': 'False', 'send_anonymous_usage_stats': 'True', 'static_parser': 'True', 'indirect_selection': 'eager', 'use_colors': 'True', 'invocation_command': 'dbt run --select bronze --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'empty': 'False', 'log_path': 'logs', 'log_format': 'default', 'fail_fast': 'False', 'use_experimental_parser': 'False', 'introspect': 'True', 'partial_parse': 'True', 'warn_error': 'None', 'target_path': 'None', 'printer_width': '80', 'cache_selected_only': 'False', 'no_print': 'None', 'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'debug': 'False', 'log_cache_events': 'False', 'version_check': 'True'}
+[0m10:19:59.865088 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:19:59.866553 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 0.06436404, "process_in_blocks": "0", "process_kernel_time": 0.12873, "process_mem_max_rss": "137117696", "process_out_blocks": "0", "process_user_time": 3.405635}
+[0m10:19:59.866904 [debug] [MainThread]: Command `dbt run` failed at 10:19:59.866835 after 0.06 seconds
+[0m10:19:59.867177 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10b1f49b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10b1f4800>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10b1f6750>]}
+[0m10:19:59.867430 [debug] [MainThread]: Flushing usage events
+[0m10:20:02.551347 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:20:06.249721 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x103639c10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105b84860>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105b84410>]}
+
+
+============================== 10:20:06.256597 | 8c150757-b4a0-4110-9ba5-e2cf37e8af2e ==============================
+[0m10:20:06.256597 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:20:06.256998 [debug] [MainThread]: running dbt with arguments {'debug': 'False', 'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'use_colors': 'True', 'target_path': 'None', 'version_check': 'True', 'no_print': 'None', 'introspect': 'True', 'send_anonymous_usage_stats': 'True', 'log_path': 'logs', 'warn_error': 'None', 'log_format': 'default', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'fail_fast': 'False', 'static_parser': 'True', 'quiet': 'False', 'write_json': 'True', 'invocation_command': 'dbt run --select silver --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'log_cache_events': 'False', 'printer_width': '80', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'empty': 'False', 'cache_selected_only': 'False', 'partial_parse': 'True'}
+[0m10:20:06.257457 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:20:06.259098 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 0.06456725, "process_in_blocks": "0", "process_kernel_time": 0.13158, "process_mem_max_rss": "136577024", "process_out_blocks": "0", "process_user_time": 3.395059}
+[0m10:20:06.259523 [debug] [MainThread]: Command `dbt run` failed at 10:20:06.259449 after 0.07 seconds
+[0m10:20:06.259805 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105b84380>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105b84860>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105b86810>]}
+[0m10:20:06.260067 [debug] [MainThread]: Flushing usage events
+[0m10:20:09.622492 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:20:13.464063 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x110dbc5c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111e709e0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111e705c0>]}
+
+
+============================== 10:20:13.471095 | 68e770c8-9f2f-4366-9739-fbdde3983e2a ==============================
+[0m10:20:13.471095 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:20:13.471514 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'write_json': 'True', 'target_path': 'None', 'introspect': 'True', 'no_print': 'None', 'debug': 'False', 'fail_fast': 'False', 'send_anonymous_usage_stats': 'True', 'indirect_selection': 'eager', 'cache_selected_only': 'False', 'use_experimental_parser': 'False', 'quiet': 'False', 'log_cache_events': 'False', 'invocation_command': 'dbt run --select gold --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'version_check': 'True', 'empty': 'False', 'use_colors': 'True', 'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'partial_parse': 'True', 'log_format': 'default', 'warn_error': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'log_path': 'logs', 'static_parser': 'True'}
+[0m10:20:13.471978 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:20:13.473594 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 0.063960664, "process_in_blocks": "0", "process_kernel_time": 0.143485, "process_mem_max_rss": "137773056", "process_out_blocks": "0", "process_user_time": 3.417813}
+[0m10:20:13.473960 [debug] [MainThread]: Command `dbt run` failed at 10:20:13.473889 after 0.06 seconds
+[0m10:20:13.474231 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111e706b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111e72600>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111e727e0>]}
+[0m10:20:13.474481 [debug] [MainThread]: Flushing usage events
+[0m10:20:15.901904 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:20:19.599323 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1080c6120>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10830c920>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10830c410>]}
+
+
+============================== 10:20:19.606277 | ac8a44f7-da94-4f21-aa03-936a8126e68b ==============================
+[0m10:20:19.606277 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:20:19.606679 [debug] [MainThread]: running dbt with arguments {'log_format': 'default', 'introspect': 'True', 'cache_selected_only': 'False', 'indirect_selection': 'eager', 'log_path': 'logs', 'warn_error': 'None', 'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'version_check': 'True', 'use_colors': 'True', 'log_cache_events': 'False', 'use_experimental_parser': 'False', 'partial_parse': 'True', 'fail_fast': 'False', 'invocation_command': 'dbt test --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt', 'static_parser': 'True', 'target_path': 'None', 'debug': 'False', 'write_json': 'True', 'empty': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'send_anonymous_usage_stats': 'True', 'printer_width': '80', 'no_print': 'None', 'quiet': 'False'}
+[0m10:20:19.607159 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_2000/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:20:19.608773 [debug] [MainThread]: Resource report: {"command_name": "test", "command_success": false, "command_wall_clock_time": 0.06494346, "process_in_blocks": "0", "process_kernel_time": 0.128031, "process_mem_max_rss": "139476992", "process_out_blocks": "0", "process_user_time": 3.401262}
+[0m10:20:19.609148 [debug] [MainThread]: Command `dbt test` failed at 10:20:19.609078 after 0.07 seconds
+[0m10:20:19.609428 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10830c8f0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10830cc20>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10830e480>]}
+[0m10:20:19.609689 [debug] [MainThread]: Flushing usage events
+[0m10:20:24.872207 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:20:32.651973 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x109a0a690>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x109eeeb70>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10a76ce30>]}
+
+
+============================== 10:20:32.659200 | 47b71d3b-d196-4e0f-8453-3de700235e6e ==============================
+[0m10:20:32.659200 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:20:32.659623 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'fail_fast': 'False', 'write_json': 'True', 'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt', 'empty': 'None', 'log_path': 'logs', 'send_anonymous_usage_stats': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'target_path': 'None', 'use_colors': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'invocation_command': 'dbt deps --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt', 'indirect_selection': 'eager', 'partial_parse': 'True', 'log_format': 'default', 'cache_selected_only': 'False', 'debug': 'False', 'printer_width': '80', 'quiet': 'False', 'warn_error': 'None', 'version_check': 'True', 'log_cache_events': 'False', 'introspect': 'True'}
+[0m10:20:32.660202 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:20:32.661784 [debug] [MainThread]: Resource report: {"command_name": "deps", "command_success": false, "command_wall_clock_time": 0.066987164, "process_in_blocks": "0", "process_kernel_time": 0.122129, "process_mem_max_rss": "135987200", "process_out_blocks": "0", "process_user_time": 3.38715}
+[0m10:20:32.662253 [debug] [MainThread]: Command `dbt deps` failed at 10:20:32.662182 after 0.07 seconds
+[0m10:20:32.662533 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10a5b01a0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10873a480>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10a76cf80>]}
+[0m10:20:32.662800 [debug] [MainThread]: Flushing usage events
+[0m10:20:35.099214 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:20:38.748807 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111183e60>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111574ad0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1115746b0>]}
+
+
+============================== 10:20:38.755540 | 1d7cf227-677a-4f3b-aa8d-fc6c5fd19416 ==============================
+[0m10:20:38.755540 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:20:38.755937 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'printer_width': '80', 'log_path': 'logs', 'use_colors': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'empty': 'False', 'send_anonymous_usage_stats': 'True', 'partial_parse': 'True', 'version_check': 'True', 'fail_fast': 'False', 'use_experimental_parser': 'False', 'no_print': 'None', 'cache_selected_only': 'False', 'introspect': 'True', 'debug': 'False', 'invocation_command': 'dbt run --select bronze --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt', 'warn_error': 'None', 'write_json': 'True', 'quiet': 'False', 'indirect_selection': 'eager', 'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt', 'target_path': 'None', 'log_cache_events': 'False', 'log_format': 'default'}
+[0m10:20:38.756368 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:20:38.757766 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 0.06449879, "process_in_blocks": "0", "process_kernel_time": 0.118974, "process_mem_max_rss": "138002432", "process_out_blocks": "0", "process_user_time": 3.38647}
+[0m10:20:38.758168 [debug] [MainThread]: Command `dbt run` failed at 10:20:38.758087 after 0.06 seconds
+[0m10:20:38.758470 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1115747d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1115746b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111576870>]}
+[0m10:20:38.758742 [debug] [MainThread]: Flushing usage events
+[0m10:20:40.346576 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:20:44.000399 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105778a70>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1064b4920>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1064b4500>]}
+
+
+============================== 10:20:44.007210 | 7ebadfe5-48de-4849-a178-78044bea3274 ==============================
+[0m10:20:44.007210 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:20:44.007603 [debug] [MainThread]: running dbt with arguments {'write_json': 'True', 'log_cache_events': 'False', 'static_parser': 'True', 'debug': 'False', 'fail_fast': 'False', 'warn_error': 'None', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'empty': 'False', 'printer_width': '80', 'partial_parse': 'True', 'use_colors': 'True', 'introspect': 'True', 'log_format': 'default', 'use_experimental_parser': 'False', 'log_path': 'logs', 'cache_selected_only': 'False', 'indirect_selection': 'eager', 'no_print': 'None', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'invocation_command': 'dbt run --select silver --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt', 'target_path': 'None', 'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt'}
+[0m10:20:44.008038 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:20:44.009696 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 0.06365354, "process_in_blocks": "0", "process_kernel_time": 0.121232, "process_mem_max_rss": "137412608", "process_out_blocks": "0", "process_user_time": 3.389132}
+[0m10:20:44.010079 [debug] [MainThread]: Command `dbt run` failed at 10:20:44.010008 after 0.06 seconds
+[0m10:20:44.010351 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1064b4620>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1064b4650>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1064b6660>]}
+[0m10:20:44.010610 [debug] [MainThread]: Flushing usage events
+[0m10:20:47.074327 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:20:50.738061 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10592f3b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10860c8c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10860c4a0>]}
+
+
+============================== 10:20:50.744898 | e8e59df3-6f6c-4aa2-a337-8d2bcbaaa5bb ==============================
+[0m10:20:50.744898 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:20:50.745292 [debug] [MainThread]: running dbt with arguments {'write_json': 'True', 'log_format': 'default', 'quiet': 'False', 'use_experimental_parser': 'False', 'target_path': 'None', 'printer_width': '80', 'partial_parse': 'True', 'static_parser': 'True', 'invocation_command': 'dbt run --select gold --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt', 'send_anonymous_usage_stats': 'True', 'indirect_selection': 'eager', 'empty': 'False', 'cache_selected_only': 'False', 'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt', 'debug': 'False', 'no_print': 'None', 'log_path': 'logs', 'use_colors': 'True', 'log_cache_events': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'warn_error': 'None', 'version_check': 'True', 'introspect': 'True', 'fail_fast': 'False'}
+[0m10:20:50.745764 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:20:50.747212 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 0.06375725, "process_in_blocks": "0", "process_kernel_time": 0.127094, "process_mem_max_rss": "138166272", "process_out_blocks": "0", "process_user_time": 3.386871}
+[0m10:20:50.747569 [debug] [MainThread]: Command `dbt run` failed at 10:20:50.747505 after 0.06 seconds
+[0m10:20:50.747840 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10860c590>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10860c560>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10860e810>]}
+[0m10:20:50.748088 [debug] [MainThread]: Flushing usage events
+[0m10:20:55.195799 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:20:58.930629 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1101c23f0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111374bc0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1113746b0>]}
+
+
+============================== 10:20:58.937650 | 4cc93131-71dc-4bbc-8e15-6e733a339169 ==============================
+[0m10:20:58.937650 [info ] [MainThread]: Running with dbt=1.11.11
+[0m10:20:58.938055 [debug] [MainThread]: running dbt with arguments {'use_experimental_parser': 'False', 'target_path': 'None', 'printer_width': '80', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'write_json': 'True', 'cache_selected_only': 'False', 'log_cache_events': 'False', 'profiles_dir': '/private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt', 'log_path': 'logs', 'partial_parse': 'True', 'quiet': 'False', 'indirect_selection': 'eager', 'version_check': 'True', 'empty': 'None', 'warn_error': 'None', 'fail_fast': 'False', 'no_print': 'None', 'introspect': 'True', 'send_anonymous_usage_stats': 'True', 'debug': 'False', 'log_format': 'default', 'invocation_command': 'dbt test --project-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt --profiles-dir /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt', 'use_colors': 'True'}
+[0m10:20:58.938519 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path /private/var/folders/yh/hmv_k4x12jnbzjmkgpt80d440000gn/T/pytest-of-sivarajumalladi/pytest-47/test_run_returns_started_statu0/medallion_dbt/dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:20:58.940133 [debug] [MainThread]: Resource report: {"command_name": "test", "command_success": false, "command_wall_clock_time": 0.064655125, "process_in_blocks": "0", "process_kernel_time": 0.1268, "process_mem_max_rss": "139935744", "process_out_blocks": "0", "process_user_time": 3.443927}
+[0m10:20:58.940485 [debug] [MainThread]: Command `dbt test` failed at 10:20:58.940420 after 0.07 seconds
+[0m10:20:58.940772 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111374a40>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111374890>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1113744a0>]}
+[0m10:20:58.941022 [debug] [MainThread]: Flushing usage events
+[0m10:20:59.874402 [debug] [MainThread]: An error was encountered while trying to flush usage events

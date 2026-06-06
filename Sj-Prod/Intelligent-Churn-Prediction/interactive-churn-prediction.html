@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Churn Prediction System - Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --warning-color: #fbbc04;
+            --dark-color: #1F2937;
+            --light-color: #F9FAFB;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--dark-color);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+        }
+
+        .architecture-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #4285f4, #34a853);
+            border-radius: 10px;
+            color: white;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            margin: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        .component-card {
+            background: var(--light-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 10px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .pipeline-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .pipeline-stage {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .pipeline-stage.active {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .pipeline-stage.completed {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            min-height: 200px;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .prediction-result {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .churn-probability {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .tech-stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .tech-card {
+            background: var(--light-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tech-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [pipelineStage, setPipelineStage] = useState(0);
+            const [customerData, setCustomerData] = useState({
+                customer_id: 'CUST_12345',
+                total_spent: 5000,
+                num_orders: 25,
+                days_since_last_order: 15,
+                avg_transaction: 200,
+                region: 'North'
+            });
+            const [prediction, setPrediction] = useState(null);
+            const [isProcessing, setIsProcessing] = useState(false);
+
+            const pipelineStages = [
+                { id: 0, name: 'Data Ingestion', icon: 'fa-database', status: 'completed' },
+                { id: 1, name: 'Feature Engineering', icon: 'fa-cogs', status: 'completed' },
+                { id: 2, name: 'Model Training', icon: 'fa-brain', status: 'active' },
+                { id: 3, name: 'Model Deployment', icon: 'fa-rocket', status: 'pending' },
+                { id: 4, name: 'Prediction', icon: 'fa-chart-line', status: 'pending' }
+            ];
+
+            const technologies = [
+                { name: 'Vertex AI', role: 'ML Training & Serving', icon: 'fa-cloud' },
+                { name: 'BigQuery', role: 'Data Warehouse', icon: 'fa-database' },
+                { name: 'MLflow', role: 'Experiment Tracking', icon: 'fa-flask' },
+                { name: 'FastAPI', role: 'API Server', icon: 'fa-server' },
+                { name: 'Docker', role: 'Containerization', icon: 'fa-box' },
+                { name: 'Streamlit', role: 'Web UI', icon: 'fa-window-maximize' },
+                { name: 'Airflow', role: 'Orchestration', icon: 'fa-tasks' }
+            ];
+
+            const runPrediction = () => {
+                setIsProcessing(true);
+                setTimeout(() => {
+                    const churnProb = Math.random() * 0.4 + 0.1; // 10-50%
+                    setPrediction({
+                        churn_probability: churnProb,
+                        prediction: churnProb > 0.3 ? 'High Risk' : 'Low Risk',
+                        confidence: 0.87,
+                        features: {
+                            total_spent: customerData.total_spent,
+                            days_since_last_order: customerData.days_since_last_order,
+                            num_orders: customerData.num_orders
+                        }
+                    });
+                    setIsProcessing(false);
+                }, 2000);
+            };
+
+            const simulatePipeline = () => {
+                let stage = 0;
+                const interval = setInterval(() => {
+                    setPipelineStage(stage);
+                    stage++;
+                    if (stage >= pipelineStages.length) {
+                        clearInterval(interval);
+                    }
+                }, 1000);
+            };
+
+            return (
+                <div className="demo-container">
+                    <div className="header">
+                        <h1><i className="fas fa-chart-line"></i> Intelligent Churn Prediction System</h1>
+                        <p>End-to-End ML Pipeline with MLOps</p>
+                    </div>
+
+                    <ul className="nav nav-tabs justify-content-center mb-4">
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('overview')}>
+                                Overview
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'architecture' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('architecture')}>
+                                Architecture
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'pipeline' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('pipeline')}>
+                                Pipeline
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'prediction' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('prediction')}>
+                                Prediction
+                            </button>
+                        </li>
+                    </ul>
+
+                    {activeTab === 'overview' && (
+                        <div className="demo-card fade-in">
+                            <div className="card-header">
+                                <h3><i className="fas fa-info-circle"></i> System Overview</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="architecture-flow">
+                                    <div className="flow-step">
+                                        <i className="fas fa-database fa-2x mb-2"></i>
+                                        <div>Data Sources</div>
+                                    </div>
+                                    <i className="fas fa-arrow-right flow-arrow"></i>
+                                    <div className="flow-step">
+                                        <i className="fas fa-cogs fa-2x mb-2"></i>
+                                        <div>Training Pipeline</div>
+                                    </div>
+                                    <i className="fas fa-arrow-right flow-arrow"></i>
+                                    <div className="flow-step">
+                                        <i className="fas fa-brain fa-2x mb-2"></i>
+                                        <div>Model Registry</div>
+                                    </div>
+                                    <i className="fas fa-arrow-right flow-arrow"></i>
+                                    <div className="flow-step">
+                                        <i className="fas fa-rocket fa-2x mb-2"></i>
+                                        <div>Deployment</div>
+                                    </div>
+                                    <i className="fas fa-arrow-right flow-arrow"></i>
+                                    <div className="flow-step">
+                                        <i className="fas fa-chart-line fa-2x mb-2"></i>
+                                        <div>Predictions</div>
+                                    </div>
+                                </div>
+
+                                <div className="tech-stack-grid">
+                                    {technologies.map((tech, idx) => (
+                                        <div key={idx} className="tech-card">
+                                            <i className={`fas ${tech.icon} tech-icon`}></i>
+                                            <h5>{tech.name}</h5>
+                                            <p className="text-muted">{tech.role}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="row mt-4">
+                                    <div className="col-md-3">
+                                        <div className="metric-card">
+                                            <div className="metric-value">87%</div>
+                                            <div>Model Accuracy</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <div className="metric-card">
+                                            <div className="metric-value">&lt;100ms</div>
+                                            <div>Prediction Latency</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <div className="metric-card">
+                                            <div className="metric-value">1M+</div>
+                                            <div>Records/Day</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <div className="metric-card">
+                                            <div className="metric-value">1000/min</div>
+                                            <div>API Throughput</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'architecture' && (
+                        <div className="demo-card fade-in">
+                            <div className="card-header">
+                                <h3><i className="fas fa-sitemap"></i> System Architecture</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="component-card">
+                                    <h5><i className="fas fa-database text-primary"></i> Data Layer</h5>
+                                    <p><strong>BigQuery:</strong> Stores customer data, transactions, and features</p>
+                                    <p><strong>Pub/Sub:</strong> Real-time event streaming</p>
+                                </div>
+
+                                <div className="component-card">
+                                    <h5><i className="fas fa-cogs text-success"></i> Training Layer</h5>
+                                    <p><strong>Airflow:</strong> Orchestrates daily/weekly training jobs</p>
+                                    <p><strong>Spark:</strong> Feature engineering and data processing</p>
+                                    <p><strong>Vertex AI:</strong> Model training with AutoML and custom training</p>
+                                    <p><strong>MLflow:</strong> Tracks experiments, metrics, and model versions</p>
+                                </div>
+
+                                <div className="component-card">
+                                    <h5><i className="fas fa-rocket text-danger"></i> Serving Layer</h5>
+                                    <p><strong>Vertex AI Endpoint:</strong> Model serving with auto-scaling</p>
+                                    <p><strong>FastAPI:</strong> REST API for predictions</p>
+                                    <p><strong>Redis:</strong> Caching for frequent predictions</p>
+                                </div>
+
+                                <div className="component-card">
+                                    <h5><i className="fas fa-window-maximize text-warning"></i> Application Layer</h5>
+                                    <p><strong>Streamlit:</strong> Web UI for predictions and monitoring</p>
+                                    <p><strong>Cloud Monitoring:</strong> System and model metrics</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'pipeline' && (
+                        <div className="demo-card fade-in">
+                            <div className="card-header">
+                                <h3><i className="fas fa-project-diagram"></i> ML Pipeline Flow</h3>
+                            </div>
+                            <div className="card-body">
+                                <button className="btn btn-primary-custom mb-3" onClick={simulatePipeline}>
+                                    <i className="fas fa-play"></i> Simulate Pipeline
+                                </button>
+                                <div className="pipeline-visual">
+                                    {pipelineStages.map((stage, idx) => (
+                                        <div key={idx} 
+                                            className={`pipeline-stage ${
+                                                idx < pipelineStage ? 'completed' : 
+                                                idx === pipelineStage ? 'active' : ''
+                                            }`}>
+                                            <i className={`fas ${stage.icon} fa-2x mb-2`}></i>
+                                            <div>{stage.name}</div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="mt-4">
+                                    <h5>Pipeline Stages:</h5>
+                                    <ol>
+                                        <li><strong>Data Ingestion:</strong> Load data from BigQuery, process real-time events</li>
+                                        <li><strong>Feature Engineering:</strong> Create features (total_spent_30d, days_since_last_order, etc.)</li>
+                                        <li><strong>Model Training:</strong> Train on Vertex AI, track with MLflow</li>
+                                        <li><strong>Model Deployment:</strong> Register model, deploy to Vertex AI endpoint</li>
+                                        <li><strong>Prediction:</strong> Serve predictions via FastAPI</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'prediction' && (
+                        <div className="demo-card fade-in">
+                            <div className="card-header">
+                                <h3><i className="fas fa-crystal-ball"></i> Churn Prediction</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <h5>Customer Data</h5>
+                                        <div className="mb-3">
+                                            <label>Customer ID:</label>
+                                            <input type="text" className="form-control" 
+                                                value={customerData.customer_id} 
+                                                onChange={(e) => setCustomerData({...customerData, customer_id: e.target.value})} />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label>Total Spent:</label>
+                                            <input type="number" className="form-control" 
+                                                value={customerData.total_spent} 
+                                                onChange={(e) => setCustomerData({...customerData, total_spent: parseFloat(e.target.value)})} />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label>Days Since Last Order:</label>
+                                            <input type="number" className="form-control" 
+                                                value={customerData.days_since_last_order} 
+                                                onChange={(e) => setCustomerData({...customerData, days_since_last_order: parseInt(e.target.value)})} />
+                                        </div>
+                                        <button className="btn btn-primary-custom" onClick={runPrediction} disabled={isProcessing}>
+                                            {isProcessing ? (
+                                                <>
+                                                    <span className="spinner-border spinner-border-sm me-2"></span>
+                                                    Processing...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="fas fa-play"></i> Predict Churn
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                    <div className="col-md-6">
+                                        {prediction && (
+                                            <div className="prediction-result fade-in">
+                                                <h5>Prediction Result</h5>
+                                                <div className="churn-probability">
+                                                    {(prediction.churn_probability * 100).toFixed(1)}%
+                                                </div>
+                                                <p><strong>Risk Level:</strong> {prediction.prediction}</p>
+                                                <p><strong>Confidence:</strong> {(prediction.confidence * 100).toFixed(0)}%</p>
+                                                <hr />
+                                                <h6>Key Features:</h6>
+                                                <ul>
+                                                    <li>Total Spent: ${prediction.features.total_spent}</li>
+                                                    <li>Days Since Last Order: {prediction.features.days_since_last_order}</li>
+                                                    <li>Number of Orders: {prediction.features.num_orders}</li>
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+</html>
+

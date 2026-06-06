@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP Data Flow - Animated Interactions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .flow-diagram {
+            position: relative;
+            height: 900px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .service-node {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10;
+        }
+
+        .service-node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 20;
+        }
+
+        .service-node.active {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .service-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .data-packet {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            animation: moveData 4s linear infinite;
+            z-index: 5;
+        }
+
+        .data-packet.large {
+            width: 12px;
+            height: 12px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 1);
+        }
+
+        .data-packet.fast {
+            animation-duration: 2s;
+        }
+
+        .data-packet.slow {
+            animation-duration: 6s;
+        }
+
+        /* Define data flow paths with classes applied in HTML */
+
+        @keyframes moveData {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            90% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+        }
+
+        .connection {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
+            border-radius: 2px;
+            animation: flowPulse 2s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes flowPulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .status-indicator {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: 2px solid white;
+            animation: statusBlink 3s ease-in-out infinite;
+        }
+
+        @keyframes statusBlink {
+
+            0%,
+            50%,
+            100% {
+                opacity: 1;
+            }
+
+            25%,
+            75% {
+                opacity: 0.5;
+            }
+        }
+
+        .metric-display {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-family: monospace;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .metric-display.updating {
+            animation: metricUpdate 2s ease-in-out infinite;
+        }
+
+        @keyframes metricUpdate {
+
+            0%,
+            100% {
+                background: rgba(0, 0, 0, 0.8);
+            }
+
+            50% {
+                background: rgba(40, 167, 69, 0.8);
+            }
+        }
+
+        .workflow-step {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            max-width: 250px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .workflow-step.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .workflow-step h4 {
+            margin-bottom: 8px;
+            color: #4285F4;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: linear-gradient(45deg, #4285F4, #1E88E5);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(66, 133, 244, 0.3);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(45deg, #34A853, #2E7D32);
+        }
+
+        .legend {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            max-width: 300px;
+        }
+
+        .legend h3 {
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .legend-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .progress-bar.show {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 8px;
+            background: linear-gradient(90deg, #4285F4, #34A853);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .background-effects {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: floatBg 20s ease-in-out infinite;
+        }
+
+        .bg-circle:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+
+        .bg-circle:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            right: 15%;
+            top: 60%;
+            animation-delay: 5s;
+        }
+
+        .bg-circle:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            left: 60%;
+            bottom: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes floatBg {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            33% {
+                transform: translateY(-30px) rotate(120deg);
+            }
+
+            66% {
+                transform: translateY(20px) rotate(240deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .flow-diagram {
+                height: 700px;
+            }
+
+            .service-node {
+                width: 100px;
+                height: 70px;
+                font-size: 11px;
+            }
+
+            .legend {
+                position: static;
+                margin-bottom: 20px;
+                max-width: none;
+            }
+
+            .controls {
+                position: static;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌊 GCP Data Flow - Animated Interactions</h1>
+            <p class="subtitle">Watch how data flows between GCP services in real-time!</p>
+        </div>
+
+        <div class="flow-diagram">
+            <!-- Background effects -->
+            <div class="background-effects">
+                <div class="bg-circle"></div>
+                <div class="bg-circle"></div>
+                <div class="bg-circle"></div>
+            </div>
+
+            <!-- Service Nodes -->
+            <div class="service-node"
+                style="left: 100px; top: 400px; background: linear-gradient(45deg, #34A853, #2E7D32);"
+                onclick="activateService('cloud-storage')">
+                <div class="service-icon">☁️</div>
+                <div>Cloud Storage</div>
+            </div>
+
+            <div class="service-node"
+                style="left: 350px; top: 300px; background: linear-gradient(45deg, #4285F4, #1E88E5);"
+                onclick="activateService('bigquery')">
+                <div class="service-icon">📊</div>
+                <div>BigQuery</div>
+            </div>
+
+            <div class="service-node"
+                style="left: 600px; top: 200px; background: linear-gradient(45deg, #EA4335, #D33B2C);"
+                onclick="activateService('vertex-ai')">
+                <div class="service-icon">🤖</div>
+                <div>Vertex AI</div>
+            </div>
+
+            <div class="service-node"
+                style="left: 850px; top: 300px; background: linear-gradient(45deg, #FBBC05, #F57C00);"
+                onclick="activateService('cloud-run')">
+                <div class="service-icon">🚀</div>
+                <div>Cloud Run</div>
+            </div>
+
+            <div class="service-node"
+                style="left: 1100px; top: 400px; background: linear-gradient(45deg, #9C27B0, #7B1FA2);"
+                onclick="activateService('cloud-functions')">
+                <div class="service-icon">⚡</div>
+                <div>Cloud Functions</div>
+            </div>
+
+            <div class="service-node"
+                style="left: 1350px; top: 500px; background: linear-gradient(45deg, #00ACC1, #00838F);"
+                onclick="activateService('dataflow')">
+                <div class="service-icon">🌊</div>
+                <div>Dataflow</div>
+            </div>
+
+            <!-- Connection Lines -->
+            <div class="connection" style="width: 230px; left: 130px; top: 440px; transform: rotate(15deg);"></div>
+            <div class="connection" style="width: 230px; left: 380px; top: 340px; transform: rotate(15deg);"></div>
+            <div class="connection" style="width: 230px; left: 630px; top: 240px; transform: rotate(15deg);"></div>
+            <div class="connection" style="width: 230px; left: 880px; top: 340px; transform: rotate(-15deg);"></div>
+            <div class="connection" style="width: 230px; left: 1130px; top: 440px; transform: rotate(-15deg);"></div>
+
+            <!-- Data Packets -->
+            <div class="data-packet path-1" style="left: 100px; top: 400px;"></div>
+            <div class="data-packet path-2 large" style="left: 350px; top: 300px;"></div>
+            <div class="data-packet path-3 fast" style="left: 600px; top: 200px;"></div>
+            <div class="data-packet path-4" style="left: 850px; top: 300px;"></div>
+            <div class="data-packet path-5 slow" style="left: 1100px; top: 400px;"></div>
+            <div class="data-packet path-6" style="left: 1350px; top: 500px;"></div>
+
+            <!-- Status Indicators -->
+            <div class="status-indicator" style="left: 180px; top: 420px;"></div>
+            <div class="status-indicator" style="left: 430px; top: 320px;"></div>
+            <div class="status-indicator" style="left: 680px; top: 220px;"></div>
+            <div class="status-indicator" style="left: 930px; top: 320px;"></div>
+            <div class="status-indicator" style="left: 1180px; top: 420px;"></div>
+            <div class="status-indicator" style="left: 1430px; top: 520px;"></div>
+
+            <!-- Metric Displays -->
+            <div class="metric-display updating" style="left: 100px; top: 500px;">
+                📈 Storage: 2.3TB<br>
+                📊 Requests: 1.2M/min
+            </div>
+
+            <div class="metric-display updating" style="left: 350px; top: 400px;">
+                🔍 Queries: 45/sec<br>
+                💾 Processed: 156GB
+            </div>
+
+            <div class="metric-display updating" style="left: 600px; top: 300px;">
+                🧠 Models: 12 active<br>
+                ⚡ Inference: 500ms avg
+            </div>
+
+            <div class="metric-display updating" style="left: 850px; top: 400px;">
+                🚀 Instances: 8 active<br>
+                📈 Scale: 0-100 auto
+            </div>
+
+            <div class="metric-display updating" style="left: 1100px; top: 500px;">
+                ⚡ Executions: 234/min<br>
+                ⏱️ Latency: 120ms
+            </div>
+
+            <div class="metric-display updating" style="left: 1350px; top: 600px;">
+                🌊 Throughput: 50GB/min<br>
+                🔄 Jobs: 8 running
+            </div>
+
+            <!-- Workflow Steps -->
+            <div class="workflow-step" id="workflow-1" style="left: 50px; top: 100px;">
+                <h4>Step 1: Data Ingestion</h4>
+                <p>Data flows from Cloud Storage into BigQuery for analytics and processing.</p>
+            </div>
+
+            <div class="workflow-step" id="workflow-2" style="left: 400px; top: 50px;">
+                <h4>Step 2: ML Training</h4>
+                <p>BigQuery data feeds into Vertex AI for model training and validation.</p>
+            </div>
+
+            <div class="workflow-step" id="workflow-3" style="left: 750px; top: 50px;">
+                <h4>Step 3: Model Deployment</h4>
+                <p>Trained models are deployed to Cloud Run for scalable inference.</p>
+            </div>
+
+            <div class="workflow-step" id="workflow-4" style="left: 1100px; top: 100px;">
+                <h4>Step 4: Event Processing</h4>
+                <p>Cloud Functions handle events and trigger Dataflow pipelines.</p>
+            </div>
+
+            <div class="workflow-step" id="workflow-5" style="left: 1350px; top: 650px;">
+                <h4>Step 5: Data Processing</h4>
+                <p>Dataflow processes streaming data and stores results back to Cloud Storage.</p>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="control-btn" onclick="toggleAnimation()">⏸️ Pause Flow</button>
+            <button class="control-btn" onclick="showWorkflow()">📋 Show Workflow</button>
+            <button class="control-btn" onclick="resetDemo()">🔄 Reset</button>
+            <button class="control-btn" onclick="speedUp()">⚡ Speed Up</button>
+            <button class="control-btn" onclick="slowDown()">🐌 Slow Down</button>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <h3>🎯 GCP Service Flow</h3>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: linear-gradient(45deg, #34A853, #2E7D32);">☁️</div>
+                <span><strong>Cloud Storage:</strong> Object storage & data lake</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: linear-gradient(45deg, #4285F4, #1E88E5);">📊</div>
+                <span><strong>BigQuery:</strong> Data warehouse & analytics</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: linear-gradient(45deg, #EA4335, #D33B2C);">🤖</div>
+                <span><strong>Vertex AI:</strong> ML platform & AutoML</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: linear-gradient(45deg, #FBBC05, #F57C00);">🚀</div>
+                <span><strong>Cloud Run:</strong> Serverless containers</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: linear-gradient(45deg, #9C27B0, #7B1FA2);">⚡</div>
+                <span><strong>Cloud Functions:</strong> Event-driven functions</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: linear-gradient(45deg, #00ACC1, #00838F);">🌊</div>
+                <span><strong>Dataflow:</strong> Stream & batch processing</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let animationPaused = false;
+        let animationSpeed = 1;
+        let workflowStep = 0;
+        const totalSteps = 5;
+
+        // Data packet animations
+        const dataPackets = document.querySelectorAll('.data-packet');
+        const originalDurations = Array.from(dataPackets).map(packet => {
+            const duration = packet.style.animationDuration || '4s';
+            return parseFloat(duration);
+        });
+
+        function updateAnimationSpeed() {
+            dataPackets.forEach((packet, index) => {
+                const originalDuration = originalDurations[index];
+                packet.style.animationDuration = (originalDuration / animationSpeed) + 's';
+            });
+        }
+
+        function toggleAnimation() {
+            animationPaused = !animationPaused;
+            const btn = event.target;
+
+            if (animationPaused) {
+                document.querySelectorAll('.data-packet, .connection, .status-indicator, .bg-circle').forEach(el => {
+                    el.style.animationPlayState = 'paused';
+                });
+                btn.textContent = '▶️ Resume Flow';
+                btn.classList.add('active');
+            } else {
+                document.querySelectorAll('.data-packet, .connection, .status-indicator, .bg-circle').forEach(el => {
+                    el.style.animationPlayState = 'running';
+                });
+                btn.textContent = '⏸️ Pause Flow';
+                btn.classList.remove('active');
+            }
+        }
+
+        function showWorkflow() {
+            const steps = document.querySelectorAll('.workflow-step');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+
+            if (workflowStep >= totalSteps) {
+                // Reset workflow
+                steps.forEach(step => step.classList.remove('show'));
+                workflowStep = 0;
+                progressBar.classList.remove('show');
+                return;
+            }
+
+            // Show current step
+            steps[workflowStep].classList.add('show');
+
+            // Update progress
+            progressBar.classList.add('show');
+            const progress = ((workflowStep + 1) / totalSteps) * 100;
+            progressFill.style.width = progress + '%';
+
+            workflowStep++;
+
+            // Auto-advance after 3 seconds
+            if (workflowStep < totalSteps) {
+                setTimeout(showWorkflow, 3000);
+            }
+        }
+
+        function resetDemo() {
+            // Reset all animations and states
+            document.querySelectorAll('.workflow-step').forEach(step => {
+                step.classList.remove('show');
+            });
+
+            document.querySelectorAll('.service-node').forEach(node => {
+                node.classList.remove('active');
+            });
+
+            document.getElementById('progressBar').classList.remove('show');
+            workflowStep = 0;
+            animationSpeed = 1;
+            updateAnimationSpeed();
+
+            if (animationPaused) {
+                toggleAnimation();
+            }
+        }
+
+        function speedUp() {
+            animationSpeed = Math.min(animationSpeed * 1.5, 4);
+            updateAnimationSpeed();
+        }
+
+        function slowDown() {
+            animationSpeed = Math.max(animationSpeed / 1.5, 0.25);
+            updateAnimationSpeed();
+        }
+
+        function activateService(serviceName) {
+            // Remove active class from all services
+            document.querySelectorAll('.service-node').forEach(node => {
+                node.classList.remove('active');
+            });
+
+            // Add active class to clicked service
+            event.target.closest('.service-node').classList.add('active');
+
+            // Show relevant workflow step
+            const serviceMap = {
+                'cloud-storage': 0,
+                'bigquery': 1,
+                'vertex-ai': 2,
+                'cloud-run': 3,
+                'cloud-functions': 4,
+                'dataflow': 5
+            };
+
+            const stepIndex = serviceMap[serviceName];
+            if (stepIndex !== undefined) {
+                document.querySelectorAll('.workflow-step').forEach((step, index) => {
+                    if (index === stepIndex) {
+                        step.classList.add('show');
+                    } else {
+                        step.classList.remove('show');
+                    }
+                });
+            }
+        }
+
+        // Simulate real-time metrics updates
+        function updateMetrics() {
+            if (animationPaused) return;
+
+            const metrics = document.querySelectorAll('.metric-display');
+            metrics.forEach(metric => {
+                // Simulate metric updates
+                const text = metric.innerHTML;
+                const updatedText = text.replace(/\d+(\.\d+)?/g, (match) => {
+                    const num = parseFloat(match);
+                    const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
+                    return (num * (1 + variation)).toFixed(1);
+                });
+                metric.innerHTML = updatedText;
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            // Start metrics updates
+            setInterval(updateMetrics, 2000);
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                switch (e.key) {
+                    case ' ':
+                        e.preventDefault();
+                        toggleAnimation();
+                        break;
+                    case 'w':
+                    case 'W':
+                        showWorkflow();
+                        break;
+                    case 'r':
+                    case 'R':
+                        resetDemo();
+                        break;
+                    case '+':
+                    case '=':
+                        speedUp();
+                        break;
+                    case '-':
+                        slowDown();
+                        break;
+                }
+            });
+
+            // Add click outside to hide workflow steps
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.service-node') && !e.target.closest('.workflow-step')) {
+                    document.querySelectorAll('.workflow-step').forEach(step => {
+                        step.classList.remove('show');
+                    });
+                    document.querySelectorAll('.service-node').forEach(node => {
+                        node.classList.remove('active');
+                    });
+                }
+            });
+        });
+
+        // Dynamic data packet generation
+        setInterval(() => {
+            if (!animationPaused && Math.random() < 0.3) { // 30% chance every second
+                const packet = document.createElement('div');
+                packet.className = 'data-packet';
+                packet.style.left = Math.random() * 80 + 10 + '%';
+                packet.style.top = Math.random() * 60 + 20 + '%';
+                packet.style.animationDuration = (Math.random() * 3 + 2) / animationSpeed + 's';
+
+                document.querySelector('.flow-diagram').appendChild(packet);
+
+                // Remove packet after animation
+                setTimeout(() => {
+                    if (packet.parentNode) {
+                        packet.parentNode.removeChild(packet);
+                    }
+                }, 5000 / animationSpeed);
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>

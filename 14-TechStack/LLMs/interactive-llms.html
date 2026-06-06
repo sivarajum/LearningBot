@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLMs Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --llm-purple: #8B5CF6;
+            --llm-blue: #3B82F6;
+            --llm-green: #10B981;
+            --llm-orange: #F59E0B;
+            --llm-red: #EF4444;
+            --llm-dark: #1F2937;
+            --llm-light: #F9FAFB;
+            --primary-color: #8B5CF6;
+            --secondary-color: #3B82F6;
+            --accent-color: #10B981;
+            --warning-color: #F59E0B;
+            --info-color: #EF4444;
+            --dark-color: #1F2937;
+            --light-color: #F9FAFB;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--llm-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            min-height: 200px;
+        }
+
+        .btn-llm {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-llm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-outline-llm {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-llm:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: var(--llm-light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--llm-dark);
+        }
+
+        .feature-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .interactive-section {
+            background: var(--llm-light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .prompt-builder {
+            background: var(--llm-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .prompt-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .response-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            min-height: 150px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .model-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .model-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .model-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .model-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .model-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 8px;
+            background: var(--llm-light);
+            border-radius: 4px;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .token-visualization {
+            background: var(--llm-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .token-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .token-chip {
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .embedding-viz {
+            background: var(--llm-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .embedding-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .fine-tuning-progress {
+            background: var(--llm-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .progress-bar-custom {
+            background: var(--secondary-color);
+            height: 20px;
+            border-radius: 4px;
+            margin: 5px 0;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: var(--primary-color);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .evaluation-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .eval-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .eval-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .eval-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .prompt-templates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .template-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .template-name {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .template-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .chain-of-thought {
+            background: var(--llm-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .thought-step {
+            background: white;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 8px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .deployment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .deploy-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .deploy-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .deploy-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .deploy-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .deploy-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .input-group-custom {
+            margin-bottom: 15px;
+        }
+
+        .input-group-custom label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--llm-dark);
+        }
+
+        .input-group-custom input,
+        .input-group-custom select,
+        .input-group-custom textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-group-custom textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .badge-custom {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        .badge-success {
+            background: #10B981;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .badge-info {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [prompt, setPrompt] = useState(`You are a helpful AI assistant. Explain quantum computing in simple terms that a 10-year-old can understand.`);
+            const [response, setResponse] = useState('');
+            const [isGenerating, setIsGenerating] = useState(false);
+            const [selectedModel, setSelectedModel] = useState('gpt-4');
+            const [temperature, setTemperature] = useState(0.7);
+            const [maxTokens, setMaxTokens] = useState(150);
+            const [models, setModels] = useState([
+                {
+                    name: 'GPT-4',
+                    provider: 'OpenAI',
+                    contextWindow: 8192,
+                    parameters: '175B',
+                    benchmark: 0.92,
+                    latency: '2.1s',
+                    cost: '$0.03/1K tokens'
+                },
+                {
+                    name: 'Claude-3',
+                    provider: 'Anthropic',
+                    contextWindow: 200000,
+                    parameters: '70B',
+                    benchmark: 0.89,
+                    latency: '1.8s',
+                    cost: '$0.015/1K tokens'
+                },
+                {
+                    name: 'Llama-3',
+                    provider: 'Meta',
+                    contextWindow: 4096,
+                    parameters: '8B',
+                    benchmark: 0.85,
+                    latency: '1.2s',
+                    cost: 'Free (local)'
+                },
+                {
+                    name: 'PaLM-2',
+                    provider: 'Google',
+                    contextWindow: 8192,
+                    parameters: '340B',
+                    benchmark: 0.88,
+                    latency: '2.5s',
+                    cost: '$0.001/1K chars'
+                }
+            ]);
+            const [tokens, setTokens] = useState(['You', 'are', 'a', 'helpful', 'AI', 'assistant', '.', 'Explain', 'quantum', 'computing', 'in', 'simple', 'terms', 'that', 'a', '10', '-', 'year', '-', 'old', 'can', 'understand', '.']);
+            const [embeddings, setEmbeddings] = useState([
+                { word: 'quantum', x: 20, y: 30 },
+                { word: 'computing', x: 60, y: 40 },
+                { word: 'physics', x: 80, y: 20 },
+                { word: 'computer', x: 40, y: 70 },
+                { word: 'algorithm', x: 70, y: 60 },
+                { word: 'data', x: 30, y: 50 }
+            ]);
+            const [fineTuningProgress, setFineTuningProgress] = useState(0.65);
+            const [evaluationMetrics, setEvaluationMetrics] = useState({
+                bleu: 0.78,
+                rouge: 0.82,
+                perplexity: 12.5,
+                accuracy: 0.89
+            });
+            const [promptTemplates, setPromptTemplates] = useState([
+                {
+                    name: 'Zero-Shot',
+                    description: 'Direct instruction without examples',
+                    template: 'Translate the following English text to French: "Hello, how are you?"'
+                },
+                {
+                    name: 'Few-Shot',
+                    description: 'Include 2-3 examples before the task',
+                    template: `Translate English to French:
+English: Hello → French: Bonjour
+English: Thank you → French: Merci
+English: Goodbye → French: Au revoir
+English: How are you? → French:`
+                },
+                {
+                    name: 'Chain-of-Thought',
+                    description: 'Break down reasoning step by step',
+                    template: `Solve this math problem step by step:
+If John has 5 apples and gives 2 to Mary, how many does he have left?
+
+First, John starts with 5 apples.
+Then he gives 2 apples to Mary.
+So we subtract: 5 - 2 = 3.
+Therefore, John has 3 apples left.`
+                },
+                {
+                    name: 'Role-Playing',
+                    description: 'Assign a specific role to the AI',
+                    template: `You are a professional chef with 20 years of experience. Explain how to make the perfect risotto, including tips for timing and ingredient quality.`
+                }
+            ]);
+            const [chainOfThought, setChainOfThought] = useState([
+                { step: 1, thought: 'Understanding the query: Need to explain quantum computing simply' },
+                { step: 2, thought: 'Breaking down complex concepts: Quantum vs Classical computing' },
+                { step: 3, thought: 'Using analogies: Compare to everyday objects/concepts' },
+                { step: 4, thought: 'Simplifying terminology: Bits vs Qubits, Superposition, Entanglement' },
+                { step: 5, thought: 'Building explanation progressively: Start simple, add complexity' },
+                { step: 6, thought: 'Final answer: Clear, concise explanation for a 10-year-old' }
+            ]);
+            const [code, setCode] = useState(`# LLM Implementation with Hugging Face Transformers
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import numpy as np
+
+# Load pre-trained model and tokenizer
+model_name = "microsoft/DialoGPT-medium"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+# Set padding token
+tokenizer.pad_token = tokenizer.eos_token
+
+def generate_response(prompt, max_length=50, temperature=0.7):
+    """
+    Generate a response from the LLM given a prompt
+    """
+    # Tokenize input
+    inputs = tokenizer.encode(prompt, return_tensors="pt")
+
+    # Generate response
+    with torch.no_grad():
+        outputs = model.generate(
+            inputs,
+            max_length=max_length,
+            temperature=temperature,
+            do_sample=True,
+            pad_token_id=tokenizer.eos_token_id,
+            num_return_sequences=1
+        )
+
+    # Decode response
+    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return response
+
+# Example usage
+prompt = "Hello, I'm interested in machine learning."
+response = generate_response(prompt)
+print(f"Prompt: {prompt}")
+print(f"Response: {response}")
+
+# Fine-tuning example (simplified)
+def fine_tune_model(training_data, epochs=3):
+    """
+    Fine-tune the model on custom data
+    """
+    from transformers import Trainer, TrainingArguments
+
+    # Prepare dataset (simplified)
+    train_dataset = prepare_dataset(training_data)
+
+    training_args = TrainingArguments(
+        output_dir="./results",
+        num_train_epochs=epochs,
+        per_device_train_batch_size=4,
+        save_steps=500,
+        save_total_limit=2,
+    )
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+    )
+
+    trainer.train()
+    return trainer
+
+# Evaluation metrics
+def calculate_perplexity(text):
+    """
+    Calculate perplexity of generated text
+    """
+    inputs = tokenizer(text, return_tensors="pt")
+    with torch.no_grad():
+        outputs = model(**inputs, labels=inputs["input_ids"])
+        loss = outputs.loss
+        perplexity = torch.exp(loss)
+    return perplexity.item()
+
+# Example evaluation
+test_text = "The quick brown fox jumps over the lazy dog."
+perplexity = calculate_perplexity(test_text)
+print(f"Perplexity: {perplexity:.2f}")`);
+            const [output, setOutput] = useState('');
+
+            const generateResponse = async () => {
+                setIsGenerating(true);
+                setResponse('');
+
+                // Simulate LLM response generation
+                setTimeout(() => {
+                    let responseText = '';
+                    if (selectedModel === 'gpt-4') {
+                        responseText = `Quantum computing is like having a super-smart computer that can think about many things at once!
+
+Imagine you have a regular computer that can only look at one toy at a time. But a quantum computer is like having a magic box where every toy can be looked at all at once!
+
+Instead of regular bits (0 or 1), quantum computers use "qubits" that can be both 0 AND 1 at the same time. This lets them solve really hard problems much faster than regular computers.
+
+Scientists are still learning how to use this magic, but it could help us discover new medicines, understand the weather better, and even explore space!`;
+                    } else if (selectedModel === 'claude-3') {
+                        responseText = `Let me explain quantum computing using something familiar - like a light switch!
+
+A normal computer is like a light switch - it can only be ON (1) or OFF (0). But a quantum computer uses "qubits" that can be ON, OFF, or BOTH at the same time! It's like the light being both on AND off until you look at it.
+
+This special ability lets quantum computers try millions of solutions at once, making them amazing at solving complex puzzles that would take regular computers forever.
+
+Right now, quantum computers are like super-powered calculators that can help scientists discover new medicines, create better batteries, and even break secret codes!`;
+                    } else if (selectedModel === 'llama-3') {
+                        responseText = `Think of quantum computing like this: Regular computers are like walking - you take one step at a time. Quantum computers are like teleporting - you can be in many places at once!
+
+They use tiny particles that can exist in multiple states simultaneously. This "superposition" lets them explore many possibilities instantly.
+
+While we don't have full quantum computers yet, researchers are building them to solve problems in chemistry, physics, and artificial intelligence that regular computers can't handle efficiently.`;
+                    } else {
+                        responseText = `Quantum computing harnesses quantum mechanics principles. Unlike classical bits (0 or 1), quantum bits (qubits) can exist in superposition - representing both 0 and 1 simultaneously.
+
+Through quantum entanglement, qubits can be correlated, enabling massive parallel processing. This allows quantum computers to solve certain problems exponentially faster than classical computers.
+
+Current applications include optimization problems, quantum chemistry simulations, and cryptography research. While still in early stages, quantum computing promises breakthroughs in drug discovery, materials science, and artificial intelligence.`;
+                    }
+
+                    setResponse(responseText);
+                    setIsGenerating(false);
+                }, 2000);
+            };
+
+            const tokenizeText = (text) => {
+                // Simple tokenization simulation
+                const tokens = text.split(/(\s+|[.,!?;])/).filter(token => token.trim());
+                setTokens(tokens);
+            };
+
+            const runCode = async () => {
+                setOutput('Running LLM code...\n' +
+                    '✓ Loading transformers library\n' +
+                    '✓ Initializing tokenizer\n' +
+                    '✓ Loading pre-trained model\n' +
+                    '✓ Setting up generation parameters\n\n' +
+                    'Model loaded successfully!\n' +
+                    'Ready for inference...\n\n' +
+                    'Example generation:\n' +
+                    'Prompt: "Hello, I am interested in machine learning"\n' +
+                    'Response: "That\'s great! Machine learning is a fascinating field that involves teaching computers to learn from data..."\n\n' +
+                    'Perplexity calculation: 12.47\n' +
+                    'BLEU Score: 0.78\n' +
+                    'Training completed in 45 minutes');
+            };
+
+            const applyTemplate = (template) => {
+                setPrompt(template.template);
+            };
+
+            const getStatusBadge = (score) => {
+                if (score >= 0.9) return 'badge-success';
+                if (score >= 0.8) return 'badge-warning';
+                return 'badge-info';
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-brain"></i> Large Language Models</h1>
+                        <p>Interactive exploration of LLMs, prompt engineering, and AI capabilities</p>
+                    </div>
+
+                    {/* Navigation Tabs */}
+                    <ul className="nav nav-tabs justify-content-center mb-4">
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('overview')}>
+                                <i className="fas fa-info-circle"></i> Overview
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'prompting' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('prompting')}>
+                                <i className="fas fa-comment-dots"></i> Prompt Engineering
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'models' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('models')}>
+                                <i className="fas fa-robot"></i> Model Comparison
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'tokenization' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('tokenization')}>
+                                <i className="fas fa-puzzle-piece"></i> Tokenization
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'embeddings' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('embeddings')}>
+                                <i className="fas fa-vector-square"></i> Embeddings
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'finetuning' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('finetuning')}>
+                                <i className="fas fa-tools"></i> Fine-tuning
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'evaluation' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('evaluation')}>
+                                <i className="fas fa-chart-bar"></i> Evaluation
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'deployment' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('deployment')}>
+                                <i className="fas fa-rocket"></i> Deployment
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'editor' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('editor')}>
+                                <i className="fas fa-terminal"></i> Code Editor
+                            </button>
+                        </li>
+                    </ul>
+
+                    {/* Tab Content */}
+                    <div className="tab-content">
+                        {/* Overview Tab */}
+                        {activeTab === 'overview' && (
+                            <div>
+                                <div className="feature-grid">
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-language"></i>
+                                        </div>
+                                        <div className="feature-title">Natural Language Processing</div>
+                                        <div className="feature-description">
+                                            Advanced text understanding, generation, and manipulation capabilities.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-magic"></i>
+                                        </div>
+                                        <div className="feature-title">Few-Shot Learning</div>
+                                        <div className="feature-description">
+                                            Learn from minimal examples to perform new tasks effectively.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-cogs"></i>
+                                        </div>
+                                        <div className="feature-title">Transformer Architecture</div>
+                                        <div className="feature-description">
+                                            Attention-based neural networks enabling parallel processing and long-range dependencies.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-users"></i>
+                                        </div>
+                                        <div className="feature-title">Multi-Modal Learning</div>
+                                        <div className="feature-description">
+                                            Integration of text, images, and other modalities for richer understanding.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>LLM Capabilities Overview</h5>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <h6>Text Generation</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> Creative writing</li>
+                                                <li><i className="fas fa-check text-success"></i> Code generation</li>
+                                                <li><i className="fas fa-check text-success"></i> Summarization</li>
+                                                <li><i className="fas fa-check text-success"></i> Translation</li>
+                                            </ul>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <h6>Understanding & Analysis</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> Sentiment analysis</li>
+                                                <li><i className="fas fa-check text-success"></i> Question answering</li>
+                                                <li><i className="fas fa-check text-success"></i> Text classification</li>
+                                                <li><i className="fas fa-check text-success"></i> Named entity recognition</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Prompt Engineering Tab */}
+                        {activeTab === 'prompting' && (
+                            <div>
+                                <h3>Prompt Engineering Playground</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="prompt-builder">
+                                            <h5>Build Your Prompt</h5>
+                                            <div className="input-group-custom">
+                                                <label>Model:</label>
+                                                <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>
+                                                    <option value="gpt-4">GPT-4 (OpenAI)</option>
+                                                    <option value="claude-3">Claude-3 (Anthropic)</option>
+                                                    <option value="llama-3">Llama-3 (Meta)</option>
+                                                    <option value="palm-2">PaLM-2 (Google)</option>
+                                                </select>
+                                            </div>
+                                            <div className="input-group-custom">
+                                                <label>Temperature: {temperature}</label>
+                                                <input type="range" min="0" max="2" step="0.1"
+                                                    value={temperature} onChange={(e) => setTemperature(parseFloat(e.target.value))} />
+                                            </div>
+                                            <div className="input-group-custom">
+                                                <label>Max Tokens: {maxTokens}</label>
+                                                <input type="range" min="50" max="500" step="10"
+                                                    value={maxTokens} onChange={(e) => setMaxTokens(parseInt(e.target.value))} />
+                                            </div>
+                                            <textarea
+                                                className="prompt-input"
+                                                value={prompt}
+                                                onChange={(e) => setPrompt(e.target.value)}
+                                                placeholder="Enter your prompt here..."
+                                            />
+                                            <button
+                                                className="btn btn-llm w-100 mt-2"
+                                                onClick={generateResponse}
+                                                disabled={isGenerating}
+                                            >
+                                                {isGenerating ? (
+                                                    <>
+                                                        <i className="fas fa-spinner fa-spin"></i> Generating...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <i className="fas fa-play"></i> Generate Response
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+
+                                        <div className="prompt-templates">
+                                            <h5>Prompt Templates</h5>
+                                            {promptTemplates.map((template, index) => (
+                                                <div key={index} className="template-card" onClick={() => applyTemplate(template)}>
+                                                    <div className="template-name">{template.name}</div>
+                                                    <div className="template-description">{template.description}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="response-output">
+                                            <strong>Response:</strong>
+                                            {response && (
+                                                <div className="mt-2">
+                                                    {response}
+                                                </div>
+                                            )}
+                                            {!response && !isGenerating && (
+                                                <div className="text-muted mt-2">
+                                                    Click "Generate Response" to see the LLM output...
+                                                </div>
+                                            )}
+                                            {isGenerating && (
+                                                <div className="text-muted mt-2 pulse-animation">
+                                                    <i className="fas fa-brain"></i> Thinking...
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="chain-of-thought">
+                                            <h6>Chain-of-Thought Reasoning</h6>
+                                            {chainOfThought.map(step => (
+                                                <div key={step.step} className="thought-step">
+                                                    <strong>Step {step.step}:</strong> {step.thought}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Models Tab */}
+                        {activeTab === 'models' && (
+                            <div>
+                                <h3>LLM Model Comparison</h3>
+                                <div className="model-comparison">
+                                    {models.map((model, index) => (
+                                        <div key={index} className="model-card">
+                                            <div className="model-name">{model.name}</div>
+                                            <div className="mb-2">
+                                                <strong>Provider:</strong> {model.provider}
+                                            </div>
+                                            <div className="model-metrics">
+                                                <div className="metric-item">
+                                                    <div className="metric-label">Context Window</div>
+                                                    <div className="metric-value">{model.contextWindow.toLocaleString()}</div>
+                                                </div>
+                                                <div className="metric-item">
+                                                    <div className="metric-label">Parameters</div>
+                                                    <div className="metric-value">{model.parameters}</div>
+                                                </div>
+                                                <div className="metric-item">
+                                                    <div className="metric-label">Benchmark</div>
+                                                    <div className="metric-value">{(model.benchmark * 100).toFixed(1)}%</div>
+                                                </div>
+                                                <div className="metric-item">
+                                                    <div className="metric-label">Latency</div>
+                                                    <div className="metric-value">{model.latency}</div>
+                                                </div>
+                                            </div>
+                                            <div className="mt-2">
+                                                <small className="text-muted">{model.cost}</small>
+                                            </div>
+                                            <button className="btn btn-outline-llm btn-sm w-100 mt-2">
+                                                <i className="fas fa-play"></i> Test Model
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Model Selection Guide</h5>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <h6>For Accuracy</h6>
+                                            <p>Choose GPT-4 or Claude-3 for highest accuracy and reasoning capabilities.</p>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <h6>For Speed</h6>
+                                            <p>Select Llama-3 or smaller models for faster inference and lower costs.</p>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <h6>For Context</h6>
+                                            <p>Use Claude-3 for extremely long context windows (up to 200K tokens).</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tokenization Tab */}
+                        {activeTab === 'tokenization' && (
+                            <div>
+                                <h3>Tokenization & Text Processing</h3>
+                                <div className="token-visualization">
+                                    <h5>Token Breakdown</h5>
+                                    <div className="input-group-custom">
+                                        <label>Input Text:</label>
+                                        <textarea
+                                            placeholder="Enter text to tokenize..."
+                                            onChange={(e) => tokenizeText(e.target.value)}
+                                            defaultValue="You are a helpful AI assistant. Explain quantum computing in simple terms that a 10-year-old can understand."
+                                        />
+                                    </div>
+                                    <div className="token-flow">
+                                        {tokens.map((token, index) => (
+                                            <span key={index} className="token-chip">
+                                                {token}
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <div className="mt-2">
+                                        <strong>Total Tokens:</strong> {tokens.length}
+                                        <span className="ms-3">
+                                            <strong>Estimated Cost:</strong> ${(tokens.length * 0.00002).toFixed(4)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Tokenization Methods</h5>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <h6>Byte-Pair Encoding (BPE)</h6>
+                                            <p>Most common method used by GPT models. Merges frequent character pairs.</p>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <h6>WordPiece</h6>
+                                            <p>Used by BERT. Splits words into meaningful subwords.</p>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <h6>SentencePiece</h6>
+                                            <p>Language-agnostic. Works without pre-tokenization.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Embeddings Tab */}
+                        {activeTab === 'embeddings' && (
+                            <div>
+                                <h3>Word Embeddings & Vector Representations</h3>
+                                <div className="embedding-viz">
+                                    <h5>Semantic Space Visualization</h5>
+                                    {embeddings.map((point, index) => (
+                                        <div
+                                            key={index}
+                                            className="embedding-point"
+                                            style={{
+                                                left: `${point.x}%`,
+                                                top: `${point.y}%`
+                                            }}
+                                            title={`${point.word} (${point.x}, ${point.y})`}
+                                        ></div>
+                                    ))}
+                                    <div className="mt-2">
+                                        <small className="text-muted">
+                                            Hover over points to see word vectors in 2D semantic space
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Embedding Techniques</h5>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <h6>Word2Vec</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> CBOW and Skip-gram</li>
+                                                <li><i className="fas fa-check text-success"></i> Distributed representations</li>
+                                                <li><i className="fas fa-check text-success"></i> Semantic relationships</li>
+                                            </ul>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <h6>Transformer Embeddings</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-check text-success"></i> Contextual embeddings</li>
+                                                <li><i className="fas fa-check text-success"></i> Position encoding</li>
+                                                <li><i className="fas fa-check text-success"></i> Multi-head attention</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Fine-tuning Tab */}
+                        {activeTab === 'finetuning' && (
+                            <div>
+                                <h3>Model Fine-tuning & Customization</h3>
+                                <div className="fine-tuning-progress">
+                                    <h5>Fine-tuning Progress</h5>
+                                    <div className="progress-bar-custom">
+                                        <div className="progress-fill" style={{ width: `${fineTuningProgress * 100}%` }}></div>
+                                    </div>
+                                    <div className="mt-2">
+                                        <strong>Progress:</strong> {(fineTuningProgress * 100).toFixed(1)}%
+                                        <span className="ms-3">
+                                            <strong>Epoch:</strong> 3/5
+                                        </span>
+                                        <span className="ms-3">
+                                            <strong>Loss:</strong> 0.234
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Fine-tuning Strategies</h5>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <button className="btn btn-outline-llm w-100 mb-2">
+                                                <i className="fas fa-graduation-cap"></i> Instruction Tuning
+                                            </button>
+                                            <button className="btn btn-outline-llm w-100 mb-2">
+                                                <i className="fas fa-balance-scale"></i> Preference Learning
+                                            </button>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <button className="btn btn-outline-llm w-100 mb-2">
+                                                <i className="fas fa-layer-group"></i> LoRA Fine-tuning
+                                            </button>
+                                            <button className="btn btn-outline-llm w-100 mb-2">
+                                                <i className="fas fa-compress"></i> Quantization
+                                            </button>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <button className="btn btn-outline-llm w-100 mb-2">
+                                                <i className="fas fa-memory"></i> Memory Optimization
+                                            </button>
+                                            <button className="btn btn-outline-llm w-100 mb-2">
+                                                <i className="fas fa-tachometer-alt"></i> Distillation
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Evaluation Tab */}
+                        {activeTab === 'evaluation' && (
+                            <div>
+                                <h3>LLM Evaluation Metrics</h3>
+                                <div className="evaluation-metrics">
+                                    <div className="eval-card">
+                                        <div className="eval-score">{(evaluationMetrics.bleu * 100).toFixed(1)}%</div>
+                                        <div className="eval-label">BLEU Score</div>
+                                        <small className="text-muted">Translation quality</small>
+                                    </div>
+                                    <div className="eval-card">
+                                        <div className="eval-score">{(evaluationMetrics.rouge * 100).toFixed(1)}%</div>
+                                        <div className="eval-label">ROUGE Score</div>
+                                        <small className="text-muted">Summarization quality</small>
+                                    </div>
+                                    <div className="eval-card">
+                                        <div className="eval-score">{evaluationMetrics.perplexity.toFixed(1)}</div>
+                                        <div className="eval-label">Perplexity</div>
+                                        <small className="text-muted">Lower is better</small>
+                                    </div>
+                                    <div className="eval-card">
+                                        <div className="eval-score">{(evaluationMetrics.accuracy * 100).toFixed(1)}%</div>
+                                        <div className="eval-label">Task Accuracy</div>
+                                        <small className="text-muted">General performance</small>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Evaluation Benchmarks</h5>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <h6>GLUE Benchmark</h6>
+                                            <p>General Language Understanding Evaluation - comprehensive NLP tasks.</p>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <h6>MMLU</h6>
+                                            <p>Massive Multitask Language Understanding - academic and professional tasks.</p>
+                                        </div>
+                                    </div>
+                                    <div className="row mt-3">
+                                        <div className="col-md-6">
+                                            <h6>HumanEval</h6>
+                                            <p>Code generation evaluation using hand-written programming problems.</p>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <h6>TruthfulQA</h6>
+                                            <p>Measures model's tendency to generate truthful and accurate responses.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Deployment Tab */}
+                        {activeTab === 'deployment' && (
+                            <div>
+                                <h3>LLM Deployment Strategies</h3>
+                                <div className="deployment-options">
+                                    <div className="deploy-card">
+                                        <div className="deploy-icon">
+                                            <i className="fas fa-cloud"></i>
+                                        </div>
+                                        <div className="deploy-title">Cloud API</div>
+                                        <div className="deploy-description">
+                                            Use managed services like OpenAI API, Anthropic Claude, or Google PaLM.
+                                        </div>
+                                        <div className="mt-2">
+                                            <span className="badge badge-success">Easy Setup</span>
+                                            <span className="badge badge-info">Auto-scaling</span>
+                                        </div>
+                                    </div>
+                                    <div className="deploy-card">
+                                        <div className="deploy-icon">
+                                            <i className="fas fa-server"></i>
+                                        </div>
+                                        <div className="deploy-title">Self-hosted</div>
+                                        <div className="deploy-description">
+                                            Deploy on your own infrastructure using Docker, Kubernetes, or cloud VMs.
+                                        </div>
+                                        <div className="mt-2">
+                                            <span className="badge badge-warning">Complex Setup</span>
+                                            <span className="badge badge-success">Full Control</span>
+                                        </div>
+                                    </div>
+                                    <div className="deploy-card">
+                                        <div className="deploy-icon">
+                                            <i className="fas fa-microchip"></i>
+                                        </div>
+                                        <div className="deploy-title">Edge Deployment</div>
+                                        <div className="deploy-description">
+                                            Run models on edge devices for low-latency, offline capabilities.
+                                        </div>
+                                        <div className="mt-2">
+                                            <span className="badge badge-info">Low Latency</span>
+                                            <span className="badge badge-warning">Limited Resources</span>
+                                        </div>
+                                    </div>
+                                    <div className="deploy-card">
+                                        <div className="deploy-icon">
+                                            <i className="fas fa-network-wired"></i>
+                                        </div>
+                                        <div className="deploy-title">Hybrid Cloud</div>
+                                        <div className="deploy-description">
+                                            Combine cloud and on-premises deployment for optimal performance and cost.
+                                        </div>
+                                        <div className="mt-2">
+                                            <span className="badge badge-success">Flexible</span>
+                                            <span className="badge badge-info">Cost-effective</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Optimization Techniques</h5>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <h6>Model Compression</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-compress text-success"></i> Quantization (8-bit, 4-bit)</li>
+                                                <li><i className="fas fa-cut text-success"></i> Pruning and distillation</li>
+                                                <li><i className="fas fa-layer-group text-success"></i> LoRA and adapters</li>
+                                            </ul>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <h6>Inference Optimization</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-tachometer-alt text-success"></i> Batch processing</li>
+                                                <li><i className="fas fa-memory text-success"></i> KV-cache optimization</li>
+                                                <li><i className="fas fa-flash text-success"></i> Flash attention</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Code Editor Tab */}
+                        {activeTab === 'editor' && (
+                            <div>
+                                <h3>LLM Implementation Code</h3>
+                                <div className="code-editor">
+                                    <pre>{code}</pre>
+                                </div>
+                                <div className="mt-3">
+                                    <button
+                                        className="btn btn-llm me-2"
+                                        onClick={runCode}
+                                    >
+                                        <i className="fas fa-play"></i> Run Code
+                                    </button>
+                                    <button className="btn btn-outline-llm">
+                                        <i className="fas fa-download"></i> Download Code
+                                    </button>
+                                </div>
+                                {output && (
+                                    <div className="code-output">
+                                        {output}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-graduation-cap"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://platform.openai.com/docs/introduction" target="_blank"><i className="fas fa-external-link-alt"></i> OpenAI API</a></li>
+                                        <li><a href="https://huggingface.co/docs/transformers/index" target="_blank"><i className="fas fa-external-link-alt"></i> Hugging Face Transformers</a></li>
+                                        <li><a href="https://docs.anthropic.com/claude/docs" target="_blank"><i className="fas fa-external-link-alt"></i> Anthropic Claude</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/" target="_blank"><i className="fas fa-external-link-alt"></i> Prompt Engineering Guide</a></li>
+                                        <li><a href="https://arxiv.org/abs/2005.14165" target="_blank"><i className="fas fa-external-link-alt"></i> Language Models are Few-Shot Learners</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/large-language-models" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

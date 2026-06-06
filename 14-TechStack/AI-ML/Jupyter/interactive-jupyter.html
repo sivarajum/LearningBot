@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Jupyter Notebook</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+        }
+
+        .notebook {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .notebook-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 30px;
+        }
+
+        .notebook-title {
+            font-size: 2em;
+            color: #495057;
+        }
+
+        .kernel-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .kernel-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            border-color: #004085;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .cell {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+
+        .cell:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .cell-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .cell-type {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .cell-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .cell-control {
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #6c757d;
+            transition: all 0.2s ease;
+        }
+
+        .cell-control:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .cell-content {
+            padding: 15px;
+        }
+
+        .code-cell .cell-content {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            background: #f8f9fa;
+            border: none;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .markdown-cell .cell-content {
+            line-height: 1.6;
+        }
+
+        .cell-output {
+            background: white;
+            border-top: 1px solid #dee2e6;
+            padding: 15px;
+        }
+
+        .output-area {
+            margin-top: 10px;
+        }
+
+        .execution-result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .plot-output {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .plot-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #f8f9fa 25%, transparent 25%),
+                linear-gradient(-45deg, #f8f9fa 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f8f9fa 75%),
+                linear-gradient(-45deg, transparent 75%, #f8f9fa 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 1.2em;
+        }
+
+        .dataframe-output {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .dataframe-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .dataframe-table th,
+        .dataframe-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .dataframe-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .dataframe-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .error-output {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            padding: 10px;
+            color: #721c24;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .execution-count {
+            color: #6c757d;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .cell.running .cell-header {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+
+        .cell.completed .cell-header {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .cell.error .cell-header {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .add-cell-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #dee2e6;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            color: #6c757d;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .add-cell-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+            color: #495057;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 24px;
+            color: #6c757d;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .cell-type-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .cell-type-option {
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cell-type-option:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+
+        .cell-type-option.selected {
+            border-color: #007bff;
+            background: #007bff;
+            color: white;
+        }
+
+        .variable-inspector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .inspector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .inspector-title {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .variable-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .variable-name {
+            font-family: monospace;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .variable-type {
+            font-size: 12px;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .variable-value {
+            font-family: monospace;
+            font-size: 12px;
+            color: #495057;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .kernel-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #28a745);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100%);
+            }
+
+            to {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .code-highlight {
+            background: #f1f3f4;
+            border-left: 3px solid #007bff;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .notebook {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .variable-inspector {
+                position: static;
+                width: 100%;
+                margin-top: 20px;
+            }
+
+            .kernel-info {
+                position: static;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="notebook">
+        <div class="notebook-header">
+            <div class="notebook-title">📓 Interactive Jupyter Notebook</div>
+            <div class="kernel-indicator">
+                <div class="kernel-status"></div>
+                <span>Python 3 (ipykernel)</span>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn" onclick="saveNotebook()">💾 Save</button>
+            <button class="btn" onclick="runAllCells()">▶️ Run All</button>
+            <button class="btn" onclick="clearAllOutputs()">🗑️ Clear All</button>
+            <button class="btn btn-primary" onclick="addCell()">➕ Add Cell</button>
+            <button class="btn" onclick="showVariableInspector()">🔍 Variables</button>
+        </div>
+
+        <div id="cells-container">
+            <!-- Initial cells will be added here -->
+        </div>
+
+        <button class="add-cell-btn" onclick="addCell()">
+            ➕ Click to add a new cell
+        </button>
+    </div>
+
+    <!-- Variable Inspector -->
+    <div id="variable-inspector" class="variable-inspector" style="display: none;">
+        <div class="inspector-header">
+            <div class="inspector-title">Variable Inspector</div>
+            <button onclick="hideVariableInspector()">×</button>
+        </div>
+        <div id="variables-list">
+            <!-- Variables will be added here -->
+        </div>
+    </div>
+
+    <!-- Kernel Info -->
+    <div class="kernel-info">
+        <div>Python 3.9.7 | IPython 7.31.1</div>
+        <div>Connected | 2.1 GB RAM</div>
+    </div>
+
+    <!-- Modal for adding cells -->
+    <div id="add-cell-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Add New Cell</div>
+                <div class="modal-close" onclick="closeModal()">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="cell-type-selector">
+                    <div class="cell-type-option" data-type="code">
+                        <div style="font-size: 2em; margin-bottom: 10px;">💻</div>
+                        <div>Code Cell</div>
+                        <div style="font-size: 12px; opacity: 0.7;">Execute Python code</div>
+                    </div>
+                    <div class="cell-type-option" data-type="markdown">
+                        <div style="font-size: 2em; margin-bottom: 10px;">📝</div>
+                        <div>Markdown Cell</div>
+                        <div style="font-size: 12px; opacity: 0.7;">Rich text formatting</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="createCell()" style="width: 100%;">Create Cell</button>
+        </div>
+    </div>
+
+    <script>
+        let cells = [];
+        let cellCounter = 1;
+        let variables = {};
+        let currentCellType = 'code';
+
+        // Initialize with sample cells
+        function initializeNotebook() {
+            addSampleCells();
+            updateVariableInspector();
+        }
+
+        function addSampleCells() {
+            // Welcome markdown cell
+            createCellElement('markdown', '# Welcome to Interactive Jupyter Notebook\n\nThis notebook demonstrates the power of Jupyter for data science and machine learning workflows.');
+
+            // Import cell
+            createCellElement('code', 'import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\nprint("Libraries imported successfully!")');
+
+            // Data generation cell
+            createCellElement('code', '# Generate sample data\nnp.random.seed(42)\ndata = {\n    \'x\': np.random.randn(100),\n    \'y\': np.random.randn(100) * 2 + 1,\n    \'category\': np.random.choice([\'A\', \'B\', \'C\'], 100)\n}\n\ndf = pd.DataFrame(data)\nprint(f"Created dataset with {len(df)} rows")\ndf.head()');
+
+            // Visualization cell
+            createCellElement('code', '# Create a scatter plot\nplt.figure(figsize=(10, 6))\ncolors = {\'A\': \'red\', \'B\': \'blue\', \'C\': \'green\'}\n\nfor category in df[\'category\'].unique():\n    subset = df[df[\'category\'] == category]\n    plt.scatter(subset[\'x\'], subset[\'y\'], \n                c=colors[category], \n                label=category, \n                alpha=0.7)\n\nplt.title(\'Sample Data Visualization\')\nplt.xlabel(\'X values\')\nplt.ylabel(\'Y values\')\nplt.legend()\nplt.grid(True, alpha=0.3)\nplt.show()');
+
+            // Analysis cell
+            createCellElement('code', '# Basic statistical analysis\nprint("Dataset Statistics:")\nprint(df.describe())\nprint("\\nCategory counts:")\nprint(df[\'category\'].value_counts())');
+        }
+
+        function createCellElement(type, content = '') {
+            const cellId = cells.length;
+            const cell = {
+                id: cellId,
+                type: type,
+                content: content,
+                output: '',
+                executionCount: null,
+                status: 'idle'
+            };
+
+            cells.push(cell);
+            renderCell(cell);
+            return cell;
+        }
+
+        function renderCell(cell) {
+            const container = document.getElementById('cells-container');
+            const cellElement = document.createElement('div');
+            cellElement.className = `cell ${cell.status}`;
+            cellElement.id = `cell-${cell.id}`;
+
+            let contentEditable = cell.type === 'code' ? 'contenteditable="true"' : 'contenteditable="true"';
+            let contentClass = cell.type === 'code' ? 'code-cell' : 'markdown-cell';
+
+            cellElement.innerHTML = `
+                <div class="cell-header">
+                    <div class="cell-type">${cell.type === 'code' ? '[ ]' : '📝'} ${cell.type.charAt(0).toUpperCase() + cell.type.slice(1)}</div>
+                    <div class="cell-controls">
+                        <button class="cell-control" onclick="runCell(${cell.id})">▶️</button>
+                        <button class="cell-control" onclick="deleteCell(${cell.id})">🗑️</button>
+                        <button class="cell-control" onclick="moveCell(${cell.id}, -1)">⬆️</button>
+                        <button class="cell-control" onclick="moveCell(${cell.id}, 1)">⬇️</button>
+                    </div>
+                </div>
+                <div class="cell-content ${contentClass}">
+                    <div ${contentEditable} class="cell-editor" oninput="updateCellContent(${cell.id}, this.innerText)">${cell.content}</div>
+                </div>
+                ${cell.output ? `<div class="cell-output">${cell.output}</div>` : ''}
+            `;
+
+            container.appendChild(cellElement);
+        }
+
+        function updateCellContent(cellId, content) {
+            cells[cellId].content = content;
+        }
+
+        function runCell(cellId) {
+            const cell = cells[cellId];
+            const cellElement = document.getElementById(`cell-${cellId}`);
+
+            cell.status = 'running';
+            cellElement.className = `cell ${cell.status}`;
+
+            // Update cell header to show running state
+            const header = cellElement.querySelector('.cell-type');
+            header.innerHTML = '[*] Running...';
+
+            // Simulate execution delay
+            setTimeout(() => {
+                executeCell(cell);
+                cell.status = 'completed';
+                cellElement.className = `cell ${cell.status}`;
+                header.innerHTML = `[${cell.executionCount || cellId + 1}] ${cell.type.charAt(0).toUpperCase() + cell.type.slice(1)}`;
+            }, 500 + Math.random() * 1000);
+        }
+
+        function executeCell(cell) {
+            cell.executionCount = cellCounter++;
+
+            if (cell.type === 'markdown') {
+                cell.output = renderMarkdown(cell.content);
+            } else {
+                cell.output = executeCode(cell.content, cell.id);
+            }
+
+            // Update the cell display
+            const cellElement = document.getElementById(`cell-${cell.id}`);
+            let outputElement = cellElement.querySelector('.cell-output');
+
+            if (!outputElement) {
+                outputElement = document.createElement('div');
+                outputElement.className = 'cell-output';
+                cellElement.appendChild(outputElement);
+            }
+
+            outputElement.innerHTML = cell.output;
+            updateVariableInspector();
+        }
+
+        function executeCode(code, cellId) {
+            // Simulate code execution with realistic outputs
+            let output = '';
+
+            if (code.includes('import numpy') || code.includes('import pandas') || code.includes('import matplotlib')) {
+                output = '<div class="execution-result">Libraries imported successfully!</div>';
+                variables['np'] = { type: 'module', value: 'numpy' };
+                variables['pd'] = { type: 'module', value: 'pandas' };
+                variables['plt'] = { type: 'module', value: 'matplotlib.pyplot' };
+            }
+
+            if (code.includes('np.random.seed')) {
+                output = '<div class="execution-result">Random seed set to 42</div>';
+            }
+
+            if (code.includes('data = {')) {
+                output += '<div class="execution-result">Created dataset with 100 rows</div>';
+                variables['data'] = { type: 'dict', value: '{x: array, y: array, category: array}' };
+                variables['df'] = { type: 'DataFrame', value: '(100, 3)' };
+            }
+
+            if (code.includes('df.head()')) {
+                output += `
+                    <div class="dataframe-output">
+                        <table class="dataframe-table">
+                            <thead>
+                                <tr><th></th><th>x</th><th>y</th><th>category</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>0</td><td>-0.234587</td><td>1.234567</td><td>A</td></tr>
+                                <tr><td>1</td><td>0.345678</td><td>-0.987654</td><td>B</td></tr>
+                                <tr><td>2</td><td>-1.567890</td><td>2.345678</td><td>C</td></tr>
+                                <tr><td>3</td><td>0.987654</td><td>0.456789</td><td>A</td></tr>
+                                <tr><td>4</td><td>-0.456789</td><td>-1.234567</td><td>B</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            if (code.includes('plt.figure') || code.includes('plt.show()')) {
+                output += `
+                    <div class="plot-output">
+                        <div class="plot-placeholder">
+                            📊 Matplotlib Plot<br>
+                            <small>Scatter plot visualization would appear here</small>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (code.includes('df.describe()')) {
+                output += `
+                    <div class="dataframe-output">
+                        <table class="dataframe-table">
+                            <thead>
+                                <tr><th></th><th>x</th><th>y</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>count</td><td>100.000000</td><td>100.000000</td></tr>
+                                <tr><td>mean</td><td>-0.023456</td><td>0.987654</td></tr>
+                                <tr><td>std</td><td>0.987654</td><td>1.456789</td></tr>
+                                <tr><td>min</td><td>-2.345678</td><td>-2.987654</td></tr>
+                                <tr><td>max</td><td>2.567890</td><td>3.456789</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            if (code.includes('df[\'category\'].value_counts()')) {
+                output += '<div class="execution-result">A    35<br>B    33<br>C    32<br>Name: category, dtype: int64</div>';
+            }
+
+            if (code.includes('print(')) {
+                const printMatch = code.match(/print\(["']([^"']+)["']\)/);
+                if (printMatch) {
+                    output += `<div class="execution-result">${printMatch[1]}</div>`;
+                }
+            }
+
+            // Add execution count
+            output = `<div class="execution-count">Out[${cellCounter}]:</div>` + output;
+
+            return output;
+        }
+
+        function renderMarkdown(content) {
+            // Simple markdown rendering
+            let html = content
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*(.*)\*/gim, '<em>$1</em>')
+                .replace(/`([^`]+)`/gim, '<code>$1</code>')
+                .replace(/\n\n/gim, '</p><p>')
+                .replace(/\n/gim, '<br>');
+
+            return `<div class="output-area"><p>${html}</p></div>`;
+        }
+
+        function deleteCell(cellId) {
+            if (confirm('Delete this cell?')) {
+                cells.splice(cellId, 1);
+                document.getElementById(`cell-${cellId}`).remove();
+                // Re-render all cells to fix IDs
+                document.getElementById('cells-container').innerHTML = '';
+                cells.forEach(cell => renderCell(cell));
+            }
+        }
+
+        function moveCell(cellId, direction) {
+            const newIndex = cellId + direction;
+            if (newIndex >= 0 && newIndex < cells.length) {
+                [cells[cellId], cells[newIndex]] = [cells[newIndex], cells[cellId]];
+                document.getElementById('cells-container').innerHTML = '';
+                cells.forEach(cell => renderCell(cell));
+            }
+        }
+
+        function addCell() {
+            document.getElementById('add-cell-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('add-cell-modal').style.display = 'none';
+        }
+
+        function createCell() {
+            const selectedOption = document.querySelector('.cell-type-option.selected');
+            if (selectedOption) {
+                const type = selectedOption.dataset.type;
+                createCellElement(type);
+                closeModal();
+                showNotification('Cell added successfully!', 'success');
+            }
+        }
+
+        // Cell type selection
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('cell-type-option')) {
+                document.querySelectorAll('.cell-type-option').forEach(opt => opt.classList.remove('selected'));
+                e.target.classList.add('selected');
+            }
+        });
+
+        function runAllCells() {
+            cells.forEach((cell, index) => {
+                setTimeout(() => runCell(index), index * 200);
+            });
+        }
+
+        function clearAllOutputs() {
+            cells.forEach(cell => {
+                cell.output = '';
+                const cellElement = document.getElementById(`cell-${cell.id}`);
+                const outputElement = cellElement.querySelector('.cell-output');
+                if (outputElement) {
+                    outputElement.remove();
+                }
+            });
+            showNotification('All outputs cleared', 'success');
+        }
+
+        function saveNotebook() {
+            showNotification('Notebook saved successfully!', 'success');
+        }
+
+        function showVariableInspector() {
+            document.getElementById('variable-inspector').style.display = 'block';
+        }
+
+        function hideVariableInspector() {
+            document.getElementById('variable-inspector').style.display = 'none';
+        }
+
+        function updateVariableInspector() {
+            const container = document.getElementById('variables-list');
+            container.innerHTML = '';
+
+            Object.entries(variables).forEach(([name, info]) => {
+                const item = document.createElement('div');
+                item.className = 'variable-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="variable-name">${name}</div>
+                        <div class="variable-type">${info.type}</div>
+                    </div>
+                    <div class="variable-value">${info.value}</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize the notebook
+        initializeNotebook();
+    </script>
+</body>
+
+</html>

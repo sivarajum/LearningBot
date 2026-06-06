@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neo4j Interactive Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.5.0/dist/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --neo4j-blue: #008CC1;
+            --neo4j-light: #60A3BC;
+            --neo4j-dark: #005B82;
+            --neo4j-accent: #4CAF50;
+            --primary-color: #008CC1;
+            --secondary-color: #60A3BC;
+            --accent-color: #4CAF50;
+            --warning-color: #FF9800;
+            --info-color: #2196F3;
+            --dark-color: #2C3E50;
+            --light-color: #ECF0F1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #008CC1 0%, #60A3BC 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .cypher-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 200px;
+            white-space: pre-wrap;
+            position: relative;
+        }
+
+        .cypher-editor:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 140, 193, 0.2);
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 140, 193, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 140, 193, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .graph-visualization {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            position: relative;
+        }
+
+        .node {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            line-height: 60px;
+            font-weight: bold;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 140, 193, 0.4);
+        }
+
+        .node.person {
+            background: var(--primary-color);
+        }
+
+        .node.movie {
+            background: var(--accent-color);
+        }
+
+        .node.company {
+            background: var(--warning-color);
+        }
+
+        .relationship {
+            position: absolute;
+            color: var(--secondary-color);
+            font-size: 12px;
+            font-weight: bold;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 2px solid var(--secondary-color);
+        }
+
+        .query-results {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .result-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .result-properties {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .property {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .property-name {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .property-value {
+            color: var(--dark-color);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .cypher-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .query-section {
+            margin-bottom: 20px;
+        }
+
+        .query-section h5 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .query-preview {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .pattern-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .pattern-element {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .element-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .element-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-element {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-element-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .result-properties {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="demo-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-project-diagram"></i> Neo4j Interactive Demo</h1>
+                <p>Explore graph database operations through interactive Cypher queries</p>
+            </div>
+
+            <!-- Neo4j Features Overview -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-star"></i> Neo4j Key Features</h3>
+                </div>
+                <div class="card-body">
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-project-diagram"></i></div>
+                            <div class="feature-title">Native Graph Storage</div>
+                            <div class="feature-description">Optimized for storing and querying graph data with native graph primitives.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-code"></i></div>
+                            <div class="feature-title">Cypher Query Language</div>
+                            <div class="feature-description">Intuitive, SQL-like query language designed specifically for graphs.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="feature-title">ACID Transactions</div>
+                            <div class="feature-description">Full ACID compliance with immediate consistency for graph operations.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-search-plus"></i></div>
+                            <div class="feature-title">Powerful Traversals</div>
+                            <div class="feature-description">Efficient graph traversals with variable-length path queries and pattern matching.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-expand-arrows-alt"></i></div>
+                            <div class="feature-title">Horizontal Scaling</div>
+                            <div class="feature-description">Clustering support for high availability and horizontal read scaling.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                            <div class="feature-title">Graph Algorithms</div>
+                            <div class="feature-description">Built-in graph algorithms for pathfinding, centrality, and community detection.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cypher Query Editor -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-terminal"></i> Cypher Query Editor</h3>
+                </div>
+                <div class="card-body">
+                    <div class="cypher-editor" contenteditable="true" v-html="currentQuery"></div>
+                    <button class="run-btn" @click="executeQuery" :disabled="!currentQuery.trim() || isExecuting">
+                        <i class="fas fa-play"></i> Execute Query
+                    </button>
+                    <div v-if="queryResult" class="output-panel">{{ queryResult }}</div>
+                </div>
+            </div>
+
+            <!-- Graph Visualization -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-share-alt"></i> Graph Visualization</h3>
+                </div>
+                <div class="card-body">
+                    <div class="graph-visualization">
+                        <!-- Movie Database Graph -->
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h5>Movie Recommendation Graph</h5>
+                        </div>
+                        
+                        <!-- Nodes -->
+                        <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap;">
+                            <div class="node person" title="Person Node">Tom</div>
+                            <div class="relationship" style="top: 30px; left: 80px;">ACTED_IN</div>
+                            <div class="node movie" title="Movie Node">Inception</div>
+                            <div class="relationship" style="top: 30px; left: 200px;">DIRECTED</div>
+                            <div class="node person" title="Person Node">Nolan</div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 20px;">
+                            <div class="node person" title="Person Node">Alice</div>
+                            <div class="relationship" style="top: 30px; left: 80px;">FOLLOWS</div>
+                            <div class="node person" title="Person Node">Tom</div>
+                            <div class="relationship" style="top: 30px; left: 200px;">RATED</div>
+                            <div class="node movie" title="Movie Node">Matrix</div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 20px;">
+                            <div class="node company" title="Company Node">Warner</div>
+                            <div class="relationship" style="top: 30px; left: 80px;">PRODUCED</div>
+                            <div class="node movie" title="Movie Node">Inception</div>
+                        </div>
+                        
+                        <div style="position: absolute; bottom: 10px; right: 10px; font-size: 12px; color: #6c757d;">
+                            <div><i class="fas fa-circle" style="color: #008CC1;"></i> Person</div>
+                            <div><i class="fas fa-circle" style="color: #4CAF50;"></i> Movie</div>
+                            <div><i class="fas fa-circle" style="color: #FF9800;"></i> Company</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CRUD Operations Demo -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-edit"></i> Graph Operations</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Operation Tabs -->
+                    <div class="operation-tabs">
+                        <button class="operation-tab active" @click="graphOperation = 'create'">
+                            <i class="fas fa-plus"></i> Create
+                        </button>
+                        <button class="operation-tab" @click="graphOperation = 'query'">
+                            <i class="fas fa-search"></i> Query
+                        </button>
+                        <button class="operation-tab" @click="graphOperation = 'update'">
+                            <i class="fas fa-edit"></i> Update
+                        </button>
+                        <button class="operation-tab" @click="graphOperation = 'delete'">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+
+                    <!-- Create Operation -->
+                    <div v-show="graphOperation === 'create'">
+                        <h4>Create Nodes & Relationships</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Node 1 Label:</label>
+                                        <select class="form-control" v-model="newGraph.node1Label">
+                                            <option value="Person">Person</option>
+                                            <option value="Movie">Movie</option>
+                                            <option value="Company">Company</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Node 1 Name:</label>
+                                        <input type="text" class="form-control" v-model="newGraph.node1Name" placeholder="e.g., John Doe">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Relationship Type:</label>
+                                        <select class="form-control" v-model="newGraph.relationship">
+                                            <option value="ACTED_IN">ACTED_IN</option>
+                                            <option value="DIRECTED">DIRECTED</option>
+                                            <option value="FOLLOWS">FOLLOWS</option>
+                                            <option value="RATED">RATED</option>
+                                            <option value="PRODUCED">PRODUCED</option>
+                                            <option value="WORKS_FOR">WORKS_FOR</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Node 2 Label:</label>
+                                        <select class="form-control" v-model="newGraph.node2Label">
+                                            <option value="Person">Person</option>
+                                            <option value="Movie">Movie</option>
+                                            <option value="Company">Company</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Node 2 Name:</label>
+                                        <input type="text" class="form-control" v-model="newGraph.node2Name" placeholder="e.g., Inception">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Properties (JSON):</label>
+                                        <textarea class="form-control" v-model="newGraph.properties" rows="3" placeholder='e.g., {"rating": 5, "year": 2010}'></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="createGraphData" :disabled="!newGraph.node1Name || !newGraph.node2Name">
+                                <i class="fas fa-save"></i> Create Graph Pattern
+                            </button>
+                        </div>
+                        <div v-if="graphResult" class="response-display">
+                            <h5>Result:</h5>
+                            <pre>{{ graphResult }}</pre>
+                        </div>
+                    </div>
+
+                    <!-- Query Operation -->
+                    <div v-show="graphOperation === 'query'">
+                        <h4>Query Graph Patterns</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Pattern Type:</label>
+                                        <select class="form-control" v-model="queryPattern.type">
+                                            <option value="friends">Friends of Friends</option>
+                                            <option value="recommendations">Movie Recommendations</option>
+                                            <option value="shortestPath">Shortest Path</option>
+                                            <option value="commonConnections">Common Connections</option>
+                                            <option value="influence">Influence Network</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Starting Node:</label>
+                                        <input type="text" class="form-control" v-model="queryPattern.startNode" placeholder="e.g., Tom Hanks">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Additional Filters:</label>
+                                <input type="text" class="form-control" v-model="queryPattern.filters" placeholder="e.g., rating > 4, year > 2000">
+                            </div>
+                            <button class="run-btn" @click="queryGraphData">
+                                <i class="fas fa-search"></i> Execute Graph Query
+                            </button>
+                        </div>
+                        <div v-if="graphResult" class="response-display">
+                            <h5>Query Results:</h5>
+                            <div class="query-results">
+                                <div class="result-row" v-for="result in queryResults" :key="result.id">
+                                    <div class="result-properties">
+                                        <div class="property" v-for="(value, key) in result" :key="key">
+                                            <span class="property-name">{{ key }}:</span>
+                                            <span class="property-value">{{ value }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <pre v-if="queryResults.length === 0">{{ graphResult }}</pre>
+                        </div>
+                    </div>
+
+                    <!-- Update Operation -->
+                    <div v-show="graphOperation === 'update'">
+                        <h4>Update Graph Data</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Node Name:</label>
+                                        <input type="text" class="form-control" v-model="updateGraph.nodeName" placeholder="e.g., Tom Hanks">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>New Property:</label>
+                                        <input type="text" class="form-control" v-model="updateGraph.newProperty" placeholder="e.g., age">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>New Value:</label>
+                                        <input type="text" class="form-control" v-model="updateGraph.newValue" placeholder="e.g., 65">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Relationship to Update:</label>
+                                        <input type="text" class="form-control" v-model="updateGraph.relationship" placeholder="e.g., ACTED_IN">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="updateGraphData" :disabled="!updateGraph.nodeName">
+                                <i class="fas fa-edit"></i> Update Graph Data
+                            </button>
+                        </div>
+                        <div v-if="graphResult" class="response-display">
+                            <h5>Result:</h5>
+                            <pre>{{ graphResult }}</pre>
+                        </div>
+                    </div>
+
+                    <!-- Delete Operation -->
+                    <div v-show="graphOperation === 'delete'">
+                        <h4>Delete Graph Elements</h4>
+                        <div class="interactive-demo">
+                            <div class="form-group">
+                                <label>Element to Delete:</label>
+                                <select class="form-control" v-model="deleteGraph.elementType">
+                                    <option value="node">Node</option>
+                                    <option value="relationship">Relationship</option>
+                                    <option value="subgraph">Subgraph</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Identifier:</label>
+                                <input type="text" class="form-control" v-model="deleteGraph.identifier" placeholder="e.g., node name or relationship pattern">
+                            </div>
+                            <button class="run-btn" @click="deleteGraphData" :disabled="!deleteGraph.identifier" style="background: linear-gradient(45deg, #dc3545, #ff6b6b);">
+                                <i class="fas fa-trash"></i> Delete Graph Element
+                            </button>
+                        </div>
+                        <div v-if="graphResult" class="response-display">
+                            <h5>Result:</h5>
+                            <pre>{{ graphResult }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern Builder -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-sitemap"></i> Cypher Pattern Builder</h3>
+                </div>
+                <div class="card-body">
+                    <div class="pattern-builder">
+                        <h5>Build Complex Cypher Patterns</h5>
+                        <div v-for="(element, index) in patternElements" :key="index" class="pattern-element">
+                            <div class="element-header">
+                                <span class="element-type">{{ element.type }}</span>
+                                <button class="remove-element" @click="removePatternElement(index)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label>Pattern:</label>
+                                <input type="text" class="form-control" v-model="element.pattern" :placeholder="getPatternPlaceholder(element.type)">
+                            </div>
+                            <div class="form-group" v-if="element.type === 'WHERE'">
+                                <label>Condition:</label>
+                                <input type="text" class="form-control" v-model="element.condition" placeholder="e.g., p.age > 30">
+                            </div>
+                            <div class="form-group" v-if="element.type === 'RETURN'">
+                                <label>Return Expression:</label>
+                                <input type="text" class="form-control" v-model="element.returnExpr" placeholder="e.g., p.name, count(*)">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Add Pattern Element:</label>
+                            <select class="form-control" v-model="newElementType">
+                                <option value="">Select type...</option>
+                                <option value="MATCH">MATCH</option>
+                                <option value="WHERE">WHERE</option>
+                                <option value="RETURN">RETURN</option>
+                                <option value="CREATE">CREATE</option>
+                                <option value="MERGE">MERGE</option>
+                                <option value="SET">SET</option>
+                            </select>
+                        </div>
+
+                        <button class="add-element-btn" @click="addPatternElement" :disabled="!newElementType">
+                            <i class="fas fa-plus"></i> Add Element
+                        </button>
+
+                        <button class="run-btn" @click="buildAndExecutePattern" :disabled="patternElements.length === 0" style="margin-left: 10px;">
+                            <i class="fas fa-play"></i> Build & Execute
+                        </button>
+
+                        <div class="query-preview">
+                            <strong>Generated Cypher:</strong><br>
+                            {{ builtPattern }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tachometer-alt"></i> Performance Metrics</h3>
+                </div>
+                <div class="card-body">
+                    <div class="performance-metrics">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ performance.queryTime }}</div>
+                            <div class="metric-label">Last Query Time</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">{{ performance.totalQueries }}</div>
+                            <div class="metric-label">Total Queries</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">{{ performance.nodeCount }}</div>
+                            <div class="metric-label">Nodes</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">{{ performance.relCount }}</div>
+                            <div class="metric-label">Relationships</div>
+                        </div>
+                    </div>
+
+                    <div class="execution-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Neo4j Version:</span>
+                            <span class="stat-value">5.15.0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Store Size:</span>
+                            <span class="stat-value">256MB</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Page Cache:</span>
+                            <span class="stat-value">128MB</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Active Transactions:</span>
+                            <span class="stat-value">3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Resources -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-book"></i> Learn More</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Official Resources</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="https://neo4j.com/" target="_blank"><i class="fas fa-external-link-alt"></i> Neo4j Official Site</a></li>
+                                <li><a href="https://neo4j.com/docs/" target="_blank"><i class="fas fa-external-link-alt"></i> Documentation</a></li>
+                                <li><a href="https://neo4j.com/developer/cypher/" target="_blank"><i class="fas fa-external-link-alt"></i> Cypher Manual</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Python Integration</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="https://neo4j.com/docs/python-manual/current/" target="_blank"><i class="fas fa-external-link-alt"></i> Neo4j Python Driver</a></li>
+                                <li><a href="https://github.com/neo4j-contrib/py2neo" target="_blank"><i class="fas fa-external-link-alt"></i> Py2neo</a></li>
+                                <li><a href="https://neo4j.com/docs/graph-data-science/current/" target="_blank"><i class="fas fa-external-link-alt"></i> Graph Data Science</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    currentQuery: 'MATCH (p:Person)-[:ACTED_IN]->(m:Movie) RETURN p.name, m.title LIMIT 5',
+                    queryResult: '',
+                    isExecuting: false,
+                    graphOperation: 'create',
+                    
+                    // Create graph data
+                    newGraph: {
+                        node1Label: 'Person',
+                        node1Name: '',
+                        relationship: 'ACTED_IN',
+                        node2Label: 'Movie',
+                        node2Name: '',
+                        properties: ''
+                    },
+                    
+                    // Query graph data
+                    queryPattern: {
+                        type: 'friends',
+                        startNode: '',
+                        filters: ''
+                    },
+                    
+                    // Update graph data
+                    updateGraph: {
+                        nodeName: '',
+                        newProperty: '',
+                        newValue: '',
+                        relationship: ''
+                    },
+                    
+                    // Delete graph data
+                    deleteGraph: {
+                        elementType: 'node',
+                        identifier: ''
+                    },
+                    
+                    graphResult: '',
+                    queryResults: [],
+                    
+                    // Pattern builder
+                    patternElements: [],
+                    newElementType: '',
+                    
+                    // Performance metrics
+                    performance: {
+                        queryTime: '0.02ms',
+                        totalQueries: 0,
+                        nodeCount: 10000,
+                        relCount: 25000
+                    }
+                }
+            },
+            computed: {
+                builtPattern() {
+                    if (this.patternElements.length === 0) return 'No pattern elements defined';
+                    
+                    let pattern = '';
+                    this.patternElements.forEach((element, index) => {
+                        if (index > 0) pattern += '\n';
+                        pattern += element.type + ' ';
+                        
+                        if (element.pattern) {
+                            pattern += element.pattern;
+                        }
+                        
+                        if (element.type === 'WHERE' && element.condition) {
+                            pattern += element.condition;
+                        }
+                        
+                        if (element.type === 'RETURN' && element.returnExpr) {
+                            pattern += element.returnExpr;
+                        }
+                    });
+                    
+                    return pattern;
+                }
+            },
+            methods: {
+                async executeQuery() {
+                    this.isExecuting = true;
+                    this.queryResult = 'Executing Cypher query...\n\n';
+                    
+                    try {
+                        await this.delay(500);
+                        
+                        const result = this.simulateCypherQuery(this.currentQuery);
+                        this.queryResult += result;
+                        this.performance.totalQueries++;
+                        
+                        this.performance.queryTime = (Math.random() * 0.1 + 0.01).toFixed(3) + 'ms';
+                        
+                    } catch (error) {
+                        this.queryResult += 'Error: ' + error.message;
+                    } finally {
+                        this.isExecuting = false;
+                    }
+                },
+                
+                simulateCypherQuery(query) {
+                    const upperQuery = query.toUpperCase().trim();
+                    
+                    if (upperQuery.includes('MATCH') && upperQuery.includes('RETURN')) {
+                        return `Query executed successfully\n\nResults:\n{\n  "p.name": "Tom Hanks",\n  "m.title": "Forrest Gump"\n}\n{\n  "p.name": "Tom Hanks",\n  "m.title": "Cast Away"\n}\n{\n  "p.name": "Leonardo DiCaprio",\n  "m.title": "Inception"\n}\n\n3 rows returned in ${this.performance.queryTime}`;
+                    } else if (upperQuery.includes('CREATE')) {
+                        return `Graph pattern created successfully\n\nNodes created: 2\nRelationships created: 1\nLabels added: Person, Movie\nProperties set: 3\n\nTransaction committed`;
+                    } else if (upperQuery.includes('MERGE')) {
+                        return `Merge operation completed\n\nNodes matched: 1\nNodes created: 1\nRelationships created: 1\n\nPattern ensured in graph`;
+                    } else if (upperQuery.includes('DELETE')) {
+                        return `Delete operation completed\n\nNodes deleted: 1\nRelationships deleted: 2\n\nTransaction committed`;
+                    } else if (upperQuery.includes('SHORTESTPATH')) {
+                        return `Shortest path found\n\nPath length: 3\nNodes: A -> B -> C -> D\nRelationships: KNOWS, WORKS_WITH, FRIENDS_WITH\n\nTotal cost: 2.5`;
+                    } else {
+                        return 'Query executed successfully';
+                    }
+                },
+                
+                async createGraphData() {
+                    this.graphResult = 'Creating graph pattern...\n\n';
+                    
+                    try {
+                        await this.delay(300);
+                        const properties = this.newGraph.properties ? JSON.parse(this.newGraph.properties) : {};
+                        
+                        this.graphResult += `✅ Graph pattern created successfully\n`;
+                        this.graphResult += `📍 Node 1: (${this.newGraph.node1Label}:${this.newGraph.node1Name})\n`;
+                        this.graphResult += `🔗 Relationship: -[:${this.newGraph.relationship}]->\n`;
+                        this.graphResult += `📍 Node 2: (${this.newGraph.node2Label}:${this.newGraph.node2Name})\n`;
+                        this.graphResult += `📄 Properties: ${JSON.stringify(properties, null, 2)}\n\n`;
+                        this.graphResult += 'Pattern added to graph database\nNodes and relationships indexed';
+                        
+                        // Reset form
+                        this.newGraph = {
+                            node1Label: 'Person',
+                            node1Name: '',
+                            relationship: 'ACTED_IN',
+                            node2Label: 'Movie',
+                            node2Name: '',
+                            properties: ''
+                        };
+                        
+                    } catch (error) {
+                        this.graphResult += '❌ Error: ' + error.message;
+                    }
+                },
+                
+                async queryGraphData() {
+                    this.graphResult = 'Executing graph query...\n\n';
+                    this.queryResults = [];
+                    
+                    try {
+                        await this.delay(400);
+                        
+                        // Simulate different query results based on type
+                        let sampleResults = [];
+                        
+                        switch (this.queryPattern.type) {
+                            case 'friends':
+                                sampleResults = [
+                                    { name: 'Alice Johnson', connection: 'Friend', path_length: 1 },
+                                    { name: 'Bob Smith', connection: 'Friend of Friend', path_length: 2 },
+                                    { name: 'Carol Davis', connection: 'Friend of Friend', path_length: 2 }
+                                ];
+                                break;
+                            case 'recommendations':
+                                sampleResults = [
+                                    { movie: 'Inception', recommended_by: 'Alice', rating: 5 },
+                                    { movie: 'The Matrix', recommended_by: 'Bob', rating: 4 },
+                                    { movie: 'Interstellar', recommended_by: 'Alice', rating: 5 }
+                                ];
+                                break;
+                            case 'shortestPath':
+                                sampleResults = [
+                                    { path: 'Tom -> Alice -> Bob', length: 2 },
+                                    { path: 'Tom -> Charlie -> Bob', length: 2 }
+                                ];
+                                break;
+                            default:
+                                sampleResults = [
+                                    { result: 'Query executed', count: 5 }
+                                ];
+                        }
+                        
+                        this.queryResults = sampleResults;
+                        this.graphResult += `✅ Graph query executed successfully\n`;
+                        this.graphResult += `📊 ${sampleResults.length} results found\n`;
+                        this.graphResult += `🔍 Pattern: ${this.queryPattern.type}\n`;
+                        this.graphResult += `⏱️ Execution time: ${this.performance.queryTime}`;
+                        
+                    } catch (error) {
+                        this.graphResult += '❌ Error: ' + error.message;
+                    }
+                },
+                
+                async updateGraphData() {
+                    this.graphResult = 'Updating graph data...\n\n';
+                    
+                    try {
+                        await this.delay(350);
+                        this.graphResult += `✅ Graph data updated successfully\n`;
+                        this.graphResult += `📍 Node: ${this.updateGraph.nodeName}\n`;
+                        
+                        if (this.updateGraph.newProperty && this.updateGraph.newValue) {
+                            this.graphResult += `📝 Property updated: ${this.updateGraph.newProperty} = ${this.updateGraph.newValue}\n`;
+                        }
+                        
+                        if (this.updateGraph.relationship) {
+                            this.graphResult += `🔗 Relationship updated: ${this.updateGraph.relationship}\n`;
+                        }
+                        
+                        this.graphResult += '\nProperties synchronized\nIndexes updated';
+                        
+                        // Reset form
+                        this.updateGraph = {
+                            nodeName: '',
+                            newProperty: '',
+                            newValue: '',
+                            relationship: ''
+                        };
+                        
+                    } catch (error) {
+                        this.graphResult += '❌ Error: ' + error.message;
+                    }
+                },
+                
+                async deleteGraphData() {
+                    this.graphResult = 'Deleting graph elements...\n\n';
+                    
+                    try {
+                        await this.delay(250);
+                        this.graphResult += `✅ Graph elements deleted successfully\n`;
+                        this.graphResult += `🗑️ Element type: ${this.deleteGraph.elementType}\n`;
+                        this.graphResult += `🆔 Identifier: ${this.deleteGraph.identifier}\n`;
+                        
+                        if (this.deleteGraph.elementType === 'node') {
+                            this.graphResult += 'Connected relationships also removed\n';
+                        }
+                        
+                        this.graphResult += 'Graph structure updated\nTransaction committed';
+                        
+                        this.deleteGraph = {
+                            elementType: 'node',
+                            identifier: ''
+                        };
+                        
+                    } catch (error) {
+                        this.graphResult += '❌ Error: ' + error.message;
+                    }
+                },
+                
+                addPatternElement() {
+                    if (this.newElementType) {
+                        const element = {
+                            type: this.newElementType,
+                            pattern: '',
+                            condition: '',
+                            returnExpr: ''
+                        };
+                        
+                        // Set default patterns based on type
+                        switch (this.newElementType) {
+                            case 'MATCH':
+                                element.pattern = '(p:Person)-[:ACTED_IN]->(m:Movie)';
+                                break;
+                            case 'WHERE':
+                                element.condition = 'p.age > 30';
+                                break;
+                            case 'RETURN':
+                                element.returnExpr = 'p.name, m.title';
+                                break;
+                            case 'CREATE':
+                                element.pattern = '(p:Person {name: "John"})-[:WORKS_FOR]->(c:Company {name: "ACME"})';
+                                break;
+                            case 'MERGE':
+                                element.pattern = '(p:Person {name: "John"})';
+                                break;
+                            case 'SET':
+                                element.pattern = 'p.age = 35';
+                                break;
+                        }
+                        
+                        this.patternElements.push(element);
+                        this.newElementType = '';
+                    }
+                },
+                
+                removePatternElement(index) {
+                    this.patternElements.splice(index, 1);
+                },
+                
+                getPatternPlaceholder(type) {
+                    const placeholders = {
+                        'MATCH': '(p:Person)-[:ACTED_IN]->(m:Movie)',
+                        'CREATE': '(p:Person {name: "John"})',
+                        'MERGE': '(p:Person {name: "John"})',
+                        'SET': 'p.age = 35',
+                        'WHERE': 'p.age > 30',
+                        'RETURN': 'p.name, count(*)'
+                    };
+                    return placeholders[type] || 'Enter pattern...';
+                },
+                
+                async buildAndExecutePattern() {
+                    this.currentQuery = this.builtPattern;
+                    await this.executeQuery();
+                },
+                
+                delay(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+            },
+            
+            mounted() {
+                // Simulate real-time performance updates
+                setInterval(() => {
+                    this.performance.nodeCount = Math.floor(Math.random() * 1000 + 9000);
+                    this.performance.relCount = Math.floor(Math.random() * 5000 + 20000);
+                }, 5000);
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

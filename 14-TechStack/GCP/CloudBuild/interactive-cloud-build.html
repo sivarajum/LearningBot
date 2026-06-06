@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Build Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --gcp-blue: #4285F4;
+            --gcp-red: #EA4335;
+            --gcp-yellow: #FBBC05;
+            --gcp-green: #34A853;
+            --gcp-purple: #9C27B0;
+            --gcp-dark: #202124;
+            --gcp-light: #FFFFFF;
+            --gcp-gray: #F8F9FA;
+            --primary-color: #4285F4;
+            --secondary-color: #EA4335;
+            --accent-color: #34A853;
+            --warning-color: #FBBC05;
+            --info-color: #9C27B0;
+            --dark-color: #202124;
+            --light-color: #F8F9FA;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4285F4 0%, #9C27B0 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--gcp-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 200px;
+            border: 1px solid #dee2e6;
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .run-preview {
+            background: var(--gcp-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            position: relative;
+            border: 2px solid var(--gcp-blue);
+        }
+
+        .build-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 180px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .build-card:hover {
+            transform: scale(1.05);
+        }
+
+        .build-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .build-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .build-progress {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .perf-metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .build-config {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .config-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .config-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-config {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-config-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .build-logs {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid var(--accent-color);
+        }
+
+        .trigger-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .trigger-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .trigger-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .trigger-card.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            height: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: width 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .pipeline-visualization {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .pipeline-step {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .pipeline-step::after {
+            content: '→';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .pipeline-step:last-child::after {
+            display: none;
+        }
+
+        .build-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-success {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .status-failure {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .status-running {
+            background: var(--warning-color);
+            color: black;
+        }
+
+        .status-pending {
+            background: #6c757d;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .trigger-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useContext, createContext } = React;
+
+        // Cloud Build context
+        const CloudBuildContext = createContext();
+
+        // Main App Component
+        const App = () => {
+            const [currentCode, setCurrentCode] = useState(`steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-app', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/my-app']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'my-service', '--image', 'gcr.io/$PROJECT_ID/my-app', '--region', 'us-central1', '--platform', 'managed']`);
+            const [output, setOutput] = useState('');
+            const [isRunning, setIsRunning] = useState(false);
+            const [activeTab, setActiveTab] = useState('builds');
+            const [buildName, setBuildName] = useState('my-build-pipeline');
+            const [triggerType, setTriggerType] = useState('push');
+            const [branchPattern, setBranchPattern] = useState('main');
+            const [tagPattern, setTagPattern] = useState('v*');
+            const [timeout, setTimeout] = useState(600);
+            const [machineType, setMachineType] = useState('n1-standard-1');
+            const [substitutions, setSubstitutions] = useState('_SERVICE_NAME=my-service\n_BRANCH_NAME=$BRANCH_NAME');
+            const [buildConfigs, setBuildConfigs] = useState([
+                {
+                    type: 'Docker Build',
+                    name: 'BuildDocker',
+                    config: `steps:\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA', '.']`
+                }
+            ]);
+            const [newConfigType, setNewConfigType] = useState('');
+
+            // Performance metrics
+            const [performance, setPerformance] = useState({
+                builds: 45,
+                successRate: 92,
+                avgDuration: 245,
+                cost: 12.45
+            });
+
+            // Build statistics
+            const [buildStats, setBuildStats] = useState([
+                { name: 'Total Builds', count: 45, icon: 'build' },
+                { name: 'Success Rate', count: 92, icon: 'check_circle', unit: '%' },
+                { name: 'Avg Duration', count: 245, icon: 'schedule', unit: 's' },
+                { name: 'Cost (24h)', count: 12.45, icon: 'attach_money', unit: '$' }
+            ]);
+
+            // Build progress
+            const [buildProgress, setBuildProgress] = useState({
+                status: 'idle',
+                progress: 0,
+                currentStep: 'Ready',
+                eta: 'Ready'
+            });
+
+            // Current project state
+            const [projectState, setProjectState] = useState({
+                projectId: 'my-cloud-build-project',
+                region: 'us-central1',
+                serviceAccount: 'cloud-build-sa'
+            });
+
+            // Build history
+            const [buildHistory, setBuildHistory] = useState([
+                { id: 'build-001', status: 'success', duration: '3m 24s', trigger: 'push', branch: 'main', timestamp: '2024-01-01 10:30:00' },
+                { id: 'build-002', status: 'success', duration: '2m 45s', trigger: 'manual', branch: 'feature-x', timestamp: '2024-01-01 09:15:00' },
+                { id: 'build-003', status: 'failure', duration: '1m 12s', trigger: 'push', branch: 'main', timestamp: '2024-01-01 08:45:00' },
+                { id: 'build-004', status: 'running', duration: '45s', trigger: 'tag', branch: 'v1.2.0', timestamp: '2024-01-01 08:30:00' }
+            ]);
+
+            // Update performance metrics
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setPerformance(prev => ({
+                        builds: prev.builds + Math.floor(Math.random() * 3),
+                        successRate: Math.floor(Math.random() * 10 + 85),
+                        avgDuration: Math.floor(Math.random() * 50 + 200),
+                        cost: (prev.cost + Math.random() * 2).toFixed(2)
+                    }));
+                }, 5000);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            // Simulate build progress
+            useEffect(() => {
+                if (buildProgress.status === 'running') {
+                    const interval = setInterval(() => {
+                        setBuildProgress(prev => {
+                            const newProgress = Math.min(prev.progress + Math.random() * 20, 100);
+                            const steps = ['Cloning', 'Building', 'Testing', 'Pushing', 'Deploying', 'Complete'];
+                            const currentStepIndex = Math.floor((newProgress / 100) * steps.length);
+                            const eta = newProgress >= 100 ? 'Complete' : `${Math.floor((100 - newProgress) / 10)}s remaining`;
+
+                            return {
+                                ...prev,
+                                progress: newProgress,
+                                currentStep: steps[Math.min(currentStepIndex, steps.length - 1)],
+                                eta: eta,
+                                status: newProgress >= 100 ? 'completed' : 'running'
+                            };
+                        });
+                    }, 800);
+
+                    return () => clearInterval(interval);
+                }
+            }, [buildProgress.status]);
+
+            const runBuild = async () => {
+                setIsRunning(true);
+                setOutput('Starting Cloud Build...\n\n');
+
+                // Start build progress
+                setBuildProgress({
+                    status: 'running',
+                    progress: 0,
+                    currentStep: 'Cloning',
+                    eta: '60s'
+                });
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
+                    // Simulate build execution
+                    const result = simulateBuildExecution(currentCode);
+                    setOutput(result);
+
+                    // Add to build history
+                    const newBuild = {
+                        id: `build-${Date.now()}`,
+                        status: 'success',
+                        duration: `${Math.floor(Math.random() * 5 + 2)}m ${Math.floor(Math.random() * 60)}s`,
+                        trigger: triggerType,
+                        branch: branchPattern,
+                        timestamp: new Date().toLocaleString()
+                    };
+                    setBuildHistory(prev => [newBuild, ...prev.slice(0, 9)]);
+
+                } catch (error) {
+                    setOutput('Error: ' + error.message);
+                    setBuildProgress(prev => ({ ...prev, status: 'failed' }));
+
+                    // Add failed build to history
+                    const failedBuild = {
+                        id: `build-${Date.now()}`,
+                        status: 'failure',
+                        duration: `${Math.floor(Math.random() * 2 + 1)}m ${Math.floor(Math.random() * 30)}s`,
+                        trigger: triggerType,
+                        branch: branchPattern,
+                        timestamp: new Date().toLocaleString()
+                    };
+                    setBuildHistory(prev => [failedBuild, ...prev.slice(0, 9)]);
+                } finally {
+                    setIsRunning(false);
+                }
+            };
+
+            const simulateBuildExecution = (code) => {
+                let result = 'Cloud Build Execution Results:\n\n';
+
+                if (code.includes('docker') || code.includes('gcr.io')) {
+                    result += '✅ Docker build steps detected\n';
+                }
+                if (code.includes('gcloud') || code.includes('deploy')) {
+                    result += '✅ Deployment steps configured\n';
+                }
+                if (code.includes('test') || code.includes('pytest') || code.includes('npm test')) {
+                    result += '✅ Testing steps included\n';
+                }
+                if (code.includes('$PROJECT_ID') || code.includes('$COMMIT_SHA')) {
+                    result += '✅ Substitutions configured\n';
+                }
+
+                result += '\n🚀 Build Status:\n';
+                result += 'Build ID: ' + buildName + '-' + Date.now() + '\n';
+                result += 'Trigger: ' + triggerType + '\n';
+                result += 'Branch: ' + branchPattern + '\n';
+                result += 'Machine Type: ' + machineType + '\n';
+                result += 'Timeout: ' + timeout + ' seconds\n';
+                result += 'Status: Success\n\n';
+
+                result += '📊 Build Steps:\n';
+                const steps = code.split('- name:').slice(1);
+                steps.forEach((step, index) => {
+                    const stepName = step.split('\n')[0].trim().replace(/'/g, '');
+                    result += `${index + 1}. ${stepName} - Completed\n`;
+                });
+
+                result += '\n🔗 Build Logs:\n';
+                result += 'https://console.cloud.google.com/cloud-build/builds/' + buildName + '\n\n';
+
+                result += 'Build completed successfully! Your application has been built and deployed.';
+
+                return result;
+            };
+
+            const createTrigger = () => {
+                if (!buildName) return;
+
+                const triggerTemplates = {
+                    'push': `steps:
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone', 'https://github.com/my-org/my-repo', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/${buildName}:$COMMIT_SHA', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/${buildName}:$COMMIT_SHA']`,
+                    'tag': `steps:
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone', '--branch', '$TAG_NAME', 'https://github.com/my-org/my-repo', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/${buildName}:$TAG_NAME', '.']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', '${buildName}', '--image', 'gcr.io/$PROJECT_ID/${buildName}:$TAG_NAME', '--region', 'us-central1']`,
+                    'manual': `steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/${buildName}:manual-$BUILD_ID', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/${buildName}:manual-$BUILD_ID']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', '${buildName}', '--image', 'gcr.io/$PROJECT_ID/${buildName}:manual-$BUILD_ID', '--region', 'us-central1']`,
+                    'schedule': `steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['system', 'prune', '-f']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['container', 'images', 'list-tags', 'gcr.io/$PROJECT_ID/${buildName}', '--filter', 'timestamp.datetime < \'-30d\'', '--format', 'get(digest)', '--limit', 'unlimited']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['container', 'images', 'delete', '--quiet', '--force-delete-tags', '\$(gcloud container images list-tags gcr.io/$PROJECT_ID/${buildName} --filter "timestamp.datetime < \'-30d\'" --format "get(digest)" --limit unlimited)']`
+                };
+
+                const triggerCode = triggerTemplates[triggerType] || triggerTemplates.push;
+                setCurrentCode(triggerCode);
+            };
+
+            const testBuild = () => {
+                const testCode = `# Test the build configuration
+import yaml
+import os
+
+# Load cloudbuild.yaml
+with open('cloudbuild.yaml', 'r') as f:
+    config = yaml.safe_load(f)
+
+print("Build Configuration:")
+print(f"Steps: {len(config.get('steps', []))}")
+print(f"Timeout: {config.get('timeout', 'default')}")
+print(f"Options: {config.get('options', {})}")
+
+# Validate steps
+for i, step in enumerate(config.get('steps', [])):
+    print(f"Step {i+1}: {step.get('name', 'unknown')}")
+    if 'args' in step:
+        print(f"  Args: {step['args']}")
+
+print("\\nBuild configuration validated successfully!")`;
+
+                setCurrentCode(testCode);
+            };
+
+            const addBuildConfig = () => {
+                if (!newConfigType) return;
+
+                const templates = {
+                    'Docker Build': {
+                        name: 'BuildDocker',
+                        config: `steps:\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA', '.']`
+                    },
+                    'Test Suite': {
+                        name: 'RunTests',
+                        config: `steps:\n- name: 'python:3.9'\n  args: ['pip', 'install', '-r', 'requirements.txt']\n- name: 'python:3.9'\n  args: ['pytest', 'tests/']`
+                    },
+                    'Deploy to GKE': {
+                        name: 'DeployGKE',
+                        config: `steps:\n- name: 'gcr.io/cloud-builders/kubectl'\n  args: ['apply', '-f', 'k8s/']\n- name: 'gcr.io/cloud-builders/kubectl'\n  args: ['rollout', 'status', 'deployment/my-app']`
+                    },
+                    'Security Scan': {
+                        name: 'SecurityScan',
+                        config: `steps:\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['run', '--rm', 'gcr.io/gcp-runtimes/container-structure-test', 'test', '--image', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA', '--config', 'container-structure-test.yaml']`
+                    },
+                    'Artifact Registry': {
+                        name: 'PushArtifact',
+                        config: `steps:\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['tag', 'my-app:$COMMIT_SHA', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$COMMIT_SHA']\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$COMMIT_SHA']`
+                    }
+                };
+
+                const template = templates[newConfigType];
+                if (template) {
+                    setBuildConfigs([...buildConfigs, {
+                        type: newConfigType,
+                        name: template.name,
+                        config: template.config
+                    }]);
+                }
+
+                setNewConfigType('');
+            };
+
+            const removeBuildConfig = (index) => {
+                setBuildConfigs(buildConfigs.filter((_, i) => i !== index));
+            };
+
+            const loadBuildExample = (example) => {
+                const examples = {
+                    'basic-docker': `steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'my-service', '--image', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA', '--region', 'us-central1']`,
+                    'multi-stage': `steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '--target', 'builder', '-t', 'builder', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['run', '--name', 'extract', 'builder', 'tar', 'czf', '/tmp/artifacts.tgz', '/app/dist']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '--target', 'runtime', '-t', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA']`,
+                    'with-tests': `steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'test-image', '-f', 'Dockerfile.test', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['run', '--rm', 'test-image', 'npm', 'test']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA']`,
+                    'k8s-deploy': `steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['container', 'clusters', 'get-credentials', 'my-cluster', '--region', 'us-central1']
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['set', 'image', 'deployment/my-app', 'my-app=gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA']
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['rollout', 'status', 'deployment/my-app']`,
+                    'artifact-registry': `steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$COMMIT_SHA', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$COMMIT_SHA']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'my-service', '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$COMMIT_SHA', '--region', 'us-central1']`
+                };
+
+                setCurrentCode(examples[example] || examples['basic-docker']);
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-cogs"></i> Cloud Build Interactive Demo</h1>
+                        <p>CI/CD pipelines with automated building, testing, and deployment</p>
+                    </div>
+
+                    {/* Cloud Build Features Overview */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-star"></i> Cloud Build Key Features</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="feature-grid">
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-code-branch"></i></div>
+                                    <div className="feature-title">Git Integration</div>
+                                    <div className="feature-description">Native integration with GitHub, GitLab, and Bitbucket. Automatic triggers on push, pull requests, and tags.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-docker"></i></div>
+                                    <div className="feature-title">Container Builds</div>
+                                    <div className="feature-description">Build Docker containers with multi-stage builds, caching, and parallel execution for faster builds.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-shield-alt"></i></div>
+                                    <div className="feature-title">Security Scanning</div>
+                                    <div className="feature-description">Built-in vulnerability scanning, binary authorization, and secure supply chain capabilities.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-tachometer-alt"></i></div>
+                                    <div className="feature-title">Fast Builds</div>
+                                    <div className="feature-description">Parallel execution, build caching, and optimized infrastructure for 2-10x faster builds.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-plug"></i></div>
+                                    <div className="feature-title">Extensible</div>
+                                    <div className="feature-description">Custom build steps, community builders, and integration with 100+ tools and services.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-chart-line"></i></div>
+                                    <div className="feature-title">Analytics</div>
+                                    <div className="feature-description">Build metrics, performance insights, and detailed logs for debugging and optimization.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Build Progress */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-spinner"></i> Build Progress</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="build-progress">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                                    <h5>Build Status</h5>
+                                    <span className={`badge ${buildProgress.status === 'running' ? 'bg-primary' : buildProgress.status === 'completed' ? 'bg-success' : 'bg-secondary'}`}>
+                                        {buildProgress.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div className="progress" style={{ height: '25px' }}>
+                                    <div
+                                        className="progress-bar"
+                                        style={{ width: `${buildProgress.progress}%` }}
+                                        role="progressbar"
+                                        aria-valuenow={buildProgress.progress}
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                    >
+                                        {buildProgress.progress.toFixed(1)}%
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', fontSize: '0.9rem', color: '#6c757d' }}>
+                                    <span>Step: {buildProgress.currentStep}</span>
+                                    <span>ETA: {buildProgress.eta}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Trigger Types */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-bolt"></i> Build Triggers</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="trigger-options">
+                                <div className={`trigger-card ${triggerType === 'push' ? 'selected' : ''}`} onClick={() => setTriggerType('push')}>
+                                    <i className="fas fa-code-branch" style={{ fontSize: '2rem', color: '#28a745', marginBottom: '10px' }}></i>
+                                    <h6>Push Trigger</h6>
+                                    <p>Build on git push to branch</p>
+                                </div>
+                                <div className={`trigger-card ${triggerType === 'tag' ? 'selected' : ''}`} onClick={() => setTriggerType('tag')}>
+                                    <i className="fas fa-tag" style={{ fontSize: '2rem', color: '#007bff', marginBottom: '10px' }}></i>
+                                    <h6>Tag Trigger</h6>
+                                    <p>Build on git tag creation</p>
+                                </div>
+                                <div className={`trigger-card ${triggerType === 'manual' ? 'selected' : ''}`} onClick={() => setTriggerType('manual')}>
+                                    <i className="fas fa-hand-pointer" style={{ fontSize: '2rem', color: '#ffc107', marginBottom: '10px' }}></i>
+                                    <h6>Manual Trigger</h6>
+                                    <p>Build on demand</p>
+                                </div>
+                                <div className={`trigger-card ${triggerType === 'schedule' ? 'selected' : ''}`} onClick={() => setTriggerType('schedule')}>
+                                    <i className="fas fa-clock" style={{ fontSize: '2rem', color: '#6f42c1', marginBottom: '10px' }}></i>
+                                    <h6>Scheduled</h6>
+                                    <p>Build on schedule</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Code Editor */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-code"></i> Build Configuration</h3>
+                        </div>
+                        <div className="card-body">
+                            <textarea
+                                className="code-editor"
+                                value={currentCode}
+                                onChange={(e) => setCurrentCode(e.target.value)}
+                                placeholder="Write your cloudbuild.yaml configuration here..."
+                            />
+                            <div style={{ marginTop: '15px' }}>
+                                <button className="run-btn" onClick={runBuild} disabled={isRunning}>
+                                    <i className="fas fa-play"></i> Run Build
+                                </button>
+                                <button className="run-btn" onClick={testBuild} style={{ marginLeft: '10px' }}>
+                                    <i className="fas fa-flask"></i> Test Config
+                                </button>
+                                <button className="run-btn" onClick={() => loadBuildExample('basic-docker')} style={{ marginLeft: '10px' }}>
+                                    <i className="fas fa-file-import"></i> Load Example
+                                </button>
+                            </div>
+                            {output && <div className="output-panel">{output}</div>}
+                        </div>
+                    </div>
+
+                    {/* Build Configuration */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-sliders-h"></i> Build Settings</h3>
+                        </div>
+                        <div className="card-body">
+                            {/* Operation Tabs */}
+                            <div className="operation-tabs">
+                                <button className={`operation-tab ${activeTab === 'builds' ? 'active' : ''}`} onClick={() => setActiveTab('builds')}>
+                                    <i className="fas fa-cog"></i> Builds
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'triggers' ? 'active' : ''}`} onClick={() => setActiveTab('triggers')}>
+                                    <i className="fas fa-bolt"></i> Triggers
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>
+                                    <i className="fas fa-history"></i> History
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'advanced' ? 'active' : ''}`} onClick={() => setActiveTab('advanced')}>
+                                    <i className="fas fa-tools"></i> Advanced
+                                </button>
+                            </div>
+
+                            {/* Builds Tab */}
+                            {activeTab === 'builds' && (
+                                <div className="interactive-demo">
+                                    <h4>Build Configuration</h4>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Build Name:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={buildName}
+                                                    onChange={(e) => setBuildName(e.target.value)}
+                                                    placeholder="my-build"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Machine Type:</label>
+                                                <select className="form-control" value={machineType} onChange={(e) => setMachineType(e.target.value)}>
+                                                    <option value="n1-standard-1">n1-standard-1 (3.75 GB)</option>
+                                                    <option value="n1-highcpu-8">n1-highcpu-8 (7.2 GB)</option>
+                                                    <option value="n1-highmem-4">n1-highmem-4 (26 GB)</option>
+                                                    <option value="e2-medium">e2-medium (4 GB)</option>
+                                                    <option value="e2-highcpu-4">e2-highcpu-4 (4 GB)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Timeout (s):</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    value={timeout}
+                                                    onChange={(e) => setTimeout(parseInt(e.target.value))}
+                                                    min="60"
+                                                    max="86400"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className="run-btn" onClick={createTrigger}>
+                                        <i className="fas fa-plus"></i> Create Build
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Triggers Tab */}
+                            {activeTab === 'triggers' && (
+                                <div className="interactive-demo">
+                                    <h4>Trigger Configuration</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Branch Pattern:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={branchPattern}
+                                                    onChange={(e) => setBranchPattern(e.target.value)}
+                                                    placeholder="main, develop, feature/*"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Tag Pattern:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={tagPattern}
+                                                    onChange={(e) => setTagPattern(e.target.value)}
+                                                    placeholder="v*, release/*"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Repository:</label>
+                                                <input type="text" className="form-control" placeholder="https://github.com/my-org/my-repo" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Service Account:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={projectState.serviceAccount}
+                                                    onChange={(e) => setProjectState({ ...projectState, serviceAccount: e.target.value })}
+                                                    placeholder="cloud-build-sa@project.iam.gserviceaccount.com"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* History Tab */}
+                            {activeTab === 'history' && (
+                                <div className="interactive-demo">
+                                    <h4>Build History</h4>
+                                    <div className="build-logs">
+                                        {buildHistory.map((build, index) => (
+                                            <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #dee2e6' }}>
+                                                <div>
+                                                    <strong>{build.id}</strong>
+                                                    <span className={`build-status status-${build.status}`}>
+                                                        {build.status.toUpperCase()}
+                                                    </span>
+                                                    <br />
+                                                    <small style={{ color: '#6c757d' }}>
+                                                        {build.trigger} • {build.branch} • {build.duration} • {build.timestamp}
+                                                    </small>
+                                                </div>
+                                                <button className="btn btn-sm btn-outline-primary">
+                                                    <i className="fas fa-eye"></i> View Logs
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Advanced Tab */}
+                            {activeTab === 'advanced' && (
+                                <div className="interactive-demo">
+                                    <h4>Advanced Options</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Substitutions:</label>
+                                                <textarea
+                                                    className="form-control"
+                                                    rows="4"
+                                                    value={substitutions}
+                                                    onChange={(e) => setSubstitutions(e.target.value)}
+                                                    placeholder="_SERVICE_NAME=my-service&#10;_ENVIRONMENT=prod"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Build Options:</label>
+                                                <textarea className="form-control" rows="3" placeholder="logging: CLOUD_LOGGING_ONLY&#10;machineType: N1_HIGHCPU_8"></textarea>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Secrets:</label>
+                                                <textarea className="form-control" rows="3" placeholder="kmsKeyName: projects/project/locations/location/keyRings/keyring/cryptoKeys/key&#10;secretEnv: API_KEY"></textarea>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Artifacts:</label>
+                                                <textarea className="form-control" rows="3" placeholder="objects:&#10;  location: gs://bucket/path/&#10;  paths: ['build/**']"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Build Statistics */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-chart-bar"></i> Build Statistics</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="run-preview">
+                                {buildStats.map((stat, index) => (
+                                    <div key={index} className="build-card">
+                                        <div className="build-value">{stat.count}{stat.unit || ''}</div>
+                                        <div className="build-label">{stat.name}</div>
+                                        <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '5px' }}>
+                                            <i className="material-icons">{stat.icon}</i>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div style={{ position: 'absolute', bottom: '20px', right: '20px' }}>
+                                    <button className="run-btn" onClick={() => {
+                                        setBuildStats(prev => prev.map(stat => ({
+                                            ...stat,
+                                            count: stat.unit === '$' ? (Math.random() * 20 + 10).toFixed(2) :
+                                                stat.unit === '%' ? Math.floor(Math.random() * 15 + 80) :
+                                                    stat.unit === 's' ? Math.floor(Math.random() * 100 + 180) :
+                                                        Math.floor(Math.random() * 50) + 40
+                                        })));
+                                    }}>
+                                        <i className="fas fa-sync"></i> Refresh Stats
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Pipeline Visualization */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-project-diagram"></i> Pipeline Visualization</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="pipeline-visualization">
+                                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                    <h5>CI/CD Pipeline Flow</h5>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-code-branch"></i> Source
+                                    </div>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-cog"></i> Build
+                                    </div>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-flask"></i> Test
+                                    </div>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-shield-alt"></i> Security
+                                    </div>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-upload"></i> Deploy
+                                    </div>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-check-circle"></i> Complete
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                    <small style={{ color: '#6c757d' }}>Current pipeline status: {buildProgress.currentStep}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Build Config Builder */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tools"></i> Build Config Builder</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="build-config">
+                                <h5>Build Advanced Configurations</h5>
+                                {buildConfigs.map((config, index) => (
+                                    <div key={index} className="config-row">
+                                        <div className="config-header">
+                                            <span className="config-type">{config.type}: {config.name}</span>
+                                            <button className="remove-config" onClick={() => removeBuildConfig(index)}>
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <pre style={{ fontSize: '12px', margin: '10px 0' }}>{config.config}</pre>
+                                    </div>
+                                ))}
+
+                                <div className="form-group">
+                                    <label>Add Build Step:</label>
+                                    <select className="form-control" value={newConfigType} onChange={(e) => setNewConfigType(e.target.value)}>
+                                        <option value="">Select build step...</option>
+                                        <option value="Docker Build">Docker Build</option>
+                                        <option value="Test Suite">Test Suite</option>
+                                        <option value="Deploy to GKE">Deploy to GKE</option>
+                                        <option value="Security Scan">Security Scan</option>
+                                        <option value="Artifact Registry">Artifact Registry</option>
+                                    </select>
+                                </div>
+
+                                <button className="add-config-btn" onClick={addBuildConfig} disabled={!newConfigType}>
+                                    <i className="fas fa-plus"></i> Add Build Step
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Performance Metrics */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tachometer-alt"></i> Performance Metrics</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="performance-metrics">
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.builds}</div>
+                                    <div className="perf-metric-label">Total Builds</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.successRate}%</div>
+                                    <div className="perf-metric-label">Success Rate</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.avgDuration}s</div>
+                                    <div className="perf-metric-label">Avg Duration</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">${performance.cost}</div>
+                                    <div className="perf-metric-label">Cost (24h)</div>
+                                </div>
+                            </div>
+
+                            <div className="execution-stats">
+                                <div className="stat-item">
+                                    <span className="stat-label">Project ID:</span>
+                                    <span className="stat-value">{projectState.projectId}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Region:</span>
+                                    <span className="stat-value">{projectState.region}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Service Account:</span>
+                                    <span className="stat-value">{projectState.serviceAccount}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Active Builds:</span>
+                                    <span className="stat-value">{buildHistory.filter(b => b.status === 'running').length}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-book"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/build" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Build Site</a></li>
+                                        <li><a href="https://cloud.google.com/build/docs" target="_blank"><i className="fas fa-external-link-alt"></i> Documentation</a></li>
+                                        <li><a href="https://console.cloud.google.com/cloud-build" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Console</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/build/docs/quickstarts" target="_blank"><i className="fas fa-external-link-alt"></i> Quickstarts</a></li>
+                                        <li><a href="https://cloud.google.com/build/docs/build-config" target="_blank"><i className="fas fa-external-link-alt"></i> Build Config</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/google-cloud-build" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+
+</html>

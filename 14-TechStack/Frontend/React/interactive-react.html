@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --react-blue: #61DAFB;
+            --react-dark: #282c34;
+            --react-light: #f8f9fa;
+            --react-accent: #21D4FD;
+            --primary-color: #61DAFB;
+            --secondary-color: #282c34;
+            --accent-color: #21D4FD;
+            --warning-color: #FFA500;
+            --info-color: #61DAFB;
+            --dark-color: #282c34;
+            --light-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #61DAFB 0%, #282c34 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #282c34;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 200px;
+            white-space: pre-wrap;
+            border: 1px solid #dee2e6;
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #282c34;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(97, 218, 251, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .component-preview {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 200px;
+            position: relative;
+            border: 2px solid #61DAFB;
+        }
+
+        .component-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            transform: scale(1.05);
+        }
+
+        .component-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .component-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .todo-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .todo-info {
+            flex-grow: 1;
+        }
+
+        .todo-status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .todo-status.completed {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .todo-status.pending {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .perf-metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .component-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .builder-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .builder-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .builder-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-builder {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-builder-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .hook-demo {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .hook-result {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useReducer, useContext, createContext, useMemo, useCallback } = React;
+
+        // Context for theme
+        const ThemeContext = createContext('light');
+
+        // Reducer for todo management
+        const todoReducer = (state, action) => {
+            switch (action.type) {
+                case 'ADD_TODO':
+                    return [...state, {
+                        id: Date.now(),
+                        text: action.text,
+                        completed: false
+                    }];
+                case 'TOGGLE_TODO':
+                    return state.map(todo =>
+                        todo.id === action.id ? { ...todo, completed: !todo.completed } : todo
+                    );
+                case 'DELETE_TODO':
+                    return state.filter(todo => todo.id !== action.id);
+                default:
+                    return state;
+            }
+        };
+
+        // Custom hook for counter
+        const useCounter = (initialValue = 0) => {
+            const [count, setCount] = useState(initialValue);
+            const increment = useCallback(() => setCount(c => c + 1), []);
+            const decrement = useCallback(() => setCount(c => c - 1), []);
+            const reset = useCallback(() => setCount(initialValue), [initialValue]);
+
+            return { count, increment, decrement, reset };
+        };
+
+        // Custom hook for local storage
+        const useLocalStorage = (key, initialValue) => {
+            const [storedValue, setStoredValue] = useState(() => {
+                try {
+                    const item = window.localStorage.getItem(key);
+                    return item ? JSON.parse(item) : initialValue;
+                } catch (error) {
+                    console.log(error);
+                    return initialValue;
+                }
+            });
+
+            const setValue = (value) => {
+                try {
+                    const valueToStore = value instanceof Function ? value(storedValue) : value;
+                    setStoredValue(valueToStore);
+                    window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+
+            return [storedValue, setValue];
+        };
+
+        // Main App Component
+        const App = () => {
+            const [currentCode, setCurrentCode] = useState(`const Welcome = () => {
+  return (
+    <div>
+      <h1>Hello, React!</h1>
+      <p>Welcome to the interactive React demo.</p>
+    </div>
+  );
+};
+
+ReactDOM.render(<Welcome />, document.getElementById('component-preview'));`);
+            const [output, setOutput] = useState('');
+            const [isRunning, setIsRunning] = useState(false);
+            const [activeTab, setActiveTab] = useState('components');
+            const [componentName, setComponentName] = useState('');
+            const [componentProps, setComponentProps] = useState('');
+            const [hookType, setHookType] = useState('useState');
+            const [builderComponents, setBuilderComponents] = useState([
+                {
+                    type: 'Functional Component',
+                    name: 'UserCard',
+                    code: `const UserCard = ({ name, email, avatar }) => {
+  return (
+    <div className="user-card">
+      <img src={avatar} alt={name} />
+      <h3>{name}</h3>
+      <p>{email}</p>
+    </div>
+  );
+};`
+                }
+            ]);
+            const [newBuilderType, setNewBuilderType] = useState('');
+
+            // Performance metrics
+            const [performance, setPerformance] = useState({
+                renderTime: 12,
+                componentCount: 8,
+                stateUpdates: 45,
+                memoryUsage: 2.3
+            });
+
+            // Todo state using reducer
+            const [todos, dispatch] = useReducer(todoReducer, [
+                { id: 1, text: 'Learn React Hooks', completed: true },
+                { id: 2, text: 'Build a component library', completed: false },
+                { id: 3, text: 'Implement state management', completed: false }
+            ]);
+
+            // Counter using custom hook
+            const counter = useCounter(0);
+
+            // Theme using context
+            const [theme, setTheme] = useLocalStorage('theme', 'light');
+
+            // Simulate performance updates
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setPerformance(prev => ({
+                        renderTime: Math.floor(Math.random() * 10 + 5),
+                        componentCount: Math.floor(Math.random() * 5 + 8),
+                        stateUpdates: Math.floor(Math.random() * 20 + 40),
+                        memoryUsage: (Math.random() * 1 + 2).toFixed(1)
+                    }));
+                }, 3000);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            const runCode = async () => {
+                setIsRunning(true);
+                setOutput('Executing React code...\n\n');
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    // Simulate code execution
+                    const result = simulateReactExecution(currentCode);
+                    setOutput(result);
+
+                } catch (error) {
+                    setOutput('Error: ' + error.message);
+                } finally {
+                    setIsRunning(false);
+                }
+            };
+
+            const simulateReactExecution = (code) => {
+                let result = 'React Code Execution Result:\n\n';
+
+                if (code.includes('useState')) {
+                    result += '✅ useState hook detected and working\n';
+                }
+                if (code.includes('useEffect')) {
+                    result += '✅ useEffect hook detected and working\n';
+                }
+                if (code.includes('const')) {
+                    result += '✅ Component declaration found\n';
+                }
+                if (code.includes('return')) {
+                    result += '✅ JSX return statement found\n';
+                }
+                if (code.includes('<div>') || code.includes('<h1>') || code.includes('<p>')) {
+                    result += '✅ JSX elements detected\n';
+                }
+
+                result += '\nComponent rendered successfully!\n';
+                result += 'Render time: ' + performance.renderTime + 'ms\n';
+                result += 'Memory usage: ' + performance.memoryUsage + 'MB\n';
+
+                return result;
+            };
+
+            const createComponent = () => {
+                if (!componentName) return;
+
+                const componentCode = `const ${componentName} = (${componentProps ? `{ ${componentProps} }` : ''}) => {
+  return (
+    <div className="${componentName.toLowerCase()}-component">
+      <h3>${componentName} Component</h3>
+      ${componentProps ? componentProps.split(',').map(prop => `<p>${prop.trim()}: {${prop.trim()}}</p>`).join('\n      ') : '<p>This is a React component!</p>'}
+    </div>
+  );
+};`;
+
+                setCurrentCode(componentCode);
+                setComponentName('');
+                setComponentProps('');
+            };
+
+            const addBuilderComponent = () => {
+                if (!newBuilderType) return;
+
+                const templates = {
+                    'Functional Component': {
+                        name: 'NewComponent',
+                        code: `const NewComponent = () => {
+  return (
+    <div>
+      <h3>New Functional Component</h3>
+      <p>This is a new React component!</p>
+    </div>
+  );
+};`
+                    },
+                    'Class Component': {
+                        name: 'NewClassComponent',
+                        code: `class NewClassComponent extends React.Component {
+  render() {
+    return (
+      <div>
+        <h3>New Class Component</h3>
+        <p>This is a class-based React component!</p>
+      </div>
+    );
+  }
+}`
+                    },
+                    'Hook Component': {
+                        name: 'HookComponent',
+                        code: `const HookComponent = () => {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <h3>Hook Component</h3>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+};`
+                    }
+                };
+
+                const template = templates[newBuilderType];
+                if (template) {
+                    setBuilderComponents([...builderComponents, {
+                        type: newBuilderType,
+                        name: template.name,
+                        code: template.code
+                    }]);
+                }
+
+                setNewBuilderType('');
+            };
+
+            const removeBuilderComponent = (index) => {
+                setBuilderComponents(builderComponents.filter((_, i) => i !== index));
+            };
+
+            const loadHookExample = (hook) => {
+                const examples = {
+                    useState: `const CounterComponent = () => {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState('React');
+
+  return (
+    <div>
+      <h3>useState Example</h3>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <p>Name: {name}</p>
+      <input value={name} onChange={(e) => setName(e.target.value)} />
+    </div>
+  );
+};`,
+                    useEffect: `const EffectComponent = () => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    document.title = \`Count: \${count}\`;
+    console.log('Effect ran:', count);
+  }, [count]);
+
+  return (
+    <div>
+      <h3>useEffect Example</h3>
+      <p>Check the document title!</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+};`,
+                    useContext: `const ThemeContext = createContext('light');
+
+const ThemedComponent = () => {
+  const theme = useContext(ThemeContext);
+
+  return (
+    <div style={{ background: theme === 'dark' ? '#333' : '#fff' }}>
+      <h3>useContext Example</h3>
+      <p>Current theme: {theme}</p>
+    </div>
+  );
+};`,
+                    useReducer: `const reducer = (state, action) => {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+};
+
+const ReducerComponent = () => {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+
+  return (
+    <div>
+      <h3>useReducer Example</h3>
+      <p>Count: {state.count}</p>
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
+      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+    </div>
+  );
+};`
+                };
+
+                setCurrentCode(examples[hook] || examples.useState);
+                setHookType(hook);
+            };
+
+            const addTodo = (text) => {
+                dispatch({ type: 'ADD_TODO', text });
+            };
+
+            const toggleTodo = (id) => {
+                dispatch({ type: 'TOGGLE_TODO', id });
+            };
+
+            const deleteTodo = (id) => {
+                dispatch({ type: 'DELETE_TODO', id });
+            };
+
+            return (
+                <ThemeContext.Provider value={theme}>
+                    <div className="demo-container">
+                        {/* Header */}
+                        <div className="header">
+                            <h1><i className="fab fa-react"></i> React Interactive Demo</h1>
+                            <p>Master React with interactive components, hooks, and state management</p>
+                        </div>
+
+                        {/* React Features Overview */}
+                        <div className="demo-card">
+                            <div className="card-header">
+                                <h3><i className="fas fa-star"></i> React Key Features</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="feature-grid">
+                                    <div className="feature-card">
+                                        <div className="feature-icon"><i className="fas fa-cubes"></i></div>
+                                        <div className="feature-title">Component-Based</div>
+                                        <div className="feature-description">Build reusable UI components with encapsulated logic and styling for scalable applications.</div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon"><i className="fas fa-bolt"></i></div>
+                                        <div className="feature-title">Declarative</div>
+                                        <div className="feature-description">Describe what your UI should look like for a given state, and React handles the rendering efficiently.</div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon"><i className="fas fa-code"></i></div>
+                                        <div className="feature-title">JSX Syntax</div>
+                                        <div className="feature-description">Write HTML-like syntax in JavaScript for intuitive component structure and readability.</div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon"><i className="fas fa-sync"></i></div>
+                                        <div className="feature-title">Virtual DOM</div>
+                                        <div className="feature-description">Efficiently update only changed parts of the UI using a lightweight virtual representation.</div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon"><i className="fas fa-fish"></i></div>
+                                        <div className="feature-title">Hooks</div>
+                                        <div className="feature-description">Use state and lifecycle features in functional components with powerful, reusable hooks.</div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon"><i className="fas fa-layer-group"></i></div>
+                                        <div className="feature-title">One-Way Data Flow</div>
+                                        <div className="feature-description">Predictable data flow from parent to child components prevents complex state management issues.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Component Preview */}
+                        <div className="demo-card">
+                            <div className="card-header">
+                                <h3><i className="fas fa-eye"></i> Component Preview</h3>
+                            </div>
+                            <div className="card-body">
+                                <div id="component-preview" className="component-preview">
+                                    <div style={{ textAlign: 'center', padding: '40px' }}>
+                                        <i className="fab fa-react" style={{ fontSize: '3rem', color: '#61DAFB' }}></i>
+                                        <h3>React Component Preview</h3>
+                                        <p>Your rendered components will appear here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Code Editor */}
+                        <div className="demo-card">
+                            <div className="card-header">
+                                <h3><i className="fas fa-code"></i> React Code Editor</h3>
+                            </div>
+                            <div className="card-body">
+                                <textarea
+                                    className="code-editor"
+                                    value={currentCode}
+                                    onChange={(e) => setCurrentCode(e.target.value)}
+                                    placeholder="Write your React code here..."
+                                />
+                                <div style={{ marginTop: '15px' }}>
+                                    <button className="run-btn" onClick={runCode} disabled={isRunning}>
+                                        <i className="fas fa-play"></i> Run Code
+                                    </button>
+                                    <button className="run-btn" onClick={() => setCurrentCode('')} style={{ marginLeft: '10px' }}>
+                                        <i className="fas fa-trash"></i> Clear
+                                    </button>
+                                    <button className="run-btn" onClick={() => setCurrentCode(`const Welcome = () => {\n  return (\n    <div>\n      <h1>Hello, React!</h1>\n      <p>Welcome to the interactive React demo.</p>\n    </div>\n  );\n};\n\nReactDOM.render(<Welcome />, document.getElementById('component-preview'));`)} style={{ marginLeft: '10px' }}>
+                                        <i className="fas fa-file-import"></i> Load Template
+                                    </button>
+                                </div>
+                                {output && <div className="output-panel">{output}</div>}
+                            </div>
+                        </div>
+
+                        {/* React Operations */}
+                        <div className="demo-card">
+                            <div className="card-header">
+                                <h3><i className="fas fa-cogs"></i> React Operations</h3>
+                            </div>
+                            <div className="card-body">
+                                {/* Operation Tabs */}
+                                <div className="operation-tabs">
+                                    <button className={`operation-tab ${activeTab === 'components' ? 'active' : ''}`} onClick={() => setActiveTab('components')}>
+                                        <i className="fas fa-cube"></i> Components
+                                    </button>
+                                    <button className={`operation-tab ${activeTab === 'hooks' ? 'active' : ''}`} onClick={() => setActiveTab('hooks')}>
+                                        <i className="fas fa-fish"></i> Hooks
+                                    </button>
+                                    <button className={`operation-tab ${activeTab === 'state' ? 'active' : ''}`} onClick={() => setActiveTab('state')}>
+                                        <i className="fas fa-database"></i> State Management
+                                    </button>
+                                    <button className={`operation-tab ${activeTab === 'builder' ? 'active' : ''}`} onClick={() => setActiveTab('builder')}>
+                                        <i className="fas fa-tools"></i> Component Builder
+                                    </button>
+                                </div>
+
+                                {/* Components Tab */}
+                                {activeTab === 'components' && (
+                                    <div className="interactive-demo">
+                                        <h4>Component Creator</h4>
+                                        <div className="row">
+                                            <div className="col-md-6">
+                                                <div className="form-group">
+                                                    <label>Component Name:</label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        value={componentName}
+                                                        onChange={(e) => setComponentName(e.target.value)}
+                                                        placeholder="MyComponent"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <div className="form-group">
+                                                    <label>Props (comma-separated):</label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        value={componentProps}
+                                                        onChange={(e) => setComponentProps(e.target.value)}
+                                                        placeholder="name, age, email"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button className="run-btn" onClick={createComponent} disabled={!componentName}>
+                                            <i className="fas fa-plus"></i> Create Component
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Hooks Tab */}
+                                {activeTab === 'hooks' && (
+                                    <div className="interactive-demo">
+                                        <h4>React Hooks Demo</h4>
+                                        <div className="row">
+                                            <div className="col-md-6">
+                                                <div className="form-group">
+                                                    <label>Select Hook:</label>
+                                                    <select className="form-control" value={hookType} onChange={(e) => setHookType(e.target.value)}>
+                                                        <option value="useState">useState</option>
+                                                        <option value="useEffect">useEffect</option>
+                                                        <option value="useContext">useContext</option>
+                                                        <option value="useReducer">useReducer</option>
+                                                    </select>
+                                                </div>
+                                                <button className="run-btn" onClick={() => loadHookExample(hookType)}>
+                                                    <i className="fas fa-eye"></i> Load Example
+                                                </button>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <div className="hook-demo">
+                                                    <h5>Hook Demo</h5>
+                                                    <div className="hook-result">
+                                                        <p><strong>Counter (useCounter hook):</strong> {counter.count}</p>
+                                                        <button className="run-btn" onClick={counter.increment} style={{ marginRight: '5px' }}>+</button>
+                                                        <button className="run-btn" onClick={counter.decrement} style={{ marginRight: '5px' }}>-</button>
+                                                        <button className="run-btn" onClick={counter.reset}>Reset</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* State Management Tab */}
+                                {activeTab === 'state' && (
+                                    <div className="interactive-demo">
+                                        <h4>State Management with useReducer</h4>
+                                        <div className="row">
+                                            <div className="col-md-6">
+                                                <div className="form-group">
+                                                    <label>New Todo:</label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="new-todo"
+                                                        placeholder="Enter a new todo..."
+                                                    />
+                                                </div>
+                                                <button className="run-btn" onClick={() => {
+                                                    const input = document.getElementById('new-todo');
+                                                    if (input.value.trim()) {
+                                                        addTodo(input.value.trim());
+                                                        input.value = '';
+                                                    }
+                                                }}>
+                                                    <i className="fas fa-plus"></i> Add Todo
+                                                </button>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <div className="form-group">
+                                                    <label>Theme:</label>
+                                                    <select className="form-control" value={theme} onChange={(e) => setTheme(e.target.value)}>
+                                                        <option value="light">Light</option>
+                                                        <option value="dark">Dark</option>
+                                                    </select>
+                                                </div>
+                                                <p>Current theme: <strong>{theme}</strong> (persisted in localStorage)</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="response-display">
+                                            <h5>Todo List (using useReducer)</h5>
+                                            {todos.map(todo => (
+                                                <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+                                                    <div className="todo-info">
+                                                        <div style={{ fontWeight: 'bold' }}>{todo.text}</div>
+                                                    </div>
+                                                    <div className="todo-status" style={{ background: todo.completed ? '#28a745' : '#ffc107', color: 'white' }}>
+                                                        {todo.completed ? 'Completed' : 'Pending'}
+                                                    </div>
+                                                    <button
+                                                        onClick={() => toggleTodo(todo.id)}
+                                                        style={{ marginLeft: '10px', border: 'none', background: 'none', cursor: 'pointer' }}
+                                                    >
+                                                        <i className={`fas ${todo.completed ? 'fa-undo' : 'fa-check'}`}></i>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteTodo(todo.id)}
+                                                        style={{ marginLeft: '5px', border: 'none', background: 'none', cursor: 'pointer', color: '#dc3545' }}
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Component Builder Tab */}
+                                {activeTab === 'builder' && (
+                                    <div className="interactive-demo">
+                                        <h4>Component Builder</h4>
+                                        <div className="component-builder">
+                                            {builderComponents.map((component, index) => (
+                                                <div key={index} className="builder-row">
+                                                    <div className="builder-header">
+                                                        <span className="builder-type">{component.type}: {component.name}</span>
+                                                        <button className="remove-builder" onClick={() => removeBuilderComponent(index)}>
+                                                            <i className="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                    <pre style={{ fontSize: '12px', margin: '10px 0' }}>{component.code}</pre>
+                                                </div>
+                                            ))}
+
+                                            <div className="form-group">
+                                                <label>Add Component Type:</label>
+                                                <select className="form-control" value={newBuilderType} onChange={(e) => setNewBuilderType(e.target.value)}>
+                                                    <option value="">Select component type...</option>
+                                                    <option value="Functional Component">Functional Component</option>
+                                                    <option value="Class Component">Class Component</option>
+                                                    <option value="Hook Component">Hook Component</option>
+                                                </select>
+                                            </div>
+
+                                            <button className="add-builder-btn" onClick={addBuilderComponent} disabled={!newBuilderType}>
+                                                <i className="fas fa-plus"></i> Add Component
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Performance Metrics */}
+                        <div className="demo-card">
+                            <div className="card-header">
+                                <h3><i className="fas fa-tachometer-alt"></i> React Performance</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="performance-metrics">
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.renderTime}ms</div>
+                                        <div className="perf-metric-label">Avg Render Time</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.componentCount}</div>
+                                        <div className="perf-metric-label">Components</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.stateUpdates}</div>
+                                        <div className="perf-metric-label">State Updates/min</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.memoryUsage}MB</div>
+                                        <div className="perf-metric-label">Memory Usage</div>
+                                    </div>
+                                </div>
+
+                                <div className="execution-stats">
+                                    <div className="stat-item">
+                                        <span className="stat-label">React Version:</span>
+                                        <span className="stat-value">18.2.0</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Virtual DOM:</span>
+                                        <span className="stat-value">Active</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Concurrent Features:</span>
+                                        <span className="stat-value">Enabled</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Fiber Architecture:</span>
+                                        <span className="stat-value">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Learning Resources */}
+                        <div className="demo-card">
+                            <div className="card-header">
+                                <h3><i className="fas fa-book"></i> Learn More</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <h5>Official Resources</h5>
+                                        <ul className="list-unstyled">
+                                            <li><a href="https://reactjs.org/" target="_blank"><i className="fas fa-external-link-alt"></i> React Official Site</a></li>
+                                            <li><a href="https://reactjs.org/docs/" target="_blank"><i className="fas fa-external-link-alt"></i> React Documentation</a></li>
+                                            <li><a href="https://github.com/facebook/react" target="_blank"><i className="fas fa-external-link-alt"></i> React GitHub</a></li>
+                                        </ul>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <h5>Learning & Community</h5>
+                                        <ul className="list-unstyled">
+                                            <li><a href="https://reactjs.org/tutorial/" target="_blank"><i className="fas fa-external-link-alt"></i> React Tutorial</a></li>
+                                            <li><a href="https://www.codecademy.com/learn/react-101" target="_blank"><i className="fas fa-external-link-alt"></i> Codecademy React</a></li>
+                                            <li><a href="https://egghead.io/courses/the-beginner-s-guide-to-react" target="_blank"><i className="fas fa-external-link-alt"></i> Egghead.io</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ThemeContext.Provider>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+
+</html>

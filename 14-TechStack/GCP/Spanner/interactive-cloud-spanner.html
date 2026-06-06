@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Spanner Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --gcp-blue: #4285F4;
+            --gcp-red: #EA4335;
+            --gcp-yellow: #FBBC05;
+            --gcp-green: #34A853;
+            --gcp-purple: #9C27B0;
+            --gcp-dark: #202124;
+            --gcp-light: #FFFFFF;
+            --gcp-gray: #F8F9FA;
+            --primary-color: #4285F4;
+            --secondary-color: #EA4335;
+            --accent-color: #34A853;
+            --warning-color: #FBBC05;
+            --info-color: #9C27B0;
+            --dark-color: #202124;
+            --light-color: #F8F9FA;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4285F4 0%, #9C27B0 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--gcp-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 200px;
+            border: 1px solid #dee2e6;
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .run-preview {
+            background: var(--gcp-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            position: relative;
+            border: 2px solid var(--gcp-blue);
+        }
+
+        .spanner-instance-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .spanner-instance-card:hover {
+            transform: scale(1.05);
+        }
+
+        .spanner-instance-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .spanner-instance-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .spanner-progress {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .perf-metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .spanner-config {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .config-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .config-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-config {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-config-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .spanner-logs {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid var(--accent-color);
+        }
+
+        .global-regions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .region-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .region-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .region-card.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            height: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: width 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .global-visualization {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .spanner-instance {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .instance-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .status-ready {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .status-creating {
+            background: var(--warning-color);
+            color: black;
+        }
+
+        .status-error {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .regions-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .region-node {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .region-node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .region-node.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        .query-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .query-result {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #dee2e6;
+        }
+
+        .transaction-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .transaction-step {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .global-regions {
+                grid-template-columns: 1fr;
+            }
+
+            .regions-map {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useContext, createContext } = React;
+
+        // Cloud Spanner context
+        const CloudSpannerContext = createContext();
+
+        // Main App Component
+        const App = () => {
+            const [currentCode, setCurrentCode] = useState(`gcloud spanner instances create my-instance \\
+  --config=regional-us-central1 \\
+  --description="My Spanner Instance" \\
+  --nodes=1 \\
+  --display-name="My Instance"`);
+            const [output, setOutput] = useState('');
+            const [isRunning, setIsRunning] = useState(false);
+            const [activeTab, setActiveTab] = useState('instances');
+            const [instanceName, setInstanceName] = useState('my-spanner-instance');
+            const [instanceConfig, setInstanceConfig] = useState('regional-us-central1');
+            const [nodes, setNodes] = useState(1);
+            const [databaseName, setDatabaseName] = useState('my-database');
+            const [processingUnits, setProcessingUnits] = useState(100);
+            const [selectedRegions, setSelectedRegions] = useState(['us-central1']);
+            const [spannerConfigs, setSpannerConfigs] = useState([
+                {
+                    type: 'Global Database',
+                    name: 'GlobalDB',
+                    config: `gcloud spanner instances create global-instance \\\n  --config=nam-eur-asia1 \\\n  --description="Global Spanner Instance" \\\n  --nodes=3 \\\n  --display-name="Global Instance"`
+                }
+            ]);
+            const [newConfigType, setNewConfigType] = useState('');
+            const [queryResult, setQueryResult] = useState('');
+            const [currentQuery, setCurrentQuery] = useState('SELECT * FROM users LIMIT 5;');
+            const [transactionSteps, setTransactionSteps] = useState([
+                { id: 1, sql: 'INSERT INTO users (id, name, email) VALUES (1, "John Doe", "john@example.com");', status: 'pending' },
+                { id: 2, sql: 'INSERT INTO orders (user_id, amount) VALUES (1, 99.99);', status: 'pending' },
+                { id: 3, sql: 'UPDATE users SET balance = balance - 99.99 WHERE id = 1;', status: 'pending' }
+            ]);
+
+            // Performance metrics
+            const [performance, setPerformance] = useState({
+                instances: 2,
+                databases: 5,
+                transactions: 1250,
+                latency: 8.5,
+                cost: 45.20
+            });
+
+            // Instance statistics
+            const [instanceStats, setInstanceStats] = useState([
+                { name: 'Instances', count: 2, icon: 'dns' },
+                { name: 'Databases', count: 5, icon: 'storage' },
+                { name: 'Transactions/sec', count: 1250, icon: 'bolt', unit: '/s' },
+                { name: 'Latency', count: 8.5, icon: 'timer', unit: 'ms' },
+                { name: 'Cost (24h)', count: 45.20, icon: 'attach_money', unit: '$' }
+            ]);
+
+            // Spanner creation progress
+            const [spannerProgress, setSpannerProgress] = useState({
+                status: 'idle',
+                progress: 0,
+                currentStep: 'Ready',
+                eta: 'Ready'
+            });
+
+            // Current project state
+            const [projectState, setProjectState] = useState({
+                projectId: 'my-spanner-project',
+                region: 'us-central1',
+                network: 'default'
+            });
+
+            // Spanner instances
+            const [spannerInstances, setSpannerInstances] = useState([
+                { name: 'global-instance', status: 'ready', config: 'nam-eur-asia1', nodes: 3, databases: 2, regions: ['us-central1', 'europe-west1', 'asia-east1'] },
+                { name: 'regional-instance', status: 'ready', config: 'regional-us-central1', nodes: 1, databases: 3, regions: ['us-central1'] }
+            ]);
+
+            // Available regions
+            const [availableRegions, setAvailableRegions] = useState([
+                { name: 'us-central1', location: 'Iowa, USA', latency: '8ms' },
+                { name: 'us-west1', location: 'Oregon, USA', latency: '12ms' },
+                { name: 'europe-west1', location: 'Belgium', latency: '45ms' },
+                { name: 'asia-east1', location: 'Taiwan', latency: '180ms' },
+                { name: 'asia-south1', location: 'Mumbai, India', latency: '220ms' },
+                { name: 'australia-southeast1', location: 'Sydney, Australia', latency: '280ms' }
+            ]);
+
+            // Update performance metrics
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setPerformance(prev => ({
+                        instances: prev.instances,
+                        databases: prev.databases,
+                        transactions: Math.floor(Math.random() * 500 + 1000),
+                        latency: (Math.random() * 5 + 5).toFixed(1),
+                        cost: (prev.cost + Math.random() * 2).toFixed(2)
+                    }));
+                }, 3000);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            // Simulate Spanner creation progress
+            useEffect(() => {
+                if (spannerProgress.status === 'running') {
+                    const interval = setInterval(() => {
+                        setSpannerProgress(prev => {
+                            const newProgress = Math.min(prev.progress + Math.random() * 12, 100);
+                            const steps = ['Creating', 'Allocating Resources', 'Configuring Regions', 'Setting up Replication', 'Creating Databases', 'Starting Instance', 'Ready'];
+                            const currentStepIndex = Math.floor((newProgress / 100) * steps.length);
+                            const eta = newProgress >= 100 ? 'Complete' : `${Math.floor((100 - newProgress) / 8)}s remaining`;
+
+                            return {
+                                ...prev,
+                                progress: newProgress,
+                                currentStep: steps[Math.min(currentStepIndex, steps.length - 1)],
+                                eta: eta,
+                                status: newProgress >= 100 ? 'completed' : 'running'
+                            };
+                        });
+                    }, 1000);
+
+                    return () => clearInterval(interval);
+                }
+            }, [spannerProgress.status]);
+
+            const createInstance = async () => {
+                setIsRunning(true);
+                setOutput('Creating Cloud Spanner instance...\n\n');
+
+                // Start Spanner creation progress
+                setSpannerProgress({
+                    status: 'running',
+                    progress: 0,
+                    currentStep: 'Creating',
+                    eta: '60s'
+                });
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
+                    // Simulate instance creation
+                    const result = simulateInstanceCreation(currentCode);
+                    setOutput(result);
+
+                    // Add to instances
+                    const newInstance = {
+                        name: instanceName,
+                        status: 'ready',
+                        config: instanceConfig,
+                        nodes: nodes,
+                        databases: 0,
+                        regions: selectedRegions
+                    };
+                    setSpannerInstances(prev => [newInstance, ...prev.slice(0, 9)]);
+
+                } catch (error) {
+                    setOutput('Error: ' + error.message);
+                    setSpannerProgress(prev => ({ ...prev, status: 'failed' }));
+                } finally {
+                    setIsRunning(false);
+                }
+            };
+
+            const simulateInstanceCreation = (code) => {
+                let result = 'Cloud Spanner Instance Creation Results:\n\n';
+
+                if (code.includes('gcloud spanner instances create') || code.includes('instances create')) {
+                    result += '✅ Instance creation command detected\n';
+                }
+                if (code.includes('--config=') || code.includes('config=')) {
+                    result += '✅ Instance configuration specified\n';
+                }
+                if (code.includes('--nodes=') || code.includes('nodes=')) {
+                    result += '✅ Node count configured\n';
+                }
+                if (code.includes('--description') || code.includes('description')) {
+                    result += '✅ Instance description provided\n';
+                }
+
+                result += '\n🚀 Instance Status:\n';
+                result += 'Instance Name: ' + instanceName + '\n';
+                result += 'Configuration: ' + instanceConfig + '\n';
+                result += 'Nodes: ' + nodes + '\n';
+                result += 'Processing Units: ' + processingUnits + '\n';
+                result += 'Regions: ' + selectedRegions.join(', ') + '\n';
+                result += 'Status: Ready\n\n';
+
+                result += '📊 Instance Details:\n';
+                result += `Instance ID: ${instanceName}\n`;
+                result += `Project: ${projectState.projectId}\n`;
+                result += `Display Name: ${instanceName}\n`;
+                result += `State: READY\n`;
+                result += `Create Time: ${new Date().toISOString()}\n\n`;
+
+                result += '🔗 Connection Info:\n';
+                result += `gcloud spanner databases list --instance=${instanceName}\n`;
+                result += `Console: https://console.cloud.google.com/spanner/instances\n\n`;
+
+                result += 'Instance created successfully! You can now create databases and run queries.';
+
+                return result;
+            };
+
+            const configureInstance = () => {
+                if (!instanceName) return;
+
+                const instanceTemplates = {
+                    'global-instance': `gcloud spanner instances create ${instanceName} \\
+  --config=nam-eur-asia1 \\
+  --description="Global Spanner Instance" \\
+  --nodes=${nodes} \\
+  --display-name="${instanceName}"`,
+                    'regional-instance': `gcloud spanner instances create ${instanceName} \\
+  --config=regional-us-central1 \\
+  --description="Regional Spanner Instance" \\
+  --nodes=${nodes} \\
+  --display-name="${instanceName}"`,
+                    'high-performance': `gcloud spanner instances create ${instanceName} \\
+  --config=regional-us-central1 \\
+  --description="High Performance Instance" \\
+  --nodes=${Math.max(nodes, 3)} \\
+  --display-name="${instanceName}"`,
+                    'development': `gcloud spanner instances create ${instanceName} \\
+  --config=regional-us-central1 \\
+  --description="Development Instance" \\
+  --nodes=1 \\
+  --display-name="${instanceName}"`,
+                    'multi-region': `gcloud spanner instances create ${instanceName} \\
+  --config=nam3 \\
+  --description="Multi-region Instance" \\
+  --nodes=${Math.max(nodes, 3)} \\
+  --display-name="${instanceName}"`
+                };
+
+                const instanceCode = instanceTemplates['regional-instance'];
+                setCurrentCode(instanceCode);
+            };
+
+            const testInstance = () => {
+                const testCode = `# Test Spanner instance configuration
+import google.cloud.spanner as spanner
+import time
+
+# Test Spanner connection
+print("Testing Spanner connectivity...")
+
+# Simulate connection test
+print("\\n📋 Configuration Validation:")
+print(f"Instance Name: {instanceName}")
+print(f"Configuration: {instanceConfig}")
+print(f"Nodes: {nodes}")
+print(f"Processing Units: {processingUnits}")
+print(f"Selected Regions: {selectedRegions.join(', ')}")
+
+# Check resource availability
+print("\\n🔍 Resource Availability:")
+print("✅ Instance name available: Confirmed")
+print("✅ Configuration valid: Confirmed")
+print("✅ Node quota available: Confirmed")
+print("✅ Processing units available: Confirmed")
+
+# Validate regions
+if (instanceConfig.includes('regional') && selectedRegions.length > 1) {
+    print("⚠️  Warning: Regional config with multiple regions")
+} else if (instanceConfig.includes('nam') && selectedRegions.length < 3) {
+    print("ℹ️  Note: Multi-region config works best with 3+ regions")
+} else {
+    print("✅ Region configuration: Valid")
+}
+
+print("\\n✅ Configuration validation passed!")`;
+
+                setCurrentCode(testCode);
+            };
+
+            const executeQuery = () => {
+                const queryResults = {
+                    'SELECT * FROM users LIMIT 5;': `Query Results (Global Query):
++----+----------+---------------------+---------------------+
+| id | name     | email               | created_at          |
++----+----------+---------------------+---------------------+
+| 1  | John Doe | john@example.com    | 2023-01-15 10:30:00 |
+| 2  | Jane Smith| jane@example.com   | 2023-01-16 14:20:00 |
+| 3  | Bob Wilson| bob@example.com    | 2023-01-17 09:15:00 |
+| 4  | Alice Brown|alice@example.com  | 2023-01-18 16:45:00 |
+| 5  | Charlie Davis|charlie@example.com| 2023-01-19 11:20:00 |
++----+----------+---------------------+---------------------+
+5 rows in set (8.5ms) - Queried from us-central1`,
+                    'SELECT COUNT(*) FROM orders;': `Query Results (Aggregated Query):
++----------+
+| COUNT(*) |
++----------+
+|     1247 |
++----------+
+1 row in set (12.3ms) - Queried across all regions`,
+                    'SHOW DATABASES;': `Database List:
++---------------------+
+| Database            |
++---------------------+
+| information_schema  |
+| my_database         |
+| analytics_db        |
+| user_data_db        |
++---------------------+
+4 rows in set (5.2ms)`
+                };
+
+                const result = queryResults[currentQuery] || `Query executed successfully:
+Affected rows: 0
+Execution time: ${(Math.random() * 20 + 5).toFixed(1)}ms
+Regions queried: ${selectedRegions.join(', ')}
+Connection: ${instanceName} (${instanceConfig})`;
+                setQueryResult(result);
+            };
+
+            const executeTransaction = async () => {
+                setTransactionSteps(prev => prev.map(step => ({ ...step, status: 'running' })));
+
+                for (let i = 0; i < transactionSteps.length; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    setTransactionSteps(prev => prev.map((step, index) =>
+                        index === i ? { ...step, status: 'completed' } :
+                            index === i + 1 ? { ...step, status: 'running' } : step
+                    ));
+                }
+
+                setTransactionSteps(prev => prev.map(step => ({ ...step, status: 'completed' })));
+            };
+
+            const addSpannerConfig = () => {
+                if (!newConfigType) return;
+
+                const templates = {
+                    'Global Database': {
+                        name: 'GlobalDB',
+                        config: `gcloud spanner instances create global-instance \\\n  --config=nam-eur-asia1 \\\n  --description="Global Spanner Instance" \\\n  --nodes=3 \\\n  --display-name="Global Instance"`
+                    },
+                    'Regional Database': {
+                        name: 'RegionalDB',
+                        config: `gcloud spanner instances create regional-instance \\\n  --config=regional-us-central1 \\\n  --description="Regional Spanner Instance" \\\n  --nodes=1 \\\n  --display-name="Regional Instance"`
+                    },
+                    'High Performance DB': {
+                        name: 'HighPerfDB',
+                        config: `gcloud spanner instances create high-perf-instance \\\n  --config=regional-us-central1 \\\n  --description="High Performance Instance" \\\n  --nodes=10 \\\n  --display-name="High Performance Instance"`
+                    },
+                    'Development DB': {
+                        name: 'DevDB',
+                        config: `gcloud spanner instances create dev-instance \\\n  --config=regional-us-central1 \\\n  --description="Development Instance" \\\n  --nodes=1 \\\n  --display-name="Development Instance"`
+                    },
+                    'Multi-region DB': {
+                        name: 'MultiRegionDB',
+                        config: `gcloud spanner instances create multi-region-instance \\\n  --config=nam3 \\\n  --description="Multi-region Instance" \\\n  --nodes=3 \\\n  --display-name="Multi-region Instance"`
+                    }
+                };
+
+                const template = templates[newConfigType];
+                if (template) {
+                    setSpannerConfigs([...spannerConfigs, {
+                        type: newConfigType,
+                        name: template.name,
+                        config: template.config
+                    }]);
+                }
+
+                setNewConfigType('');
+            };
+
+            const removeSpannerConfig = (index) => {
+                setSpannerConfigs(spannerConfigs.filter((_, i) => i !== index));
+            };
+
+            const loadInstanceExample = (example) => {
+                const examples = {
+                    'basic-instance': `gcloud spanner instances create my-instance \\
+  --config=regional-us-central1 \\
+  --description="My Spanner Instance" \\
+  --nodes=1 \\
+  --display-name="My Instance"`,
+                    'global-instance': `gcloud spanner instances create global-instance \\
+  --config=nam-eur-asia1 \\
+  --description="Global Spanner Instance" \\
+  --nodes=3 \\
+  --display-name="Global Instance"`,
+                    'high-performance': `gcloud spanner instances create high-perf-instance \\
+  --config=regional-us-central1 \\
+  --description="High Performance Instance" \\
+  --nodes=10 \\
+  --display-name="High Performance Instance"`,
+                    'multi-region': `gcloud spanner instances create multi-region-instance \\
+  --config=nam3 \\
+  --description="Multi-region Instance" \\
+  --nodes=3 \\
+  --display-name="Multi-region Instance"`,
+                    'with-database': `gcloud spanner instances create my-instance \\
+  --config=regional-us-central1 \\
+  --description="Instance with Database" \\
+  --nodes=1 \\
+  --display-name="My Instance"
+
+# Create database after instance is ready
+gcloud spanner databases create my-database \\
+  --instance=my-instance \\
+  --ddl="CREATE TABLE users (
+    id INT64 NOT NULL,
+    name STRING(100),
+    email STRING(100),
+    created_at TIMESTAMP
+  ) PRIMARY KEY (id)"`
+                };
+
+                setCurrentCode(examples[example] || examples['basic-instance']);
+            };
+
+            const toggleRegion = (regionName) => {
+                setSelectedRegions(prev =>
+                    prev.includes(regionName)
+                        ? prev.filter(r => r !== regionName)
+                        : [...prev, regionName]
+                );
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-globe"></i> Cloud Spanner Interactive Demo</h1>
+                        <p>Globally distributed relational database</p>
+                    </div>
+
+                    {/* Cloud Spanner Features Overview */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-star"></i> Cloud Spanner Key Features</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="feature-grid">
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-globe-americas"></i></div>
+                                    <div className="feature-title">Global Distribution</div>
+                                    <div className="feature-description">Horizontally scalable database that spans multiple regions and continents with strong consistency and low latency.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-shield-alt"></i></div>
+                                    <div className="feature-title">Strong Consistency</div>
+                                    <div className="feature-description">ACID transactions with serializable isolation across multiple regions and continents, ensuring data consistency.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-chart-line"></i></div>
+                                    <div className="feature-title">99.999% Availability</div>
+                                    <div className="feature-description">Five 9's availability with automatic replication, failover, and maintenance with zero downtime.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-database"></i></div>
+                                    <div className="feature-title">SQL Support</div>
+                                    <div className="feature-description">Full ANSI SQL support with secondary indexes, foreign keys, and advanced query capabilities.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-expand-arrows-alt"></i></div>
+                                    <div className="feature-title">Horizontal Scaling</div>
+                                    <div className="feature-description">Scale compute resources independently from storage with processing units for cost optimization.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-clock"></i></div>
+                                    <div className="feature-title">External Consistency</div>
+                                    <div className="feature-description">TrueTime-based external consistency ensures globally consistent reads without coordination delays.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Spanner Creation Progress */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-spinner"></i> Instance Creation Progress</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="spanner-progress">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                                    <h5>Instance Status</h5>
+                                    <span className={`badge ${spannerProgress.status === 'running' ? 'bg-primary' : spannerProgress.status === 'completed' ? 'bg-success' : 'bg-secondary'}`}>
+                                        {spannerProgress.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div className="progress" style={{ height: '25px' }}>
+                                    <div
+                                        className="progress-bar"
+                                        style={{ width: `${spannerProgress.progress}%` }}
+                                        role="progressbar"
+                                        aria-valuenow={spannerProgress.progress}
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                    >
+                                        {spannerProgress.progress.toFixed(1)}%
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', fontSize: '0.9rem', color: '#6c757d' }}>
+                                    <span>Step: {spannerProgress.currentStep}</span>
+                                    <span>ETA: {spannerProgress.eta}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Global Regions */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-map-marked-alt"></i> Global Regions</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="global-regions">
+                                {availableRegions.map((region, index) => (
+                                    <div
+                                        key={index}
+                                        className={`region-card ${selectedRegions.includes(region.name) ? 'selected' : ''}`}
+                                        onClick={() => toggleRegion(region.name)}
+                                    >
+                                        <i className="fas fa-server" style={{ fontSize: '2rem', color: '#4285F4', marginBottom: '10px' }}></i>
+                                        <h6>{region.name}</h6>
+                                        <p>{region.location}</p>
+                                        <small>Latency: {region.latency}</small>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Code Editor */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-code"></i> Instance Configuration</h3>
+                        </div>
+                        <div className="card-body">
+                            <textarea
+                                className="code-editor"
+                                value={currentCode}
+                                onChange={(e) => setCurrentCode(e.target.value)}
+                                placeholder="Write your gcloud spanner command here..."
+                            />
+                            <div style={{ marginTop: '15px' }}>
+                                <button className="run-btn" onClick={createInstance} disabled={isRunning}>
+                                    <i className="fas fa-play"></i> Create Instance
+                                </button>
+                                <button className="run-btn" onClick={testInstance} style={{ marginLeft: '10px' }}>
+                                    <i className="fas fa-flask"></i> Validate Config
+                                </button>
+                                <button className="run-btn" onClick={() => loadInstanceExample('basic-instance')} style={{ marginLeft: '10px' }}>
+                                    <i className="fas fa-file-import"></i> Load Example
+                                </button>
+                            </div>
+                            {output && <div className="output-panel">{output}</div>}
+                        </div>
+                    </div>
+
+                    {/* Query Builder */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-search"></i> SQL Query Builder</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="query-builder">
+                                <div className="row">
+                                    <div className="col-md-8">
+                                        <div className="form-group">
+                                            <label>SQL Query:</label>
+                                            <textarea
+                                                className="form-control"
+                                                rows="4"
+                                                value={currentQuery}
+                                                onChange={(e) => setCurrentQuery(e.target.value)}
+                                                placeholder="SELECT * FROM users LIMIT 5;"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className="form-group">
+                                            <label>Quick Queries:</label>
+                                            <select className="form-control" onChange={(e) => setCurrentQuery(e.target.value)}>
+                                                <option value="SELECT * FROM users LIMIT 5;">Show Users</option>
+                                                <option value="SHOW DATABASES;">List Databases</option>
+                                                <option value="SELECT COUNT(*) FROM orders;">Count Orders</option>
+                                                <option value="SELECT * FROM users WHERE region = 'us-central1';">Regional Query</option>
+                                            </select>
+                                        </div>
+                                        <button className="run-btn" onClick={executeQuery} style={{ width: '100%' }}>
+                                            <i className="fas fa-play"></i> Execute Query
+                                        </button>
+                                    </div>
+                                </div>
+                                {queryResult && (
+                                    <div className="query-result">
+                                        <h6>Query Results:</h6>
+                                        <pre style={{ fontSize: '12px', margin: '10px 0' }}>{queryResult}</pre>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Distributed Transactions */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-exchange-alt"></i> Distributed Transactions</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="transaction-builder">
+                                <h5>Execute Distributed Transaction</h5>
+                                <p>Simulate ACID transactions across multiple regions</p>
+                                {transactionSteps.map((step, index) => (
+                                    <div key={index} className="transaction-step">
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div>
+                                                <strong>Step {step.id}:</strong> {step.sql}
+                                            </div>
+                                            <span className={`badge ${step.status === 'completed' ? 'bg-success' : step.status === 'running' ? 'bg-primary' : 'bg-secondary'}`}>
+                                                {step.status.toUpperCase()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button className="run-btn" onClick={executeTransaction} style={{ marginTop: '15px' }}>
+                                    <i className="fas fa-play"></i> Execute Transaction
+                                </button>
+                                <div style={{ marginTop: '10px', fontSize: '0.9rem', color: '#6c757d' }}>
+                                    <i className="fas fa-info-circle"></i> Transaction spans regions: {selectedRegions.join(', ')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Instance Configuration */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-sliders-h"></i> Instance Settings</h3>
+                        </div>
+                        <div className="card-body">
+                            {/* Operation Tabs */}
+                            <div className="operation-tabs">
+                                <button className={`operation-tab ${activeTab === 'instances' ? 'active' : ''}`} onClick={() => setActiveTab('instances')}>
+                                    <i className="fas fa-server"></i> Instances
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'databases' ? 'active' : ''}`} onClick={() => setActiveTab('databases')}>
+                                    <i className="fas fa-database"></i> Databases
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'scaling' ? 'active' : ''}`} onClick={() => setActiveTab('scaling')}>
+                                    <i className="fas fa-expand-arrows-alt"></i> Scaling
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'backups' ? 'active' : ''}`} onClick={() => setActiveTab('backups')}>
+                                    <i className="fas fa-save"></i> Backups
+                                </button>
+                            </div>
+
+                            {/* Instances Tab */}
+                            {activeTab === 'instances' && (
+                                <div className="interactive-demo">
+                                    <h4>Instance Management</h4>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Instance Name:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={instanceName}
+                                                    onChange={(e) => setInstanceName(e.target.value)}
+                                                    placeholder="my-spanner-instance"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Configuration:</label>
+                                                <select className="form-control" value={instanceConfig} onChange={(e) => setInstanceConfig(e.target.value)}>
+                                                    <option value="regional-us-central1">Regional - US Central</option>
+                                                    <option value="regional-us-west1">Regional - US West</option>
+                                                    <option value="nam-eur-asia1">Multi-region - Americas/Europe/Asia</option>
+                                                    <option value="nam3">Multi-region - Americas</option>
+                                                    <option value="eur3">Multi-region - Europe</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Nodes:</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    value={nodes}
+                                                    onChange={(e) => setNodes(parseInt(e.target.value))}
+                                                    min="1"
+                                                    max="100"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className="run-btn" onClick={configureInstance}>
+                                        <i className="fas fa-plus"></i> Configure Instance
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Databases Tab */}
+                            {activeTab === 'databases' && (
+                                <div className="interactive-demo">
+                                    <h4>Database Management</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Database Name:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={databaseName}
+                                                    onChange={(e) => setDatabaseName(e.target.value)}
+                                                    placeholder="my-database"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>DDL Statements:</label>
+                                                <textarea className="form-control" rows="6" placeholder={`CREATE TABLE users (
+  id INT64 NOT NULL,
+  name STRING(100),
+  email STRING(100),
+  region STRING(50),
+  created_at TIMESTAMP
+) PRIMARY KEY (id);
+
+CREATE INDEX idx_users_region ON users(region);`}></textarea>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Instance:</label>
+                                                <select className="form-control">
+                                                    <option value="">Select instance...</option>
+                                                    {spannerInstances.map((instance, index) => (
+                                                        <option key={index} value={instance.name}>{instance.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Database Options:</label>
+                                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                                    <input type="checkbox" /> Enable DDL
+                                                    <input type="checkbox" defaultChecked /> Enable DML
+                                                    <input type="checkbox" /> Version Retention
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Scaling Tab */}
+                            {activeTab === 'scaling' && (
+                                <div className="interactive-demo">
+                                    <h4>Compute Scaling</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Processing Units:</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    value={processingUnits}
+                                                    onChange={(e) => setProcessingUnits(parseInt(e.target.value))}
+                                                    min="100"
+                                                    max="100000"
+                                                    step="100"
+                                                />
+                                                <small>100 PUs = ~1 node</small>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Scaling Mode:</label>
+                                                <select className="form-control">
+                                                    <option value="manual">Manual Scaling</option>
+                                                    <option value="auto">Auto Scaling</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Min Processing Units:</label>
+                                                <input type="number" className="form-control" defaultValue="100" min="100" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Max Processing Units:</label>
+                                                <input type="number" className="form-control" defaultValue="1000" min="100" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Backups Tab */}
+                            {activeTab === 'backups' && (
+                                <div className="interactive-demo">
+                                    <h4>Backup Management</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Backup Name:</label>
+                                                <input type="text" className="form-control" placeholder="my-backup" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Database:</label>
+                                                <select className="form-control">
+                                                    <option value="">Select database...</option>
+                                                    <option value="my-database">my-database</option>
+                                                    <option value="analytics-db">analytics-db</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Retention Period:</label>
+                                                <select className="form-control">
+                                                    <option value="7">7 days</option>
+                                                    <option value="30">30 days</option>
+                                                    <option value="90">90 days</option>
+                                                    <option value="365">1 year</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Backup Type:</label>
+                                                <select className="form-control">
+                                                    <option value="on-demand">On-demand</option>
+                                                    <option value="scheduled">Scheduled</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Instance Statistics */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-chart-bar"></i> Instance Statistics</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="run-preview">
+                                {instanceStats.map((stat, index) => (
+                                    <div key={index} className="spanner-instance-card">
+                                        <div className="spanner-instance-value">{stat.count}{stat.unit || ''}</div>
+                                        <div className="spanner-instance-label">{stat.name}</div>
+                                        <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '5px' }}>
+                                            <i className="material-icons">{stat.icon}</i>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div style={{ position: 'absolute', bottom: '20px', right: '20px' }}>
+                                    <button className="run-btn" onClick={() => {
+                                        setInstanceStats(prev => prev.map(stat => ({
+                                            ...stat,
+                                            count: stat.unit === '$' ? (Math.random() * 50 + 30).toFixed(2) :
+                                                stat.unit === '/s' ? Math.floor(Math.random() * 1000 + 1000) :
+                                                    stat.unit === 'ms' ? (Math.random() * 10 + 5).toFixed(1) :
+                                                        Math.floor(Math.random() * 5) + 3
+                                        })));
+                                    }}>
+                                        <i className="fas fa-sync"></i> Refresh Stats
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Global Visualization */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-globe"></i> Global Infrastructure</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="global-visualization">
+                                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                    <h5>Spanner Instances & Global Distribution</h5>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                                    {spannerInstances.map((instance, index) => (
+                                        <div key={index} className="spanner-instance">
+                                            <i className={`fas ${instance.status === 'ready' ? 'fa-globe' : instance.status === 'creating' ? 'fa-spinner' : 'fa-exclamation-triangle'}`}></i> {instance.name}
+                                            <span className={`instance-status status-${instance.status}`}>
+                                                {instance.status}
+                                            </span>
+                                            <br />
+                                            <small>{instance.config} • {instance.nodes} nodes • {instance.databases} DBs • Regions: {instance.regions.join(', ')}</small>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                    <small style={{ color: '#6c757d' }}>Project: {projectState.projectId} • Total Instances: {spannerInstances.length} • Global Regions: {[...new Set(spannerInstances.flatMap(i => i.regions))].length}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Spanner Config Builder */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tools"></i> Spanner Config Builder</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="spanner-config">
+                                <h5>Build Advanced Spanner Configurations</h5>
+                                {spannerConfigs.map((config, index) => (
+                                    <div key={index} className="config-row">
+                                        <div className="config-header">
+                                            <span className="config-type">{config.type}: {config.name}</span>
+                                            <button className="remove-config" onClick={() => removeSpannerConfig(index)}>
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <pre style={{ fontSize: '12px', margin: '10px 0' }}>{config.config}</pre>
+                                    </div>
+                                ))}
+
+                                <div className="form-group">
+                                    <label>Add Spanner Type:</label>
+                                    <select className="form-control" value={newConfigType} onChange={(e) => setNewConfigType(e.target.value)}>
+                                        <option value="">Select Spanner type...</option>
+                                        <option value="Global Database">Global Database</option>
+                                        <option value="Regional Database">Regional Database</option>
+                                        <option value="High Performance DB">High Performance DB</option>
+                                        <option value="Development DB">Development DB</option>
+                                        <option value="Multi-region DB">Multi-region DB</option>
+                                    </select>
+                                </div>
+
+                                <button className="add-config-btn" onClick={addSpannerConfig} disabled={!newConfigType}>
+                                    <i className="fas fa-plus"></i> Add Spanner Config
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Performance Metrics */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tachometer-alt"></i> Performance Metrics</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="performance-metrics">
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.instances}</div>
+                                    <div className="perf-metric-label">Total Instances</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.databases}</div>
+                                    <div className="perf-metric-label">Databases</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.transactions}</div>
+                                    <div className="perf-metric-label">Transactions/sec</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.latency}ms</div>
+                                    <div className="perf-metric-label">Avg Latency</div>
+                                </div>
+                            </div>
+
+                            <div className="execution-stats">
+                                <div className="stat-item">
+                                    <span className="stat-label">Project ID:</span>
+                                    <span className="stat-value">{projectState.projectId}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Region:</span>
+                                    <span className="stat-value">{projectState.region}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Network:</span>
+                                    <span className="stat-value">{projectState.network}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Cost (24h):</span>
+                                    <span className="stat-value">${performance.cost}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-book"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/spanner" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Spanner Site</a></li>
+                                        <li><a href="https://cloud.google.com/spanner/docs" target="_blank"><i className="fas fa-external-link-alt"></i> Documentation</a></li>
+                                        <li><a href="https://console.cloud.google.com/spanner" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Console</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/spanner/docs/quickstarts" target="_blank"><i className="fas fa-external-link-alt"></i> Quickstarts</a></li>
+                                        <li><a href="https://cloud.google.com/spanner/docs/schema-and-data-model" target="_blank"><i className="fas fa-external-link-alt"></i> Schema Design</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/google-cloud-spanner" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GCP Data Engineer Certification Cheat Sheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    font-size: 11px;
+  }
+
+  .cover-page {
+    width: 297mm;
+    min-height: 210mm;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    page-break-after: always;
+  }
+
+  .cover-logo {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 28px;
+    margin-bottom: 28px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a73e8;
+    letter-spacing: 1px;
+  }
+  .cover-logo span.g { color: #4285F4; }
+  .cover-logo span.o1 { color: #EA4335; }
+  .cover-logo span.o2 { color: #FBBC05; }
+  .cover-logo span.g2 { color: #34A853; }
+  .cover-logo span.l { color: #4285F4; }
+  .cover-logo span.e { color: #EA4335; }
+
+  .cover-title {
+    font-size: 42px;
+    font-weight: 800;
+    color: white;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .cover-subtitle {
+    font-size: 18px;
+    color: #ffd700;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .cover-badge {
+    background: linear-gradient(90deg, #4285F4, #34A853);
+    color: white;
+    border-radius: 30px;
+    padding: 10px 32px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 20px;
+    letter-spacing: 1px;
+  }
+  .cover-themes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+    justify-content: center;
+  }
+  .theme-pill {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .cover-rule {
+    background: rgba(255,215,0,0.6);
+    border-radius: 12px;
+    padding: 16px 32px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 28px;
+    text-align: center;
+    max-width: 500px;
+    border-left: 5px solid #ffd700;
+  }
+
+  /* GRID PAGE */
+  .grid-page {
+    width: 297mm;
+    padding: 8mm;
+    background: #f0f2f5;
+    page-break-after: always;
+  }
+  .grid-page-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  /* CARD */
+  .card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    flex-direction: column;
+  }
+  .card-header {
+    padding: 8px 10px 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 12px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+  }
+  .card-subtitle {
+    font-size: 9px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .card-body {
+    padding: 8px 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .section-label {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+    color: #555;
+  }
+  .what-box {
+    background: #f7f9fc;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 9.5px;
+    color: #333;
+    line-height: 1.4;
+    border-left: 3px solid;
+  }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+  .mini-box {
+    background: #f7f9fc;
+    border-radius: 6px;
+    padding: 5px 7px;
+  }
+  .mini-box ul {
+    list-style: none;
+    padding: 0;
+  }
+  .mini-box ul li {
+    font-size: 8.5px;
+    color: #333;
+    padding: 1px 0;
+    padding-left: 10px;
+    position: relative;
+    line-height: 1.35;
+  }
+  .mini-box ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    font-size: 7px;
+  }
+
+  .arch-box {
+    border-radius: 6px;
+    padding: 6px 8px;
+    text-align: center;
+    font-size: 8.5px;
+    color: white;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+  .arch-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    background: #f7f9fc;
+    border-radius: 6px;
+    padding: 5px;
+  }
+  .arch-node {
+    background: white;
+    border-radius: 5px;
+    padding: 3px 6px;
+    font-size: 8px;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    border: 1px solid #e0e0e0;
+  }
+  .arch-arrow {
+    font-size: 10px;
+    color: #888;
+  }
+
+  .two-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+  .practice-box {
+    background: #e8f5e9;
+    border-radius: 6px;
+    padding: 5px 7px;
+  }
+  .practice-box ul li::before { color: #2e7d32; content: '✓ '; font-size: 7px; }
+  .warning-box {
+    background: #fff3e0;
+    border-radius: 6px;
+    padding: 5px 7px;
+  }
+  .warning-box ul li::before { color: #e65100; content: '✗ '; font-size: 7px; }
+
+  .exam-tip {
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 8.5px;
+    font-weight: 700;
+    color: white;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .exam-tip::before {
+    content: '⭐';
+    font-size: 10px;
+  }
+
+  /* Color themes */
+  .bq   { background: linear-gradient(135deg, #1565C0, #1976D2); }
+  .bq-accent { border-color: #1976D2; }
+  .bq-arch { background: linear-gradient(90deg, #1565C0, #1976D2); }
+  .bq-tip { background: #1565C0; }
+
+  .ps   { background: linear-gradient(135deg, #E65100, #F57C00); }
+  .ps-accent { border-color: #F57C00; }
+  .ps-arch { background: linear-gradient(90deg, #E65100, #F57C00); }
+  .ps-tip { background: #E65100; }
+
+  .df   { background: linear-gradient(135deg, #1B5E20, #2E7D32); }
+  .df-accent { border-color: #2E7D32; }
+  .df-arch { background: linear-gradient(90deg, #1B5E20, #2E7D32); }
+  .df-tip { background: #1B5E20; }
+
+  .dp   { background: linear-gradient(135deg, #4A148C, #6A1B9A); }
+  .dp-accent { border-color: #6A1B9A; }
+  .dp-arch { background: linear-gradient(90deg, #4A148C, #6A1B9A); }
+  .dp-tip { background: #4A148C; }
+
+  .gcs  { background: linear-gradient(135deg, #006064, #00838F); }
+  .gcs-accent { border-color: #00838F; }
+  .gcs-arch { background: linear-gradient(90deg, #006064, #00838F); }
+  .gcs-tip { background: #006064; }
+
+  .bt   { background: linear-gradient(135deg, #BF360C, #D84315); }
+  .bt-accent { border-color: #D84315; }
+  .bt-arch { background: linear-gradient(90deg, #BF360C, #D84315); }
+  .bt-tip { background: #BF360C; }
+
+  .sp   { background: linear-gradient(135deg, #880E4F, #AD1457); }
+  .sp-accent { border-color: #AD1457; }
+  .sp-arch { background: linear-gradient(90deg, #880E4F, #AD1457); }
+  .sp-tip { background: #880E4F; }
+
+  .dfwr { background: linear-gradient(135deg, #1A237E, #283593); }
+  .dfwr-accent { border-color: #283593; }
+  .dfwr-arch { background: linear-gradient(90deg, #1A237E, #283593); }
+  .dfwr-tip { background: #1A237E; }
+
+  .fs   { background: linear-gradient(135deg, #F57F17, #F9A825); }
+  .fs-accent { border-color: #F9A825; }
+  .fs-arch { background: linear-gradient(90deg, #F57F17, #F9A825); }
+  .fs-tip { background: #F57F17; }
+
+  .csql { background: linear-gradient(135deg, #01579B, #0277BD); }
+  .csql-accent { border-color: #0277BD; }
+  .csql-arch { background: linear-gradient(90deg, #01579B, #0277BD); }
+  .csql-tip { background: #01579B; }
+
+  .adb  { background: linear-gradient(135deg, #263238, #37474F); }
+  .adb-accent { border-color: #37474F; }
+  .adb-arch { background: linear-gradient(90deg, #263238, #37474F); }
+  .adb-tip { background: #263238; }
+
+  .comp { background: linear-gradient(135deg, #1B5E20, #388E3C); }
+  .comp-accent { border-color: #388E3C; }
+  .comp-arch { background: linear-gradient(90deg, #1B5E20, #388E3C); }
+  .comp-tip { background: #1B5E20; }
+
+  .cld  { background: linear-gradient(135deg, #4E342E, #6D4C41); }
+  .cld-accent { border-color: #6D4C41; }
+  .cld-arch { background: linear-gradient(90deg, #4E342E, #6D4C41); }
+  .cld-tip { background: #4E342E; }
+
+  .dc   { background: linear-gradient(135deg, #006064, #0097A7); }
+  .dc-accent { border-color: #0097A7; }
+  .dc-arch { background: linear-gradient(90deg, #006064, #0097A7); }
+  .dc-tip { background: #006064; }
+
+  @media print {
+    body { background: white; }
+    .cover-page, .grid-page { page-break-after: always; }
+    .card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== COVER PAGE ===================== -->
+<div class="cover-page">
+  <div class="cover-logo">
+    <span class="g">G</span><span class="o1">o</span><span class="o2">o</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span>&nbsp;Cloud
+  </div>
+  <div class="cover-subtitle">Professional Certification</div>
+  <div class="cover-title">GCP Data Engineer<br>Cheat Sheet</div>
+  <div class="cover-badge">Google Cloud Certified – Professional Data Engineer</div>
+  <div class="cover-themes">
+    <div class="theme-pill">⚡ Scalability</div>
+    <div class="theme-pill">🛡️ Reliability &amp; Availability</div>
+    <div class="theme-pill">🚀 Performance</div>
+    <div class="theme-pill">🔒 Security &amp; Governance</div>
+    <div class="theme-pill">💰 Cost Optimization</div>
+    <div class="theme-pill">🏆 Operational Excellence</div>
+  </div>
+  <div class="cover-rule">
+    ⭐ Golden Rule: Choose managed, scalable, secure, cost-effective solutions.
+  </div>
+</div>
+
+<!-- ===================== PAGE 1: BigQuery + Pub/Sub + Dataflow ===================== -->
+<div class="grid-page">
+  <div class="grid-page-title">GCP Core Data Services — Part 1</div>
+  <div class="grid">
+
+    <!-- BIGQUERY -->
+    <div class="card">
+      <div class="card-header bq">
+        <div class="card-num">1</div>
+        <div>
+          <div class="card-title">BigQuery</div>
+          <div class="card-subtitle">Serverless Data Warehouse</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box bq-accent">Fully managed, serverless data warehouse for analytics using SQL. Petabyte-scale with built-in ML &amp; BI integration.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Serverless, no infra mgmt</li>
+              <li>Columnar (Dremel engine)</li>
+              <li>ANSI SQL support</li>
+              <li>Storage/compute separation</li>
+              <li>ML &amp; GIS integrated</li>
+              <li>Petabyte scale</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Analytics &amp; reporting</li>
+              <li>BI dashboards</li>
+              <li>Ad-hoc queries</li>
+              <li>Data warehousing</li>
+              <li>ML analytics</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Databases</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Files (GCS)</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#1976D2;color:white;">BigQuery</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">BI Tools</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">ML/AI</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Partition by date/timestamp</li>
+              <li>Cluster frequently filtered cols</li>
+              <li>Avoid SELECT *</li>
+              <li>Use materialized views</li>
+              <li>Schedule queries for automation</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Not for OLTP workloads</li>
+              <li>Not for &lt;1s latency needs</li>
+              <li>Avoid for transactional data</li>
+              <li>Not for small datasets</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip bq-tip">Exam Tip: For analytical SQL workloads at scale, choose BigQuery.</div>
+      </div>
+    </div>
+
+    <!-- PUB/SUB -->
+    <div class="card">
+      <div class="card-header ps">
+        <div class="card-num">2</div>
+        <div>
+          <div class="card-title">Pub/Sub</div>
+          <div class="card-subtitle">Messaging Service</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box ps-accent">Fully managed real-time messaging for event ingestion and asynchronous communication between decoupled systems.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Global, highly available</li>
+              <li>At-least-once delivery</li>
+              <li>Push or Pull subscriptions</li>
+              <li>Ordering keys</li>
+              <li>Dead letter topics</li>
+              <li>Replay &amp; retention</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Event streaming</li>
+              <li>IoT data ingestion</li>
+              <li>Decoupled microservices</li>
+              <li>Log aggregation</li>
+              <li>Async workflows</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Apps</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Services</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#F57C00;color:white;">Pub/Sub Topic</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Dataflow</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">BigQuery</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Use ordering keys if needed</li>
+              <li>Configure dead letter topics</li>
+              <li>Set appropriate retention</li>
+              <li>Use pull for better control</li>
+              <li>Monitor undelivered msgs</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Not for request/response</li>
+              <li>Not for high-throughput low-latency storage</li>
+              <li>Use other DBs for persistent transactional data</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip ps-tip">Exam Tip: Best choice for event ingestion and decoupled systems.</div>
+      </div>
+    </div>
+
+    <!-- DATAFLOW -->
+    <div class="card">
+      <div class="card-header df">
+        <div class="card-num">3</div>
+        <div>
+          <div class="card-title">Dataflow</div>
+          <div class="card-subtitle">Stream &amp; Batch Processing (Apache Beam)</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box df-accent">Serverless stream and batch processing service based on Apache Beam with auto-scaling and unified programming model.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Serverless autoscaling</li>
+              <li>Unified stream &amp; batch</li>
+              <li>Exactly-once processing</li>
+              <li>Windowing &amp; triggers</li>
+              <li>Built-in connectors</li>
+              <li>Monitoring &amp; metrics</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Real-time ETL</li>
+              <li>Stream analytics</li>
+              <li>Event-driven pipelines</li>
+              <li>Log processing</li>
+              <li>IoT data pipelines</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Pub/Sub</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">GCS</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#2E7D32;color:white;">Dataflow</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">BigQuery</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Pub/Sub</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Choose right windowing strategy</li>
+              <li>Handle late data w/ watermarks</li>
+              <li>Use side inputs for ref data</li>
+              <li>Monitor &amp; autoscaling</li>
+              <li>Optimize number of workers</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Complex Spark jobs → Dataproc</li>
+              <li>Need low-level cluster control</li>
+              <li>Heavy custom libraries</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip df-tip">Exam Tip: For serverless streaming/batch with minimal ops, choose Dataflow.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== PAGE 2: Dataproc + GCS + Bigtable ===================== -->
+<div class="grid-page">
+  <div class="grid-page-title">GCP Core Data Services — Part 2</div>
+  <div class="grid">
+
+    <!-- DATAPROC -->
+    <div class="card">
+      <div class="card-header dp">
+        <div class="card-num">4</div>
+        <div>
+          <div class="card-title">Dataproc</div>
+          <div class="card-subtitle">Managed Hadoop &amp; Spark Service</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box dp-accent">Managed service for running Hadoop, Spark, Hive and other open-source big data tools on Google Cloud infrastructure.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Managed clusters</li>
+              <li>Supports Spark, Hive, HBase, Pig, Presto</li>
+              <li>Custom init actions</li>
+              <li>Autoscaling clusters</li>
+              <li>Preemptible VMs</li>
+              <li>Integrates with GCS, BigQuery</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Lift &amp; shift Hadoop</li>
+              <li>Existing Spark processing</li>
+              <li>IoT transformation</li>
+              <li>ML model training</li>
+              <li>Data lake processing</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">GCS</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">BigQuery</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#6A1B9A;color:white;">Dataproc Cluster</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">GCS</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">BigQuery</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Use autoscaler</li>
+              <li>Enable autoscaling</li>
+              <li>Use preemptible VMs</li>
+              <li>Store data in GCS (not HDFS)</li>
+              <li>Right-size machine types</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Need serverless solution</li>
+              <li>New pipelines → use Dataflow</li>
+              <li>Minimal ops required</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip dp-tip">Exam Tip: Use Dataproc for existing Spark/Hadoop workloads.</div>
+      </div>
+    </div>
+
+    <!-- GCS -->
+    <div class="card">
+      <div class="card-header gcs">
+        <div class="card-num">5</div>
+        <div>
+          <div class="card-title">Cloud Storage (GCS)</div>
+          <div class="card-subtitle">Object Storage</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box gcs-accent">Highly durable, scalable object storage for data lakes, backups, archives and more. 99.999999999% durability.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>99.999999999% durability</li>
+              <li>Global &amp; regional policies</li>
+              <li>Lifecycle management</li>
+              <li>Versioning</li>
+              <li>Signed URLs</li>
+              <li>Object-level IAM</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Storage Classes</div>
+            <ul>
+              <li>Standard – Frequent access</li>
+              <li>Nearline – Monthly access</li>
+              <li>Coldline – Quarterly</li>
+              <li>Archive – Long-term</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Apps</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Upload/Download</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#00838F;color:white;">GCS Bucket</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Dataflow / BQ</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Use appropriate storage class</li>
+              <li>Configure lifecycle policies</li>
+              <li>Enable versioning if needed</li>
+              <li>Use folder structure &amp; permissions</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Not for RDBMS workloads</li>
+              <li>Not for low-latency queries</li>
+              <li>Avoid frequent data egress charges</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip gcs-tip">Exam Tip: Foundation of data lake on GCP. Use lifecycle to save cost.</div>
+      </div>
+    </div>
+
+    <!-- BIGTABLE -->
+    <div class="card">
+      <div class="card-header bt">
+        <div class="card-num">6</div>
+        <div>
+          <div class="card-title">Bigtable</div>
+          <div class="card-subtitle">NoSQL Wide-Column Database</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box bt-accent">Fully managed NoSQL database for massive scale, low-latency workloads. Powers Google Search, Maps, and Analytics.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Massive scale (PBs)</li>
+              <li>High availability</li>
+              <li>Automatic scaling</li>
+              <li>Strong consistency</li>
+              <li>HBase API compatible</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Wide-column store</li>
+              <li>Time-series data</li>
+              <li>IoT applications</li>
+              <li>Real-time analytics</li>
+              <li>Event logging</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Applications</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#D84315;color:white;">Bigtable</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Storage Nodes (Replicated)</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Design row keys carefully</li>
+              <li>Use appropriate column families</li>
+              <li>Avoid hot row keys</li>
+              <li>Monitor performance &amp; latency</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Complex joins</li>
+              <li>Ad-hoc analytical queries</li>
+              <li>Transactions across rows</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip bt-tip">Exam Tip: Use Bigtable for latency, high-scale NoSQL workloads.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== PAGE 3: Spanner + Dataflow (wr) + Firestore ===================== -->
+<div class="grid-page">
+  <div class="grid-page-title">GCP Database &amp; Streaming Services — Part 3</div>
+  <div class="grid">
+
+    <!-- SPANNER -->
+    <div class="card">
+      <div class="card-header sp">
+        <div class="card-num">7</div>
+        <div>
+          <div class="card-title">Spanner</div>
+          <div class="card-subtitle">Globally Distributed SQL Database</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box sp-accent">Globally distributed, strongly consistent relational database with horizontal scale. First globally consistent SQL DB.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>SQL interface</li>
+              <li>ACID transactions</li>
+              <li>Global distribution</li>
+              <li>99.999% availability</li>
+              <li>Strong consistency</li>
+              <li>Horizontal scaling</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Global applications</li>
+              <li>Financial services</li>
+              <li>IoT platforms</li>
+              <li>High throughput OLTP</li>
+              <li>Mission critical apps</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Apps</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#AD1457;color:white;">Spanner</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Region 1</div>
+            <div class="arch-arrow">+</div>
+            <div class="arch-node">Region 2</div>
+            <div class="arch-arrow">+</div>
+            <div class="arch-node">Region N</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Design schema for distribution</li>
+              <li>Use appropriate primary keys</li>
+              <li>Use interleaving for related data</li>
+              <li>Monitor &amp; optimize queries</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Simple single-region apps</li>
+              <li>Small or schema-less data</li>
+              <li>Low scale use cases</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip sp-tip">Exam Tip: Choose Spanner for global, consistent, scalable SQL.</div>
+      </div>
+    </div>
+
+    <!-- DATAFLWR (Dataflow for Real-time) -->
+    <div class="card">
+      <div class="card-header dfwr">
+        <div class="card-num">3b</div>
+        <div>
+          <div class="card-title">Dataflow (Real-time)</div>
+          <div class="card-subtitle">5G/SQL Document Database</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box dfwr-accent">Real-time orchestration for stream processing OLTP/IP model with geofence testing &amp; data transformations using Apache Beam.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Dual-time analytics</li>
+              <li>Geo dimensions</li>
+              <li>Causal objects</li>
+              <li>Geofence testing</li>
+              <li>Data cancellations</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Realtime data pipelines</li>
+              <li>Real-time streaming</li>
+              <li>Geo processing</li>
+              <li>Event correlation</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Pub/Sub</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#283593;color:white;">Dataflow RT</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">BigQuery</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">GCS</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Use streaming inserts wisely</li>
+              <li>Monitor pipeline latency</li>
+              <li>Set watermarks correctly</li>
+              <li>Handle late data gracefully</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Use for existing Spark/Hadoop real-time needs → Dataproc</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip dfwr-tip">Exam Tip: Use for existing Spark/Hadoop as real-time mode.</div>
+      </div>
+    </div>
+
+    <!-- FIRESTORE -->
+    <div class="card">
+      <div class="card-header fs">
+        <div class="card-num">8</div>
+        <div>
+          <div class="card-title">Firestore</div>
+          <div class="card-subtitle">NoSQL Document Database</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box fs-accent">Fully managed NoSQL document database for mobile, web and server applications with real-time sync capabilities.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Document-based model</li>
+              <li>Real-time sync</li>
+              <li>Offline support</li>
+              <li>Auto scaling</li>
+              <li>Strong security</li>
+              <li>Simple APIs</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Mobile apps</li>
+              <li>Web apps</li>
+              <li>Real-time apps</li>
+              <li>Chat / messaging</li>
+              <li>User data</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Web/Mobile</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">SDK</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#F9A825;color:white;">Firestore</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Offline Cache</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Design collections carefully</li>
+              <li>Avoid large documents (&gt;1MB)</li>
+              <li>Use security rules</li>
+              <li>Paginate query results</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Complex analytics</li>
+              <li>Large scale aggregations</li>
+              <li>Multi-doc transactions (not strong)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip fs-tip" style="color:#333;">Exam Tip: Use Firestore for app backend &amp; real-time data.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== PAGE 4: Cloud SQL + AlloyDB + Composer ===================== -->
+<div class="grid-page">
+  <div class="grid-page-title">GCP Databases &amp; Orchestration — Part 4</div>
+  <div class="grid">
+
+    <!-- CLOUD SQL -->
+    <div class="card">
+      <div class="card-header csql">
+        <div class="card-num">9</div>
+        <div>
+          <div class="card-title">Cloud SQL</div>
+          <div class="card-subtitle">Managed Relational Database</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box csql-accent">Fully managed relational database service supporting MySQL, PostgreSQL, and SQL Server with automated backups &amp; HA.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Managed backups</li>
+              <li>High availability (HA)</li>
+              <li>Read replicas</li>
+              <li>Automated patching</li>
+              <li>Security &amp; IAM</li>
+              <li>Monitoring</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Supported Engines</div>
+            <ul>
+              <li>MySQL</li>
+              <li>PostgreSQL</li>
+              <li>SQL Server</li>
+            </ul>
+            <div class="section-label" style="margin-top:6px;">Best Use Cases</div>
+            <ul>
+              <li>Traditional apps</li>
+              <li>Web applications</li>
+              <li>ERP / CRM systems</li>
+              <li>Lift-and-shift</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">App</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#0277BD;color:white;">Cloud SQL Primary</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Read Replicas</div>
+            <div class="arch-arrow">+</div>
+            <div class="arch-node">Backup</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Right-size instances</li>
+              <li>Use read replicas</li>
+              <li>Enable backups &amp; PITR</li>
+              <li>Monitor performance</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Massive scale analytics</li>
+              <li>Global distribution needs</li>
+              <li>Highly variable workloads</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip csql-tip">Exam Tip: Use Cloud SQL for managed relational DB needs.</div>
+      </div>
+    </div>
+
+    <!-- ALLOYDB -->
+    <div class="card">
+      <div class="card-header adb">
+        <div class="card-num">10</div>
+        <div>
+          <div class="card-title">AlloyDB</div>
+          <div class="card-subtitle">High Performance PostgreSQL</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box adb-accent">Fully managed PostgreSQL-compatible database with high performance for demanding transactional &amp; analytical workloads.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>PostgreSQL compatible</li>
+              <li>High performance</li>
+              <li>Automatic backups</li>
+              <li>Built-in HA</li>
+              <li>IAM &amp; security</li>
+              <li>Analytics + OLTP</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>High-performance apps</li>
+              <li>PostgreSQL workloads</li>
+              <li>Geospatial workloads</li>
+              <li>SaaS applications</li>
+              <li>Modern apps</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Applications</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#37474F;color:white;">AlloyDB Primary</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Read Replica</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Use read replicas</li>
+              <li>Monitor &amp; tune queries</li>
+              <li>Use IAM authentication</li>
+              <li>Keep queries optimized</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Legacy MySQL-specific features</li>
+              <li>Feature sets heavy</li>
+              <li>Extremely low scale apps</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip adb-tip">Exam Tip: Use AlloyDB for high-perf managed PostgreSQL.</div>
+      </div>
+    </div>
+
+    <!-- COMPOSER (AIRFLOW) -->
+    <div class="card">
+      <div class="card-header comp">
+        <div class="card-num">11</div>
+        <div>
+          <div class="card-title">Composer (Airflow)</div>
+          <div class="card-subtitle">Workflow Orchestration</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box comp-accent">Managed Apache Airflow for authoring, scheduling and monitoring workflows. DAG-based pipeline management on GCP.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Managed Airflow service</li>
+              <li>Global distribution</li>
+              <li>Scalable</li>
+              <li>Integration with GCP</li>
+              <li>Web UI</li>
+              <li>Logging &amp; monitoring</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Workflow orchestration</li>
+              <li>ETL scheduling</li>
+              <li>Dependency mgmt</li>
+              <li>Multi-step compute tasks</li>
+              <li>Batch workflows</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">DAGs (GCS)</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#388E3C;color:white;">Composer Env</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Workers</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">BigQuery / GCS</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Keep DAGs modular</li>
+              <li>Use variables &amp; connections</li>
+              <li>Set retries &amp; alerts</li>
+              <li>Monitor task failures</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Real-time processing needs</li>
+              <li>Very simple compute tasks</li>
+              <li>Simple one-off scripts</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip comp-tip">Exam Tip: Use Composer for reliable workflow scheduling.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== PAGE 5: Looker + Cloud Composer + Data Catalog ===================== -->
+<div class="grid-page">
+  <div class="grid-page-title">GCP Analytics &amp; Governance — Part 5</div>
+  <div class="grid">
+
+    <!-- DATAFLOW (REAL-TIME ORCHESTRATION) - Card 3b renamed to Dataflow Real-Time -->
+    <!-- CLOUD ENDPOINTS / LOOKER -->
+    <div class="card">
+      <div class="card-header" style="background: linear-gradient(135deg, #4E342E, #6D4C41);">
+        <div class="card-num">C</div>
+        <div>
+          <div class="card-title">Clo'dser (Cloud Dns)</div>
+          <div class="card-subtitle">Managed Relationships/Directives</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box cld-accent">Containerized metadata for classifications, policy tags, row-level security. Each streaming and get-impl apps.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Item monocot</li>
+              <li>Data lineage</li>
+              <li>Classification</li>
+              <li>Policy tags</li>
+              <li>Search &amp; governance</li>
+              <li>Integration with Dataplex</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Containerized metadata</li>
+              <li>Classification tasks</li>
+              <li>Policy &amp; governance</li>
+              <li>Get-impl apps</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Data Sources</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#6D4C41;color:white;">Clo'dser</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Consumers</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Tag data assets</li>
+              <li>Use policy tags</li>
+              <li>Keep metadata updated</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Real-time processing needs</li>
+              <li>Complex analytics</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip cld-tip">Exam Tip: Use for managed metadata &amp; policy governance.</div>
+      </div>
+    </div>
+
+    <!-- DATA CATALOG -->
+    <div class="card">
+      <div class="card-header dc">
+        <div class="card-num">12</div>
+        <div>
+          <div class="card-title">Data Catalog</div>
+          <div class="card-subtitle">Metadata Management</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">What is it?</div>
+          <div class="what-box dc-accent">Centralized metadata service for discovering, understanding and managing data assets across your GCP environment.</div>
+        </div>
+        <div class="two-col">
+          <div class="mini-box">
+            <div class="section-label">Key Features</div>
+            <ul>
+              <li>Metadata discovery</li>
+              <li>Data lineage</li>
+              <li>Classification</li>
+              <li>Policy tags</li>
+              <li>Search &amp; governance</li>
+              <li>Dataplex integration</li>
+            </ul>
+          </div>
+          <div class="mini-box">
+            <div class="section-label">Best Use Cases</div>
+            <ul>
+              <li>Metadata discovery</li>
+              <li>Data governance</li>
+              <li>Compliance</li>
+              <li>Data cataloging</li>
+              <li>Data lineage</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Architecture / How it works</div>
+          <div class="arch-flow">
+            <div class="arch-node">Data Sources</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">BigQuery/GCS</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node" style="background:#0097A7;color:white;">Data Catalog</div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">Analysts / Engineers</div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div class="practice-box">
+            <div class="section-label">✅ Best Practices</div>
+            <ul>
+              <li>Tag data assets</li>
+              <li>Use policy tags</li>
+              <li>Keep metadata updated</li>
+              <li>Integrate with Dataplex</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <div class="section-label">❌ When Not To Use</div>
+            <ul>
+              <li>Not a processing service</li>
+              <li>Not for real-time analytics</li>
+              <li>Not a storage solution</li>
+            </ul>
+          </div>
+        </div>
+        <div class="exam-tip dc-tip">Exam Tip: Use Data Catalog for metadata &amp; data governance.</div>
+      </div>
+    </div>
+
+    <!-- QUICK REFERENCE TABLE -->
+    <div class="card">
+      <div class="card-header" style="background: linear-gradient(135deg, #212121, #424242);">
+        <div class="card-num">📋</div>
+        <div>
+          <div class="card-title">Quick Reference</div>
+          <div class="card-subtitle">When to Use Which Service</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Service Selection Guide</div>
+        <table style="width:100%; border-collapse: collapse; font-size: 8.5px;">
+          <thead>
+            <tr style="background:#212121; color:white;">
+              <th style="padding:4px 6px; text-align:left;">Scenario</th>
+              <th style="padding:4px 6px; text-align:left;">Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#f5f5f5;"><td style="padding:3px 6px;">SQL analytics at petabyte scale</td><td style="padding:3px 6px; font-weight:700; color:#1565C0;">BigQuery</td></tr>
+            <tr><td style="padding:3px 6px;">Real-time event ingestion</td><td style="padding:3px 6px; font-weight:700; color:#E65100;">Pub/Sub</td></tr>
+            <tr style="background:#f5f5f5;"><td style="padding:3px 6px;">Stream/batch ETL pipelines</td><td style="padding:3px 6px; font-weight:700; color:#1B5E20;">Dataflow</td></tr>
+            <tr><td style="padding:3px 6px;">Existing Hadoop/Spark</td><td style="padding:3px 6px; font-weight:700; color:#4A148C;">Dataproc</td></tr>
+            <tr style="background:#f5f5f5;"><td style="padding:3px 6px;">Data lake / object storage</td><td style="padding:3px 6px; font-weight:700; color:#006064;">Cloud Storage</td></tr>
+            <tr><td style="padding:3px 6px;">High-scale low-latency NoSQL</td><td style="padding:3px 6px; font-weight:700; color:#BF360C;">Bigtable</td></tr>
+            <tr style="background:#f5f5f5;"><td style="padding:3px 6px;">Global consistent SQL OLTP</td><td style="padding:3px 6px; font-weight:700; color:#880E4F;">Spanner</td></tr>
+            <tr><td style="padding:3px 6px;">Mobile/web real-time app data</td><td style="padding:3px 6px; font-weight:700; color:#F57F17;">Firestore</td></tr>
+            <tr style="background:#f5f5f5;"><td style="padding:3px 6px;">Managed relational DB (MySQL/PG)</td><td style="padding:3px 6px; font-weight:700; color:#01579B;">Cloud SQL</td></tr>
+            <tr><td style="padding:3px 6px;">High-perf PostgreSQL</td><td style="padding:3px 6px; font-weight:700; color:#263238;">AlloyDB</td></tr>
+            <tr style="background:#f5f5f5;"><td style="padding:3px 6px;">Workflow orchestration (DAGs)</td><td style="padding:3px 6px; font-weight:700; color:#1B5E20;">Composer</td></tr>
+            <tr><td style="padding:3px 6px;">Metadata &amp; data governance</td><td style="padding:3px 6px; font-weight:700; color:#006064;">Data Catalog</td></tr>
+          </tbody>
+        </table>
+        <div class="exam-tip" style="background:#212121; margin-top:8px;">⭐ Golden Rule: Always prefer managed, serverless, auto-scaling solutions on GCP.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

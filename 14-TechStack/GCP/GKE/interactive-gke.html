@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GKE Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --gcp-blue: #4285F4;
+            --gcp-red: #EA4335;
+            --gcp-yellow: #FBBC05;
+            --gcp-green: #34A853;
+            --gcp-purple: #9C27B0;
+            --gcp-dark: #202124;
+            --gcp-light: #FFFFFF;
+            --gcp-gray: #F8F9FA;
+            --primary-color: #4285F4;
+            --secondary-color: #EA4335;
+            --accent-color: #34A853;
+            --warning-color: #FBBC05;
+            --info-color: #9C27B0;
+            --dark-color: #202124;
+            --light-color: #F8F9FA;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4285F4 0%, #9C27B0 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--gcp-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 200px;
+            border: 1px solid #dee2e6;
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .run-preview {
+            background: var(--gcp-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            position: relative;
+            border: 2px solid var(--gcp-blue);
+        }
+
+        .cluster-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 180px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .cluster-card:hover {
+            transform: scale(1.05);
+        }
+
+        .cluster-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .cluster-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .deployment-progress {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .perf-metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .k8s-config {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .config-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .config-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-config {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-config-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .pod-logs {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid var(--accent-color);
+        }
+
+        .node-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .node-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .node-card.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            height: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: width 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .cluster-visualization {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .k8s-resource {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .resource-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .status-running {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .status-pending {
+            background: var(--warning-color);
+            color: black;
+        }
+
+        .status-failed {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .workload-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .workload-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .workload-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .workload-card.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .node-types {
+                grid-template-columns: 1fr;
+            }
+
+            .workload-types {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useContext, createContext } = React;
+
+        // GKE context
+        const GKEContext = createContext();
+
+        // Main App Component
+        const App = () => {
+            const [currentCode, setCurrentCode] = useState(`apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  labels:
+    app: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: gcr.io/google-samples/hello-app:1.0
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"`);
+            const [output, setOutput] = useState('');
+            const [isRunning, setIsRunning] = useState(false);
+            const [activeTab, setActiveTab] = useState('clusters');
+            const [clusterName, setClusterName] = useState('my-gke-cluster');
+            const [nodeType, setNodeType] = useState('e2-medium');
+            const [numNodes, setNumNodes] = useState(3);
+            const [workloadType, setWorkloadType] = useState('deployment');
+            const [namespace, setNamespace] = useState('default');
+            const [replicas, setReplicas] = useState(3);
+            const [cpuRequest, setCpuRequest] = useState('250m');
+            const [memoryRequest, setMemoryRequest] = useState('64Mi');
+            const [cpuLimit, setCpuLimit] = useState('500m');
+            const [memoryLimit, setMemoryLimit] = useState('128Mi');
+            const [k8sConfigs, setK8sConfigs] = useState([
+                {
+                    type: 'Deployment',
+                    name: 'WebApp',
+                    config: `apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web-app\nspec:\n  replicas: 2\n  selector:\n    matchLabels:\n      app: web-app`
+                }
+            ]);
+            const [newConfigType, setNewConfigType] = useState('');
+
+            // Performance metrics
+            const [performance, setPerformance] = useState({
+                pods: 24,
+                nodes: 3,
+                cpuUsage: 45,
+                memoryUsage: 320,
+                cost: 18.75
+            });
+
+            // Cluster statistics
+            const [clusterStats, setClusterStats] = useState([
+                { name: 'Pods', count: 24, icon: 'call_split' },
+                { name: 'Nodes', count: 3, icon: 'dns' },
+                { name: 'CPU Usage', count: 45, icon: 'memory', unit: '%' },
+                { name: 'Memory', count: 320, icon: 'data_usage', unit: 'MB' },
+                { name: 'Cost (24h)', count: 18.75, icon: 'attach_money', unit: '$' }
+            ]);
+
+            // Deployment progress
+            const [deploymentProgress, setDeploymentProgress] = useState({
+                status: 'idle',
+                progress: 0,
+                currentStep: 'Ready',
+                eta: 'Ready'
+            });
+
+            // Current project state
+            const [projectState, setProjectState] = useState({
+                projectId: 'my-gke-project',
+                region: 'us-central1',
+                zone: 'us-central1-c',
+                network: 'default'
+            });
+
+            // Pod/Workload status
+            const [workloadStatus, setWorkloadStatus] = useState([
+                { name: 'web-app', type: 'Deployment', status: 'running', replicas: '3/3', age: '2h' },
+                { name: 'api-service', type: 'Deployment', status: 'running', replicas: '2/2', age: '1h' },
+                { name: 'db-proxy', type: 'StatefulSet', status: 'running', replicas: '1/1', age: '3h' },
+                { name: 'nginx-ingress', type: 'DaemonSet', status: 'running', replicas: '3/3', age: '1d' }
+            ]);
+
+            // Update performance metrics
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setPerformance(prev => ({
+                        pods: prev.pods + Math.floor(Math.random() * 5 - 2),
+                        nodes: prev.nodes,
+                        cpuUsage: Math.floor(Math.random() * 20 + 30),
+                        memoryUsage: Math.floor(Math.random() * 50 + 250),
+                        cost: (prev.cost + Math.random() * 1).toFixed(2)
+                    }));
+                }, 4000);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            // Simulate deployment progress
+            useEffect(() => {
+                if (deploymentProgress.status === 'running') {
+                    const interval = setInterval(() => {
+                        setDeploymentProgress(prev => {
+                            const newProgress = Math.min(prev.progress + Math.random() * 25, 100);
+                            const steps = ['Creating', 'Scheduling', 'Pulling Images', 'Starting Containers', 'Running', 'Ready'];
+                            const currentStepIndex = Math.floor((newProgress / 100) * steps.length);
+                            const eta = newProgress >= 100 ? 'Complete' : `${Math.floor((100 - newProgress) / 15)}s remaining`;
+
+                            return {
+                                ...prev,
+                                progress: newProgress,
+                                currentStep: steps[Math.min(currentStepIndex, steps.length - 1)],
+                                eta: eta,
+                                status: newProgress >= 100 ? 'completed' : 'running'
+                            };
+                        });
+                    }, 1000);
+
+                    return () => clearInterval(interval);
+                }
+            }, [deploymentProgress.status]);
+
+            const deployWorkload = async () => {
+                setIsRunning(true);
+                setOutput('Deploying workload to GKE cluster...\n\n');
+
+                // Start deployment progress
+                setDeploymentProgress({
+                    status: 'running',
+                    progress: 0,
+                    currentStep: 'Creating',
+                    eta: '45s'
+                });
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
+                    // Simulate deployment
+                    const result = simulateWorkloadDeployment(currentCode);
+                    setOutput(result);
+
+                    // Add to workload status
+                    const newWorkload = {
+                        name: clusterName,
+                        type: workloadType,
+                        status: 'running',
+                        replicas: `${replicas}/${replicas}`,
+                        age: '0s'
+                    };
+                    setWorkloadStatus(prev => [newWorkload, ...prev.slice(0, 9)]);
+
+                } catch (error) {
+                    setOutput('Error: ' + error.message);
+                    setDeploymentProgress(prev => ({ ...prev, status: 'failed' }));
+                } finally {
+                    setIsRunning(false);
+                }
+            };
+
+            const simulateWorkloadDeployment = (code) => {
+                let result = 'GKE Workload Deployment Results:\n\n';
+
+                if (code.includes('apiVersion: apps/v1') || code.includes('kind: Deployment')) {
+                    result += '✅ Kubernetes manifest detected\n';
+                }
+                if (code.includes('replicas:') || code.includes('spec:')) {
+                    result += '✅ Deployment specification configured\n';
+                }
+                if (code.includes('containers:') || code.includes('image:')) {
+                    result += '✅ Container configuration found\n';
+                }
+                if (code.includes('resources:') || code.includes('requests:')) {
+                    result += '✅ Resource limits configured\n';
+                }
+                if (code.includes('ports:') || code.includes('containerPort:')) {
+                    result += '✅ Port configuration detected\n';
+                }
+
+                result += '\n🚀 Deployment Status:\n';
+                result += 'Cluster: ' + clusterName + '\n';
+                result += 'Namespace: ' + namespace + '\n';
+                result += 'Workload Type: ' + workloadType + '\n';
+                result += 'Replicas: ' + replicas + '\n';
+                result += 'Node Type: ' + nodeType + '\n';
+                result += 'Status: Deployed\n\n';
+
+                result += '📊 Resource Allocation:\n';
+                result += `CPU Request: ${cpuRequest}\n`;
+                result += `Memory Request: ${memoryRequest}\n`;
+                result += `CPU Limit: ${cpuLimit}\n`;
+                result += `Memory Limit: ${memoryLimit}\n\n`;
+
+                result += '🔗 Service Endpoints:\n';
+                result += `Cluster IP: 10.0.0.1\n`;
+                result += `LoadBalancer IP: 34.102.XXX.XXX\n`;
+                result += `Ingress: https://my-app.example.com\n\n`;
+
+                result += 'Workload deployed successfully! You can now access your application through the cluster.';
+
+                return result;
+            };
+
+            const createCluster = () => {
+                if (!clusterName) return;
+
+                const clusterTemplates = {
+                    'deployment': `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${clusterName}
+  namespace: ${namespace}
+  labels:
+    app: ${clusterName}
+spec:
+  replicas: ${replicas}
+  selector:
+    matchLabels:
+      app: ${clusterName}
+  template:
+    metadata:
+      labels:
+        app: ${clusterName}
+    spec:
+      containers:
+      - name: app
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "${memoryRequest}"
+            cpu: "${cpuRequest}"
+          limits:
+            memory: "${memoryLimit}"
+            cpu: "${cpuLimit}"`,
+                    'statefulset': `apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ${clusterName}
+  namespace: ${namespace}
+spec:
+  serviceName: ${clusterName}
+  replicas: ${replicas}
+  selector:
+    matchLabels:
+      app: ${clusterName}
+  template:
+    metadata:
+      labels:
+        app: ${clusterName}
+    spec:
+      containers:
+      - name: app
+        image: postgres:13
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        resources:
+          requests:
+            memory: "${memoryRequest}"
+            cpu: "${cpuRequest}"
+          limits:
+            memory: "${memoryLimit}"
+            cpu: "${cpuLimit}"`,
+                    'service': `apiVersion: v1
+kind: Service
+metadata:
+  name: ${clusterName}-service
+  namespace: ${namespace}
+spec:
+  selector:
+    app: ${clusterName}
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  type: LoadBalancer`,
+                    'ingress': `apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${clusterName}-ingress
+  namespace: ${namespace}
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+  - host: ${clusterName}.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ${clusterName}-service
+            port:
+              number: 80`
+                };
+
+                const workloadCode = clusterTemplates[workloadType] || clusterTemplates.deployment;
+                setCurrentCode(workloadCode);
+            };
+
+            const testCluster = () => {
+                const testCode = `# Test Kubernetes configuration
+import yaml
+import json
+
+# Load k8s manifest
+manifest = """
+${currentCode}
+"""
+
+try:
+    config = yaml.safe_load(manifest)
+    print("✅ Valid YAML syntax")
+    print(f"Kind: {config.get('kind', 'Unknown')}")
+    print(f"Name: {config.get('metadata', {}).get('name', 'Unknown')}")
+    print(f"Namespace: {config.get('metadata', {}).get('namespace', 'default')}")
+
+    if config.get('kind') == 'Deployment':
+        spec = config.get('spec', {})
+        print(f"Replicas: {spec.get('replicas', 'Not specified')}")
+        containers = spec.get('template', {}).get('spec', {}).get('containers', [])
+        if containers:
+            print(f"Containers: {len(containers)}")
+            for i, container in enumerate(containers):
+                print(f"  {i+1}. {container.get('name', 'unnamed')}: {container.get('image', 'no image')}")
+
+    print("\\n✅ Configuration validation passed!")
+
+except Exception as e:
+    print(f"❌ Validation failed: {e}")`;
+
+                setCurrentCode(testCode);
+            };
+
+            const addK8sConfig = () => {
+                if (!newConfigType) return;
+
+                const templates = {
+                    'Deployment': {
+                        name: 'WebDeployment',
+                        config: `apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web-deployment\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: web`
+                    },
+                    'Service': {
+                        name: 'WebService',
+                        config: `apiVersion: v1\nkind: Service\nmetadata:\n  name: web-service\nspec:\n  selector:\n    app: web\n  ports:\n  - port: 80\n  type: ClusterIP`
+                    },
+                    'ConfigMap': {
+                        name: 'AppConfig',
+                        config: `apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: app-config\ndata:\n  config.yaml: |\n    database:\n      host: postgres\n      port: 5432`
+                    },
+                    'Secret': {
+                        name: 'AppSecret',
+                        config: `apiVersion: v1\nkind: Secret\nmetadata:\n  name: app-secret\ntype: Opaque\ndata:\n  password: cGFzc3dvcmQ=`
+                    },
+                    'Ingress': {
+                        name: 'AppIngress',
+                        config: `apiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: app-ingress\nspec:\n  rules:\n  - host: app.example.com\n    http:\n      paths:\n      - path: /\n        pathType: Prefix\n        backend:\n          service:\n            name: web-service\n            port:\n              number: 80`
+                    }
+                };
+
+                const template = templates[newConfigType];
+                if (template) {
+                    setK8sConfigs([...k8sConfigs, {
+                        type: newConfigType,
+                        name: template.name,
+                        config: template.config
+                    }]);
+                }
+
+                setNewConfigType('');
+            };
+
+            const removeK8sConfig = (index) => {
+                setK8sConfigs(k8sConfigs.filter((_, i) => i !== index));
+            };
+
+            const loadK8sExample = (example) => {
+                const examples = {
+                    'basic-deployment': `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"`,
+                    'with-service': `apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21
+        ports:
+        - containerPort: 80`,
+                    'stateful-app': `apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-statefulset
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:13
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: mydb
+        - name: POSTGRES_USER
+          value: user
+        - name: POSTGRES_PASSWORD
+          value: password
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi`,
+                    'microservices': `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: gateway
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user
+        image: my-user-service:v1
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP`,
+                    'with-ingress': `apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "my-app-ip"
+spec:
+  rules:
+  - host: my-app.example.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api-service
+            port:
+              number: 8080
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-service
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+spec:
+  selector:
+    app: web
+  ports:
+  - port: 80
+    targetPort: 80
+  type: NodePort`
+                };
+
+                setCurrentCode(examples[example] || examples['basic-deployment']);
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-cubes"></i> GKE Interactive Demo</h1>
+                        <p>Managed Kubernetes clusters with automated operations</p>
+                    </div>
+
+                    {/* GKE Features Overview */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-star"></i> GKE Key Features</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="feature-grid">
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-shield-alt"></i></div>
+                                    <div className="feature-title">Fully Managed</div>
+                                    <div className="feature-description">Google handles cluster management, upgrades, and scaling. Focus on your applications, not infrastructure.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-lock"></i></div>
+                                    <div className="feature-title">Security</div>
+                                    <div className="feature-description">Built-in security with automatic updates, vulnerability scanning, and integrated IAM and networking.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-tachometer-alt"></i></div>
+                                    <div className="feature-title">Auto-Scaling</div>
+                                    <div className="feature-description">Horizontal and vertical pod autoscaling, cluster autoscaling, and workload-based scaling.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-network-wired"></i></div>
+                                    <div className="feature-title">Networking</div>
+                                    <div className="feature-description">Advanced networking with load balancing, service mesh (Istio), and multi-cluster support.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-brain"></i></div>
+                                    <div className="feature-title">AI/ML Integration</div>
+                                    <div className="feature-description">Native integration with Vertex AI, TPUs, and GPU support for machine learning workloads.</div>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon"><i className="fas fa-chart-line"></i></div>
+                                    <div className="feature-title">Monitoring</div>
+                                    <div className="feature-description">Integrated monitoring with Cloud Monitoring, logging, and tracing for comprehensive observability.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Deployment Progress */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-spinner"></i> Workload Deployment Progress</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="deployment-progress">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                                    <h5>Deployment Status</h5>
+                                    <span className={`badge ${deploymentProgress.status === 'running' ? 'bg-primary' : deploymentProgress.status === 'completed' ? 'bg-success' : 'bg-secondary'}`}>
+                                        {deploymentProgress.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div className="progress" style={{ height: '25px' }}>
+                                    <div
+                                        className="progress-bar"
+                                        style={{ width: `${deploymentProgress.progress}%` }}
+                                        role="progressbar"
+                                        aria-valuenow={deploymentProgress.progress}
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                    >
+                                        {deploymentProgress.progress.toFixed(1)}%
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', fontSize: '0.9rem', color: '#6c757d' }}>
+                                    <span>Step: {deploymentProgress.currentStep}</span>
+                                    <span>ETA: {deploymentProgress.eta}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Node Types */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-server"></i> Node Pool Configuration</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="node-types">
+                                <div className={`node-card ${nodeType === 'e2-micro' ? 'selected' : ''}`} onClick={() => setNodeType('e2-micro')}>
+                                    <i className="fas fa-microchip" style={{ fontSize: '2rem', color: '#28a745', marginBottom: '10px' }}></i>
+                                    <h6>E2 Micro</h6>
+                                    <p>0.2 vCPU, 1 GB RAM</p>
+                                    <small>$0.008/h</small>
+                                </div>
+                                <div className={`node-card ${nodeType === 'e2-small' ? 'selected' : ''}`} onClick={() => setNodeType('e2-small')}>
+                                    <i className="fas fa-memory" style={{ fontSize: '2rem', color: '#007bff', marginBottom: '10px' }}></i>
+                                    <h6>E2 Small</h6>
+                                    <p>0.5 vCPU, 2 GB RAM</p>
+                                    <small>$0.016/h</small>
+                                </div>
+                                <div className={`node-card ${nodeType === 'e2-medium' ? 'selected' : ''}`} onClick={() => setNodeType('e2-medium')}>
+                                    <i className="fas fa-server" style={{ fontSize: '2rem', color: '#ffc107', marginBottom: '10px' }}></i>
+                                    <h6>E2 Medium</h6>
+                                    <p>2 vCPU, 4 GB RAM</p>
+                                    <small>$0.063/h</small>
+                                </div>
+                                <div className={`node-card ${nodeType === 'n1-standard-1' ? 'selected' : ''}`} onClick={() => setNodeType('n1-standard-1')}>
+                                    <i className="fas fa-cogs" style={{ fontSize: '2rem', color: '#dc3545', marginBottom: '10px' }}></i>
+                                    <h6>N1 Standard</h6>
+                                    <p>1 vCPU, 3.75 GB RAM</p>
+                                    <small>$0.047/h</small>
+                                </div>
+                                <div className={`node-card ${nodeType === 'n2-highcpu-4' ? 'selected' : ''}`} onClick={() => setNodeType('n2-highcpu-4')}>
+                                    <i className="fas fa-rocket" style={{ fontSize: '2rem', color: '#6f42c1', marginBottom: '10px' }}></i>
+                                    <h6>N2 High CPU</h6>
+                                    <p>4 vCPU, 4 GB RAM</p>
+                                    <small>$0.149/h</small>
+                                </div>
+                                <div className={`node-card ${nodeType === 'n2-highmem-2' ? 'selected' : ''}`} onClick={() => setNodeType('n2-highmem-2')}>
+                                    <i className="fas fa-database" style={{ fontSize: '2rem', color: '#17a2b8', marginBottom: '10px' }}></i>
+                                    <h6>N2 High Mem</h6>
+                                    <p>2 vCPU, 16 GB RAM</p>
+                                    <small>$0.119/h</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Code Editor */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-code"></i> Kubernetes Manifest</h3>
+                        </div>
+                        <div className="card-body">
+                            <textarea
+                                className="code-editor"
+                                value={currentCode}
+                                onChange={(e) => setCurrentCode(e.target.value)}
+                                placeholder="Write your Kubernetes YAML manifest here..."
+                            />
+                            <div style={{ marginTop: '15px' }}>
+                                <button className="run-btn" onClick={deployWorkload} disabled={isRunning}>
+                                    <i className="fas fa-rocket"></i> Deploy Workload
+                                </button>
+                                <button className="run-btn" onClick={testCluster} style={{ marginLeft: '10px' }}>
+                                    <i className="fas fa-flask"></i> Validate YAML
+                                </button>
+                                <button className="run-btn" onClick={() => loadK8sExample('basic-deployment')} style={{ marginLeft: '10px' }}>
+                                    <i className="fas fa-file-import"></i> Load Example
+                                </button>
+                            </div>
+                            {output && <div className="output-panel">{output}</div>}
+                        </div>
+                    </div>
+
+                    {/* Workload Types */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-layer-group"></i> Workload Types</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="workload-types">
+                                <div className={`workload-card ${workloadType === 'deployment' ? 'selected' : ''}`} onClick={() => setWorkloadType('deployment')}>
+                                    <i className="fas fa-cubes" style={{ fontSize: '2rem', color: '#4285F4', marginBottom: '10px' }}></i>
+                                    <h6>Deployment</h6>
+                                    <p>Stateless applications with rolling updates</p>
+                                </div>
+                                <div className={`workload-card ${workloadType === 'statefulset' ? 'selected' : ''}`} onClick={() => setWorkloadType('statefulset')}>
+                                    <i className="fas fa-database" style={{ fontSize: '2rem', color: '#34A853', marginBottom: '10px' }}></i>
+                                    <h6>StatefulSet</h6>
+                                    <p>Stateful applications with persistent storage</p>
+                                </div>
+                                <div className={`workload-card ${workloadType === 'daemonset' ? 'selected' : ''}`} onClick={() => setWorkloadType('daemonset')}>
+                                    <i className="fas fa-server" style={{ fontSize: '2rem', color: '#FBBC05', marginBottom: '10px' }}></i>
+                                    <h6>DaemonSet</h6>
+                                    <p>One pod per node for cluster services</p>
+                                </div>
+                                <div className={`workload-card ${workloadType === 'job' ? 'selected' : ''}`} onClick={() => setWorkloadType('job')}>
+                                    <i className="fas fa-play-circle" style={{ fontSize: '2rem', color: '#EA4335', marginBottom: '10px' }}></i>
+                                    <h6>Job</h6>
+                                    <p>Run-to-completion workloads</p>
+                                </div>
+                                <div className={`workload-card ${workloadType === 'cronjob' ? 'selected' : ''}`} onClick={() => setWorkloadType('cronjob')}>
+                                    <i className="fas fa-clock" style={{ fontSize: '2rem', color: '#9C27B0', marginBottom: '10px' }}></i>
+                                    <h6>CronJob</h6>
+                                    <p>Scheduled jobs with cron syntax</p>
+                                </div>
+                                <div className={`workload-card ${workloadType === 'service' ? 'selected' : ''}`} onClick={() => setWorkloadType('service')}>
+                                    <i className="fas fa-network-wired" style={{ fontSize: '2rem', color: '#00ACC1', marginBottom: '10px' }}></i>
+                                    <h6>Service</h6>
+                                    <p>Network abstraction for pods</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Cluster Configuration */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-sliders-h"></i> Cluster Configuration</h3>
+                        </div>
+                        <div className="card-body">
+                            {/* Operation Tabs */}
+                            <div className="operation-tabs">
+                                <button className={`operation-tab ${activeTab === 'clusters' ? 'active' : ''}`} onClick={() => setActiveTab('clusters')}>
+                                    <i className="fas fa-cubes"></i> Clusters
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'workloads' ? 'active' : ''}`} onClick={() => setActiveTab('workloads')}>
+                                    <i className="fas fa-tasks"></i> Workloads
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'networking' ? 'active' : ''}`} onClick={() => setActiveTab('networking')}>
+                                    <i className="fas fa-network-wired"></i> Networking
+                                </button>
+                                <button className={`operation-tab ${activeTab === 'storage' ? 'active' : ''}`} onClick={() => setActiveTab('storage')}>
+                                    <i className="fas fa-hdd"></i> Storage
+                                </button>
+                            </div>
+
+                            {/* Clusters Tab */}
+                            {activeTab === 'clusters' && (
+                                <div className="interactive-demo">
+                                    <h4>Cluster Management</h4>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Cluster Name:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={clusterName}
+                                                    onChange={(e) => setClusterName(e.target.value)}
+                                                    placeholder="my-cluster"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Namespace:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={namespace}
+                                                    onChange={(e) => setNamespace(e.target.value)}
+                                                    placeholder="default"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="form-group">
+                                                <label>Node Count:</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    value={numNodes}
+                                                    onChange={(e) => setNumNodes(parseInt(e.target.value))}
+                                                    min="1"
+                                                    max="100"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className="run-btn" onClick={createCluster}>
+                                        <i className="fas fa-plus"></i> Create Cluster
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Workloads Tab */}
+                            {activeTab === 'workloads' && (
+                                <div className="interactive-demo">
+                                    <h4>Workload Configuration</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Replicas:</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    value={replicas}
+                                                    onChange={(e) => setReplicas(parseInt(e.target.value))}
+                                                    min="1"
+                                                    max="100"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>CPU Request:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={cpuRequest}
+                                                    onChange={(e) => setCpuRequest(e.target.value)}
+                                                    placeholder="250m"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Memory Request:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={memoryRequest}
+                                                    onChange={(e) => setMemoryRequest(e.target.value)}
+                                                    placeholder="64Mi"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>CPU Limit:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={cpuLimit}
+                                                    onChange={(e) => setCpuLimit(e.target.value)}
+                                                    placeholder="500m"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Memory Limit:</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={memoryLimit}
+                                                    onChange={(e) => setMemoryLimit(e.target.value)}
+                                                    placeholder="128Mi"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Networking Tab */}
+                            {activeTab === 'networking' && (
+                                <div className="interactive-demo">
+                                    <h4>Networking & Services</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Service Type:</label>
+                                                <select className="form-control" id="service-type">
+                                                    <option value="ClusterIP">ClusterIP</option>
+                                                    <option value="NodePort">NodePort</option>
+                                                    <option value="LoadBalancer">LoadBalancer</option>
+                                                    <option value="ExternalName">ExternalName</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Ingress Class:</label>
+                                                <select className="form-control" id="ingress-class">
+                                                    <option value="gce">GCE Ingress</option>
+                                                    <option value="nginx">NGINX Ingress</option>
+                                                    <option value="istio">Istio Gateway</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Network Policy:</label>
+                                                <select className="form-control" id="network-policy">
+                                                    <option value="allow-all">Allow All</option>
+                                                    <option value="deny-all">Deny All</option>
+                                                    <option value="custom">Custom Rules</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Load Balancer:</label>
+                                                <input type="text" className="form-control" id="load-balancer" placeholder="34.102.XXX.XXX" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Storage Tab */}
+                            {activeTab === 'storage' && (
+                                <div className="interactive-demo">
+                                    <h4>Persistent Storage</h4>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Storage Class:</label>
+                                                <select className="form-control" id="storage-class">
+                                                    <option value="standard">Standard (HDD)</option>
+                                                    <option value="premium">Premium (SSD)</option>
+                                                    <option value="ssd">SSD Persistent Disk</option>
+                                                    <option value="regional">Regional PD</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Volume Size:</label>
+                                                <input type="text" className="form-control" id="volume-size" placeholder="10Gi" />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group">
+                                                <label>Access Mode:</label>
+                                                <select className="form-control" id="access-mode">
+                                                    <option value="ReadWriteOnce">ReadWriteOnce</option>
+                                                    <option value="ReadOnlyMany">ReadOnlyMany</option>
+                                                    <option value="ReadWriteMany">ReadWriteMany</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>PV/PVC:</label>
+                                                <select className="form-control" id="pv-pvc">
+                                                    <option value="pvc">PersistentVolumeClaim</option>
+                                                    <option value="pv">PersistentVolume</option>
+                                                    <option value="dynamic">Dynamic Provisioning</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Cluster Statistics */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-chart-bar"></i> Cluster Statistics</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="run-preview">
+                                {clusterStats.map((stat, index) => (
+                                    <div key={index} className="cluster-card">
+                                        <div className="cluster-value">{stat.count}{stat.unit || ''}</div>
+                                        <div className="cluster-label">{stat.name}</div>
+                                        <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '5px' }}>
+                                            <i className="material-icons">{stat.icon}</i>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div style={{ position: 'absolute', bottom: '20px', right: '20px' }}>
+                                    <button className="run-btn" onClick={() => {
+                                        setClusterStats(prev => prev.map(stat => ({
+                                            ...stat,
+                                            count: stat.unit === '$' ? (Math.random() * 25 + 15).toFixed(2) :
+                                                stat.unit === '%' ? Math.floor(Math.random() * 30 + 40) :
+                                                    stat.unit === 'MB' ? Math.floor(Math.random() * 100 + 250) :
+                                                        Math.floor(Math.random() * 10) + 20
+                                        })));
+                                    }}>
+                                        <i className="fas fa-sync"></i> Refresh Stats
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Cluster Visualization */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-sitemap"></i> Cluster Visualization</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="cluster-visualization">
+                                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                    <h5>Kubernetes Resources Overview</h5>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                                    {workloadStatus.map((workload, index) => (
+                                        <div key={index} className="k8s-resource">
+                                            <i className={`fas ${workload.type === 'Deployment' ? 'fa-cubes' : workload.type === 'StatefulSet' ? 'fa-database' : workload.type === 'DaemonSet' ? 'fa-server' : 'fa-network-wired'}`}></i> {workload.name}
+                                            <span className={`resource-status status-${workload.status}`}>
+                                                {workload.status}
+                                            </span>
+                                            <br />
+                                            <small>{workload.replicas} • {workload.age}</small>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                    <small style={{ color: '#6c757d' }}>Cluster: {clusterName} • Nodes: {numNodes} • Region: {projectState.region}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* K8s Config Builder */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tools"></i> K8s Config Builder</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="k8s-config">
+                                <h5>Build Advanced Kubernetes Configurations</h5>
+                                {k8sConfigs.map((config, index) => (
+                                    <div key={index} className="config-row">
+                                        <div className="config-header">
+                                            <span className="config-type">{config.type}: {config.name}</span>
+                                            <button className="remove-config" onClick={() => removeK8sConfig(index)}>
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <pre style={{ fontSize: '12px', margin: '10px 0' }}>{config.config}</pre>
+                                    </div>
+                                ))}
+
+                                <div className="form-group">
+                                    <label>Add K8s Resource:</label>
+                                    <select className="form-control" value={newConfigType} onChange={(e) => setNewConfigType(e.target.value)}>
+                                        <option value="">Select resource type...</option>
+                                        <option value="Deployment">Deployment</option>
+                                        <option value="Service">Service</option>
+                                        <option value="ConfigMap">ConfigMap</option>
+                                        <option value="Secret">Secret</option>
+                                        <option value="Ingress">Ingress</option>
+                                    </select>
+                                </div>
+
+                                <button className="add-config-btn" onClick={addK8sConfig} disabled={!newConfigType}>
+                                    <i className="fas fa-plus"></i> Add Resource
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Performance Metrics */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-tachometer-alt"></i> Performance Metrics</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="performance-metrics">
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.pods}</div>
+                                    <div className="perf-metric-label">Total Pods</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.nodes}</div>
+                                    <div className="perf-metric-label">Active Nodes</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.cpuUsage}%</div>
+                                    <div className="perf-metric-label">CPU Usage</div>
+                                </div>
+                                <div className="perf-metric-card">
+                                    <div className="perf-metric-value">{performance.memoryUsage}MB</div>
+                                    <div className="perf-metric-label">Memory Usage</div>
+                                </div>
+                            </div>
+
+                            <div className="execution-stats">
+                                <div className="stat-item">
+                                    <span className="stat-label">Project ID:</span>
+                                    <span className="stat-value">{projectState.projectId}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Region:</span>
+                                    <span className="stat-value">{projectState.region}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Zone:</span>
+                                    <span className="stat-value">{projectState.zone}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Network:</span>
+                                    <span className="stat-value">{projectState.network}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Cost (24h):</span>
+                                    <span className="stat-value">${performance.cost}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-book"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/kubernetes-engine" target="_blank"><i className="fas fa-external-link-alt"></i> GKE Site</a></li>
+                                        <li><a href="https://cloud.google.com/kubernetes-engine/docs" target="_blank"><i className="fas fa-external-link-alt"></i> Documentation</a></li>
+                                        <li><a href="https://console.cloud.google.com/kubernetes" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Console</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://kubernetes.io/docs/" target="_blank"><i className="fas fa-external-link-alt"></i> Kubernetes Docs</a></li>
+                                        <li><a href="https://cloud.google.com/kubernetes-engine/docs/quickstarts" target="_blank"><i className="fas fa-external-link-alt"></i> GKE Quickstarts</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/google-kubernetes-engine" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+
+</html>

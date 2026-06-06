@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  # -------------------------------------------------------------------------
+  # medallion: single container running the full stack
+  #   - dbt runs as CLI inside the container
+  #   - FastAPI exposed on port 8000
+  #   - Streamlit exposed on port 8501
+  # -------------------------------------------------------------------------
+  medallion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medallion_poc08
+    environment:
+      - RAW_DATA_PATH=/app/data/raw
+      - DUCKDB_PATH=/app/data/warehouse.duckdb
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+    ports:
+      - "8000:8000"   # FastAPI
+      - "8501:8501"   # Streamlit
+    volumes:
+      # Mount data directory so DuckDB warehouse + CSVs persist across restarts
+      - ./data:/app/data
+    command: ["python", "main.py", "all"]
+    restart: unless-stopped
+
+  # -------------------------------------------------------------------------
+  # pipeline-only: one-shot container to just run the dbt pipeline
+  # Usage: docker-compose run --rm pipeline
+  # -------------------------------------------------------------------------
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medallion_pipeline
+    environment:
+      - RAW_DATA_PATH=/app/data/raw
+      - DUCKDB_PATH=/app/data/warehouse.duckdb
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+    volumes:
+      - ./data:/app/data
+    command: ["python", "main.py", "pipeline"]
+    profiles:
+      - tools
+
+  # -------------------------------------------------------------------------
+  # api-only: just the FastAPI server (pipeline must have been run first)
+  # Usage: docker-compose up api
+  # -------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medallion_api
+    environment:
+      - RAW_DATA_PATH=/app/data/raw
+      - DUCKDB_PATH=/app/data/warehouse.duckdb
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    command: ["python", "main.py", "api"]
+    profiles:
+      - tools

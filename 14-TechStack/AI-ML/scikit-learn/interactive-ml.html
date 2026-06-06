@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scikit-Learn Interactive ML</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .ml-canvas {
+            position: relative;
+            height: 700px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ml-workspace {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .data-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .data-point.class-0 {
+            background: linear-gradient(45deg, #FF6B6B, #FF4757);
+            box-shadow: 0 0 8px rgba(255, 107, 107, 0.6);
+        }
+
+        .data-point.class-1 {
+            background: linear-gradient(45deg, #4ECDC4, #26D0CE);
+            box-shadow: 0 0 8px rgba(78, 205, 196, 0.6);
+        }
+
+        .data-point:hover {
+            transform: scale(1.5);
+            z-index: 10;
+        }
+
+        .decision-boundary {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.8));
+            border-radius: 1px;
+            animation: boundaryFlow 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes boundaryFlow {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .model-representation {
+            position: absolute;
+            background: rgba(255, 107, 53, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .model-representation:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .pipeline-step {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #FFD93D, #FF8C42);
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            padding: 5px;
+        }
+
+        .pipeline-step:hover {
+            transform: scale(1.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .pipeline-step.active {
+            animation: stepPulse 1.5s ease-in-out infinite;
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+        }
+
+        @keyframes stepPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .pipeline-connection {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.9), rgba(255, 215, 0, 0.4));
+            border-radius: 2px;
+            animation: pipelineFlow 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pipelineFlow {
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .cross-validation-fold {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .cross-validation-fold.active {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+            animation: foldHighlight 1s ease-in-out infinite;
+        }
+
+        @keyframes foldHighlight {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+            }
+        }
+
+        .metrics-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+        }
+
+        .confusion-matrix {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+        }
+
+        .confusion-matrix.show {
+            display: block;
+        }
+
+        .cm-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .cm-cell {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            text-align: center;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .cm-cell.header {
+            background: rgba(255, 107, 53, 0.8);
+            font-weight: bold;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 107, 53, 0.3);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+        }
+
+        .algorithm-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            max-width: 300px;
+        }
+
+        .algorithm-selector h3 {
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+
+        .algo-option {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #f5f5f5, #e0e0e0);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .algo-option:hover {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+        }
+
+        .algo-option.active {
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+
+        .info-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            max-width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .info-panel h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .background-effects {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: floatParticle 20s ease-in-out infinite;
+        }
+
+        .bg-particle:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+
+        .bg-particle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            right: 15%;
+            top: 50%;
+            animation-delay: 7s;
+        }
+
+        .bg-particle:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            left: 70%;
+            bottom: 20%;
+            animation-delay: 14s;
+        }
+
+        @keyframes floatParticle {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            33% {
+                transform: translateY(-20px) rotate(120deg);
+            }
+
+            66% {
+                transform: translateY(15px) rotate(240deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .ml-canvas {
+                height: 600px;
+            }
+
+            .algorithm-selector,
+            .info-panel {
+                position: static;
+                margin-bottom: 20px;
+                max-width: none;
+            }
+
+            .controls {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Scikit-Learn Interactive ML</h1>
+            <p class="subtitle">Explore machine learning algorithms, pipelines, and evaluation metrics!</p>
+        </div>
+
+        <div class="ml-canvas">
+            <div class="background-effects">
+                <div class="bg-particle"></div>
+                <div class="bg-particle"></div>
+                <div class="bg-particle"></div>
+            </div>
+
+            <div class="ml-workspace" id="mlWorkspace">
+                <!-- ML visualization will be dynamically generated -->
+            </div>
+
+            <div class="metrics-display" id="metricsDisplay">
+                <div>Algorithm: <span id="currentAlgo">Logistic Regression</span></div>
+                <div>Accuracy: <span id="accuracyValue">0.0%</span></div>
+                <div>Precision: <span id="precisionValue">0.0</span></div>
+                <div>Recall: <span id="recallValue">0.0</span></div>
+                <div>F1-Score: <span id="f1Value">0.0</span></div>
+                <div>Training Time: <span id="trainingTime">0ms</span></div>
+            </div>
+
+            <div class="confusion-matrix" id="confusionMatrix">
+                <div style="text-align: center; margin-bottom: 10px;">Confusion Matrix</div>
+                <div class="cm-grid">
+                    <div class="cm-cell header"></div>
+                    <div class="cm-cell header">Predicted 0</div>
+                    <div class="cm-cell header">Predicted 1</div>
+                    <div class="cm-cell header">Actual 0</div>
+                    <div class="cm-cell" id="cm00">0</div>
+                    <div class="cm-cell" id="cm01">0</div>
+                    <div class="cm-cell header">Actual 1</div>
+                    <div class="cm-cell" id="cm10">0</div>
+                    <div class="cm-cell" id="cm11">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="control-btn" onclick="trainModel()">🚀 Train Model</button>
+            <button class="control-btn" onclick="generateData()">🎯 Generate Data</button>
+            <button class="control-btn" onclick="resetWorkspace()">🔄 Reset</button>
+            <button class="control-btn" onclick="showConfusionMatrix()">📊 Confusion Matrix</button>
+            <button class="control-btn" onclick="runCrossValidation()">🔀 Cross Validation</button>
+            <button class="control-btn" onclick="showPipeline()">🔧 Pipeline</button>
+        </div>
+
+        <!-- Algorithm Selector -->
+        <div class="algorithm-selector">
+            <h3>🧮 ML Algorithms</h3>
+            <button class="algo-option active" onclick="changeAlgorithm('logistic')">Logistic Regression</button>
+            <button class="algo-option" onclick="changeAlgorithm('svm')">Support Vector Machine</button>
+            <button class="algo-option" onclick="changeAlgorithm('rf')">Random Forest</button>
+            <button class="algo-option" onclick="changeAlgorithm('knn')">K-Nearest Neighbors</button>
+            <button class="algo-option" onclick="changeAlgorithm('nb')">Naive Bayes</button>
+            <button class="algo-option" onclick="changeAlgorithm('dt')">Decision Tree</button>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <h3>ℹ️ Algorithm Information</h3>
+            <p id="algorithmInfo">
+                <strong>Logistic Regression:</strong> A linear model for binary classification that predicts the
+                probability
+                of a sample belonging to a particular class using the logistic function.
+            </p>
+            <p><strong>Status:</strong> <span id="statusText">Ready to train</span></p>
+            <p><strong>Parameters:</strong> <span id="paramCount">2</span></p>
+            <p><strong>Best for:</strong> <span id="bestFor">Binary classification, interpretable results</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Algorithm configurations
+        const algorithms = {
+            logistic: {
+                name: 'Logistic Regression',
+                description: 'A linear model for binary classification that predicts the probability of a sample belonging to a particular class using the logistic function.',
+                params: 2,
+                bestFor: 'Binary classification, interpretable results',
+                color: '#FF6B6B'
+            },
+            svm: {
+                name: 'Support Vector Machine',
+                description: 'A powerful classification algorithm that finds the optimal hyperplane to separate classes in high-dimensional space.',
+                params: 3,
+                bestFor: 'High-dimensional data, non-linear classification',
+                color: '#4ECDC4'
+            },
+            rf: {
+                name: 'Random Forest',
+                description: 'An ensemble learning method that constructs multiple decision trees and merges their results for improved accuracy.',
+                params: 100,
+                bestFor: 'Complex datasets, feature importance analysis',
+                color: '#FFD93D'
+            },
+            knn: {
+                name: 'K-Nearest Neighbors',
+                description: 'A non-parametric algorithm that classifies samples based on the majority vote of their k nearest neighbors.',
+                params: 5,
+                bestFor: 'Small datasets, non-linear boundaries',
+                color: '#FF8C42'
+            },
+            nb: {
+                name: 'Naive Bayes',
+                description: 'A probabilistic classifier based on Bayes theorem with strong independence assumptions between features.',
+                params: 2,
+                bestFor: 'Text classification, spam filtering',
+                color: '#A78BFA'
+            },
+            dt: {
+                name: 'Decision Tree',
+                description: 'A tree-based model that makes decisions by recursively splitting data based on feature values.',
+                params: 15,
+                bestFor: 'Interpretable models, mixed data types',
+                color: '#F87171'
+            }
+        };
+
+        let currentAlgorithm = 'logistic';
+        let dataPoints = [];
+        let decisionBoundary = null;
+        let modelRepresentation = null;
+        let pipelineSteps = [];
+        let pipelineConnections = [];
+        let crossValidationFolds = [];
+        let isTraining = false;
+        let accuracy = 0.0;
+        let precision = 0.0;
+        let recall = 0.0;
+        let f1Score = 0.0;
+
+        function initializeWorkspace() {
+            const workspace = document.getElementById('mlWorkspace');
+            workspace.innerHTML = '';
+
+            dataPoints = [];
+            pipelineSteps = [];
+            pipelineConnections = [];
+            crossValidationFolds = [];
+
+            // Remove existing elements
+            if (decisionBoundary) {
+                decisionBoundary.remove();
+                decisionBoundary = null;
+            }
+            if (modelRepresentation) {
+                modelRepresentation.remove();
+                modelRepresentation = null;
+            }
+
+            updateAlgorithmInfo();
+            updateMetrics();
+        }
+
+        function generateData() {
+            const workspace = document.getElementById('mlWorkspace');
+            dataPoints.forEach(point => point.remove());
+            dataPoints = [];
+
+            // Generate synthetic data
+            const numPoints = 50;
+            for (let i = 0; i < numPoints; i++) {
+                const x = Math.random() * 80 + 10; // 10% to 90%
+                const y = Math.random() * 80 + 10; // 10% to 90%
+
+                // Create two clusters
+                const centerX1 = 30, centerY1 = 30;
+                const centerX2 = 70, centerY2 = 70;
+
+                const dist1 = Math.sqrt((x - centerX1) ** 2 + (y - centerY1) ** 2);
+                const dist2 = Math.sqrt((x - centerX2) ** 2 + (y - centerY2) ** 2);
+
+                const classLabel = dist1 < dist2 ? 0 : 1;
+
+                const point = document.createElement('div');
+                point.className = `data-point class-${classLabel}`;
+                point.style.left = `${x}%`;
+                point.style.top = `${y}%`;
+                point.onclick = () => togglePointClass(point, i);
+
+                workspace.appendChild(point);
+                dataPoints.push({ element: point, x, y, class: classLabel, index: i });
+            }
+
+            document.getElementById('statusText').textContent = 'Data generated';
+        }
+
+        function togglePointClass(point, index) {
+            const dataPoint = dataPoints[index];
+            dataPoint.class = 1 - dataPoint.class;
+            point.className = `data-point class-${dataPoint.class}`;
+        }
+
+        function trainModel() {
+            if (isTraining || dataPoints.length === 0) return;
+
+            isTraining = true;
+            document.getElementById('statusText').textContent = 'Training...';
+
+            const startTime = Date.now();
+
+            // Simulate training process
+            setTimeout(() => {
+                // Create decision boundary
+                createDecisionBoundary();
+
+                // Create model representation
+                createModelRepresentation();
+
+                // Calculate mock metrics
+                calculateMetrics();
+
+                const trainingTime = Date.now() - startTime;
+                document.getElementById('trainingTime').textContent = trainingTime + 'ms';
+                document.getElementById('statusText').textContent = 'Training complete';
+
+                isTraining = false;
+            }, 2000);
+        }
+
+        function createDecisionBoundary() {
+            if (decisionBoundary) {
+                decisionBoundary.remove();
+            }
+
+            const workspace = document.getElementById('mlWorkspace');
+            decisionBoundary = document.createElement('div');
+            decisionBoundary.className = 'decision-boundary';
+
+            // Create a diagonal decision boundary
+            const startX = 20, startY = 80;
+            const endX = 80, endY = 20;
+
+            const length = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+            const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+            decisionBoundary.style.width = `${length}%`;
+            decisionBoundary.style.left = `${startX}%`;
+            decisionBoundary.style.top = `${startY}%`;
+            decisionBoundary.style.transform = `rotate(${angle}deg)`;
+            decisionBoundary.style.transformOrigin = '0 0';
+
+            workspace.appendChild(decisionBoundary);
+        }
+
+        function createModelRepresentation() {
+            if (modelRepresentation) {
+                modelRepresentation.remove();
+            }
+
+            const workspace = document.getElementById('mlWorkspace');
+            modelRepresentation = document.createElement('div');
+            modelRepresentation.className = 'model-representation';
+            modelRepresentation.style.left = '75%';
+            modelRepresentation.style.top = '10%';
+            modelRepresentation.textContent = algorithms[currentAlgorithm].name;
+
+            workspace.appendChild(modelRepresentation);
+        }
+
+        function calculateMetrics() {
+            // Mock metrics calculation
+            accuracy = 85 + Math.random() * 10;
+            precision = 0.8 + Math.random() * 0.15;
+            recall = 0.75 + Math.random() * 0.2;
+            f1Score = 2 * (precision * recall) / (precision + recall);
+
+            updateMetrics();
+
+            // Update confusion matrix
+            const tp = Math.floor(accuracy * 0.4);
+            const tn = Math.floor(accuracy * 0.4);
+            const fp = Math.floor((100 - accuracy) * 0.3);
+            const fn = Math.floor((100 - accuracy) * 0.3);
+
+            document.getElementById('cm00').textContent = tn;
+            document.getElementById('cm01').textContent = fp;
+            document.getElementById('cm10').textContent = fn;
+            document.getElementById('cm11').textContent = tp;
+        }
+
+        function updateMetrics() {
+            document.getElementById('accuracyValue').textContent = accuracy.toFixed(1) + '%';
+            document.getElementById('precisionValue').textContent = precision.toFixed(2);
+            document.getElementById('recallValue').textContent = recall.toFixed(2);
+            document.getElementById('f1Value').textContent = f1Score.toFixed(2);
+        }
+
+        function showPipeline() {
+            const workspace = document.getElementById('mlWorkspace');
+
+            // Clear existing pipeline
+            pipelineSteps.forEach(step => step.remove());
+            pipelineConnections.forEach(conn => conn.remove());
+            pipelineSteps = [];
+            pipelineConnections = [];
+
+            const steps = ['Data Prep', 'Feature Eng', 'Model', 'Evaluation'];
+            const stepPositions = [
+                { x: 15, y: 20 },
+                { x: 35, y: 20 },
+                { x: 55, y: 20 },
+                { x: 75, y: 20 }
+            ];
+
+            // Create pipeline steps
+            steps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'pipeline-step';
+                stepElement.style.left = `${stepPositions[index].x}%`;
+                stepElement.style.top = `${stepPositions[index].y}%`;
+                stepElement.textContent = step;
+                stepElement.onclick = () => activatePipelineStep(index);
+
+                workspace.appendChild(stepElement);
+                pipelineSteps.push(stepElement);
+
+                // Create connections between steps
+                if (index < steps.length - 1) {
+                    const connection = document.createElement('div');
+                    connection.className = 'pipeline-connection';
+
+                    const startX = stepPositions[index].x + 4;
+                    const startY = stepPositions[index].y + 4;
+                    const endX = stepPositions[index + 1].x + 4;
+                    const endY = stepPositions[index + 1].y + 4;
+
+                    const length = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+                    const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+                    connection.style.width = `${length}%`;
+                    connection.style.left = `${startX}%`;
+                    connection.style.top = `${startY}%`;
+                    connection.style.transform = `rotate(${angle}deg)`;
+                    connection.style.transformOrigin = '0 0';
+
+                    workspace.appendChild(connection);
+                    pipelineConnections.push(connection);
+                }
+            });
+
+            // Animate pipeline execution
+            animatePipeline();
+        }
+
+        function activatePipelineStep(stepIndex) {
+            pipelineSteps.forEach((step, index) => {
+                if (index === stepIndex) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+
+        function animatePipeline() {
+            pipelineSteps.forEach((step, index) => {
+                setTimeout(() => {
+                    activatePipelineStep(index);
+                }, index * 1000);
+            });
+        }
+
+        function runCrossValidation() {
+            const workspace = document.getElementById('mlWorkspace');
+
+            // Clear existing folds
+            crossValidationFolds.forEach(fold => fold.remove());
+            crossValidationFolds = [];
+
+            const numFolds = 5;
+            for (let i = 0; i < numFolds; i++) {
+                const fold = document.createElement('div');
+                fold.className = 'cross-validation-fold';
+                fold.style.left = `${10 + i * 15}%`;
+                fold.style.top = `${60 + (i % 2) * 15}%`;
+                fold.style.width = '120px';
+                fold.style.height = '80px';
+
+                workspace.appendChild(fold);
+                crossValidationFolds.push(fold);
+            }
+
+            // Animate cross-validation
+            crossValidationFolds.forEach((fold, index) => {
+                setTimeout(() => {
+                    fold.classList.add('active');
+                    setTimeout(() => {
+                        fold.classList.remove('active');
+                    }, 800);
+                }, index * 500);
+            });
+        }
+
+        function changeAlgorithm(algo) {
+            currentAlgorithm = algo;
+
+            // Update active button
+            document.querySelectorAll('.algo-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            initializeWorkspace();
+        }
+
+        function updateAlgorithmInfo() {
+            const config = algorithms[currentAlgorithm];
+            document.getElementById('algorithmInfo').innerHTML = config.description;
+            document.getElementById('paramCount').textContent = config.params;
+            document.getElementById('bestFor').textContent = config.bestFor;
+            document.getElementById('currentAlgo').textContent = config.name;
+        }
+
+        function resetWorkspace() {
+            initializeWorkspace();
+            document.getElementById('statusText').textContent = 'Ready';
+            accuracy = 0.0;
+            precision = 0.0;
+            recall = 0.0;
+            f1Score = 0.0;
+            updateMetrics();
+        }
+
+        function showConfusionMatrix() {
+            const cm = document.getElementById('confusionMatrix');
+            cm.classList.toggle('show');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            switch (e.key.toLowerCase()) {
+                case 't':
+                    trainModel();
+                    break;
+                case 'g':
+                    generateData();
+                    break;
+                case 'r':
+                    resetWorkspace();
+                    break;
+                case 'c':
+                    showConfusionMatrix();
+                    break;
+                case 'p':
+                    showPipeline();
+                    break;
+                case 'v':
+                    runCrossValidation();
+                    break;
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeWorkspace();
+        });
+    </script>
+</body>
+
+</html>

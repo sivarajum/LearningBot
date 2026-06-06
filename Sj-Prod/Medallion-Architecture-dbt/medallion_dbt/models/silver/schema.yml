@@ -1,0 +1,71 @@
+version: 2
+
+models:
+  - name: silver_customers
+    description: >
+      Cleaned and validated customers. Invalid emails filtered, deduplication applied,
+      name/email normalised to lowercase. Derives customer_age_days and tier_rank.
+    columns:
+      - name: customer_id
+        description: Unique customer identifier (primary key for Silver layer).
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: Validated, normalised email (contains '@').
+        tests:
+          - not_null
+      - name: tier
+        description: Customer tier — normalised to UPPERCASE (BRONZE/SILVER/GOLD).
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['BRONZE', 'SILVER', 'GOLD']
+      - name: customer_age_days
+        description: Number of days since signup_date.
+        tests:
+          - not_null
+
+  - name: silver_orders
+    description: >
+      Cleaned and validated orders. Status normalised to uppercase, invalid statuses and
+      negative amounts removed. Enriched with order_year, order_month, order_size.
+    columns:
+      - name: order_id
+        description: Unique order identifier (primary key for Silver layer).
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: FK to silver_customers.
+        tests:
+          - not_null
+      - name: status
+        description: Normalised order status.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+      - name: amount
+        description: Validated positive order amount.
+        tests:
+          - not_null
+
+  - name: silver_products
+    description: >
+      Cleaned and validated products. Category normalised, gross_margin_pct derived,
+      price_tier bucketed.
+    columns:
+      - name: product_id
+        description: Unique product identifier.
+        tests:
+          - not_null
+          - unique
+      - name: category
+        description: Product category (title-cased).
+        tests:
+          - not_null
+      - name: gross_margin_pct
+        description: Gross margin percentage derived from (price - cost) / price * 100.

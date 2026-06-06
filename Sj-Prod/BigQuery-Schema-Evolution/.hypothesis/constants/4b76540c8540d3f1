@@ -1,0 +1,4 @@
+# file: /Users/sivarajumalladi/Documents/GitHub/LearningBot/POCs/BigQuery-Schema-Evolution/src/migration/runner.py
+# hypothesis_version: 6.151.5
+
+[0.0, ', ', '.,;', ':', 'NULLABLE', 'REQUIRED', 'STRING', 'TIMESTAMP', 'applied_at', 'checksum', 'cnt', 'compatibility', 'description', 'migration_type', 'schema', 'see migration notes', 'use ', 'version', 'view_query']

@@ -1,0 +1,12 @@
+medallion_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # Path to the DuckDB warehouse file.
+      # Resolved from env var; defaults to data/warehouse.duckdb relative to project root.
+      path: "{{ env_var('DUCKDB_PATH', '../data/warehouse.duckdb') }}"
+      threads: 4
+      # Allow schema creation per layer (bronze / silver / gold)
+      settings:
+        threads: 4

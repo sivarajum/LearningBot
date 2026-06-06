@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: bronze_customers
+    description: >
+      Raw ingest of customers.csv. Type casts only, no business logic.
+      Every source row preserved. Acts as immutable system of record.
+    columns:
+      - name: customer_id
+        description: Unique customer identifier from source system.
+        tests:
+          - not_null
+      - name: email
+        description: Raw email address from source. May contain invalid values (filtered in Silver).
+        tests:
+          - not_null
+      - name: tier
+        description: Customer tier from source. Raw values (may be mixed case).
+        tests:
+          - not_null
+      - name: _ingested_at
+        description: Timestamp when this row was ingested into the Bronze layer.
+        tests:
+          - not_null
+
+  - name: bronze_orders
+    description: >
+      Raw ingest of orders.csv. All order records including cancelled ones.
+    columns:
+      - name: order_id
+        description: Unique order identifier.
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: Foreign key to bronze_customers.
+        tests:
+          - not_null
+      - name: amount
+        description: Order amount in USD (raw, unvalidated).
+        tests:
+          - not_null
+      - name: status
+        description: Raw order status (unvalidated — may be mixed case).
+        tests:
+          - not_null
+
+  - name: bronze_products
+    description: >
+      Raw ingest of products.csv. Product catalogue with pricing.
+    columns:
+      - name: product_id
+        description: Unique product identifier.
+        tests:
+          - not_null
+          - unique
+      - name: price
+        description: Retail price in USD.
+        tests:
+          - not_null
+      - name: cost
+        description: Cost price in USD.
+        tests:
+          - not_null

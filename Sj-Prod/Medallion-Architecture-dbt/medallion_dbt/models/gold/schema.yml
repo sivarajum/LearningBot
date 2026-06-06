@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: gold_customer_lifetime_value
+    description: >
+      Customer Lifetime Value aggregation. One row per customer.
+      CLV = sum of delivered order amounts. Includes tier, country,
+      tenure days, and value segment.
+    columns:
+      - name: customer_id
+        description: Unique customer identifier (PK).
+        tests:
+          - not_null
+          - unique
+      - name: lifetime_value
+        description: Total revenue from delivered orders for this customer.
+        tests:
+          - not_null
+      - name: clv_segment
+        description: Value segmentation (high_value / mid_value / low_value).
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['high_value', 'mid_value', 'low_value']
+
+  - name: gold_product_performance
+    description: >
+      Revenue and profitability metrics per product. One row per product.
+      Includes revenue rank within category and revenue percentile.
+    columns:
+      - name: product_id
+        description: Unique product identifier (PK).
+        tests:
+          - not_null
+          - unique
+      - name: total_revenue
+        description: Sum of delivered order amounts for this product.
+        tests:
+          - not_null
+
+  - name: gold_daily_revenue
+    description: >
+      Daily revenue trend with rolling averages and cumulative totals.
+      One row per calendar day with at least one delivered order.
+    columns:
+      - name: order_date
+        description: Calendar date (PK for this model).
+        tests:
+          - not_null
+          - unique
+      - name: daily_revenue
+        description: Total delivered revenue on this day.
+        tests:
+          - not_null

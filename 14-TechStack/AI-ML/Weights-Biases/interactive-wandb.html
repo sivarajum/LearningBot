@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Weights & Biases Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            height: fit-content;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-section:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #45B7D1, #96CEB4);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #FECA57, #FF9FF3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #FF9F43, #EE5A24);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #FF6B6B;
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+        }
+
+        .metric-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .chart-container {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-title {
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .run-card {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #FF6B6B;
+            transition: all 0.3s ease;
+        }
+
+        .run-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .run-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .run-name {
+            color: white;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .run-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-running {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-finished {
+            background: #2196F3;
+            color: white;
+        }
+
+        .status-crashed {
+            background: #f44336;
+            color: white;
+        }
+
+        .run-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            font-size: 0.8em;
+        }
+
+        .metric-item {
+            text-align: center;
+        }
+
+        .metric-name {
+            color: #ccc;
+            margin-bottom: 2px;
+        }
+
+        .metric-val {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .sweep-config {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .sweep-title {
+            color: white;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .sweep-params {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            font-size: 0.8em;
+        }
+
+        .param-item {
+            background: #3d3d3d;
+            padding: 8px;
+            border-radius: 6px;
+            color: #ccc;
+        }
+
+        .param-name {
+            color: #FF6B6B;
+            font-weight: bold;
+        }
+
+        .param-value {
+            color: #4ECDC4;
+        }
+
+        .parallel-coords {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+                linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+                linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            position: relative;
+        }
+
+        .axis {
+            position: absolute;
+            width: 2px;
+            background: #555;
+            top: 20px;
+            bottom: 20px;
+        }
+
+        .axis-label {
+            position: absolute;
+            color: white;
+            font-size: 0.8em;
+            transform: rotate(-90deg);
+            white-space: nowrap;
+        }
+
+        .axis-label.top {
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-90deg);
+        }
+
+        .axis-label.bottom {
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-90deg);
+        }
+
+        .data-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+            border-radius: 1px;
+            animation: sweep 3s infinite;
+        }
+
+        @keyframes sweep {
+            0% {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scaleX(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scaleX(1);
+            }
+        }
+
+        .loss-curve {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(to bottom, #1a1a1a 0%, #2d2d2d 100%);
+        }
+
+        .curve-path {
+            stroke: #FF6B6B;
+            stroke-width: 3;
+            fill: none;
+            filter: drop-shadow(0 0 6px rgba(255, 107, 107, 0.5));
+        }
+
+        .curve-point {
+            fill: #4ECDC4;
+            r: 4;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                r: 4;
+                opacity: 1;
+            }
+
+            50% {
+                r: 6;
+                opacity: 0.7;
+            }
+        }
+
+        .confusion-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            width: 100%;
+            height: 100%;
+            background: #333;
+            padding: 10px;
+        }
+
+        .matrix-cell {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8em;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-cell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        .artifacts-panel {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .artifacts-title {
+            color: white;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .artifact-item {
+            background: #3d3d3d;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .artifact-name {
+            color: white;
+            font-weight: bold;
+        }
+
+        .artifact-type {
+            color: #4ECDC4;
+            font-size: 0.8em;
+        }
+
+        .artifact-size {
+            color: #ccc;
+            font-size: 0.8em;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 6px;
+            color: #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .hyperparameter-sweep {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .sweep-progress {
+            width: 100%;
+            height: 8px;
+            background: #444;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .sweep-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .sweep-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            font-size: 0.8em;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: #ccc;
+        }
+
+        .stat-value {
+            color: #4ECDC4;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .alert-panel {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1));
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+        }
+
+        .alert-panel h3 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .alert-panel p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 107, 107, 0.3);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .particle:nth-child(2n) {
+            animation-delay: 2s;
+            background: rgba(78, 205, 196, 0.3);
+        }
+
+        .particle:nth-child(3n) {
+            animation-delay: 4s;
+            background: rgba(254, 202, 87, 0.3);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="floating-particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Interactive Weights & Biases Dashboard</h1>
+            <p>Experience the power of experiment tracking, hyperparameter optimization, and collaborative ML
+                development</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3>🚀 Experiment Controls</h3>
+                    <button class="btn" onclick="startRun()">Start New Run</button>
+                    <button class="btn btn-secondary" onclick="logMetrics()">Log Metrics</button>
+                    <button class="btn btn-success" onclick="finishRun()">Finish Run</button>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>⚙️ Hyperparameters</h3>
+                    <div class="control-group">
+                        <label>Learning Rate</label>
+                        <input type="number" id="learning-rate" step="0.001" value="0.01" min="0.001" max="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label>Batch Size</label>
+                        <input type="number" id="batch-size" value="32" min="8" max="256">
+                    </div>
+                    <div class="control-group">
+                        <label>Model Type</label>
+                        <select id="model-type">
+                            <option value="cnn">CNN</option>
+                            <option value="rnn">RNN</option>
+                            <option value="transformer">Transformer</option>
+                            <option value="mlp">MLP</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>🎯 Sweep Configuration</h3>
+                    <button class="btn" onclick="startSweep()">Start Hyperparameter Sweep</button>
+                    <button class="btn btn-danger" onclick="stopSweep()">Stop Sweep</button>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>📊 Current Metrics</h3>
+                    <div class="metric-display">
+                        <div class="metric-card">
+                            <div class="metric-value" id="accuracy">0.85</div>
+                            <div class="metric-label">Accuracy</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="loss">0.42</div>
+                            <div class="metric-label">Loss</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="f1-score">0.83</div>
+                            <div class="metric-label">F1-Score</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="val-acc">0.81</div>
+                            <div class="metric-label">Val Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('overview')">Overview</div>
+                    <div class="tab" onclick="switchTab('runs')">Runs</div>
+                    <div class="tab" onclick="switchTab('sweeps')">Sweeps</div>
+                    <div class="tab" onclick="switchTab('artifacts')">Artifacts</div>
+                </div>
+
+                <div id="overview-tab" class="tab-content active">
+                    <div class="chart-grid">
+                        <div class="chart-container">
+                            <div class="chart-title">Training Loss Over Time</div>
+                            <div class="loss-curve">
+                                <svg width="100%" height="100%" viewBox="0 0 400 200">
+                                    <path id="loss-path" class="curve-path" d="M0,150 Q100,120 200,80 T400,40"></path>
+                                    <circle id="loss-point" class="curve-point" cx="200" cy="80" r="4"></circle>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-title">Hyperparameter Parallel Coordinates</div>
+                            <div class="parallel-coords">
+                                <div class="axis" style="left: 10%"></div>
+                                <div class="axis" style="left: 30%"></div>
+                                <div class="axis" style="left: 50%"></div>
+                                <div class="axis" style="left: 70%"></div>
+                                <div class="axis" style="left: 90%"></div>
+                                <div class="axis-label top" style="left: 10%">LR</div>
+                                <div class="axis-label top" style="left: 30%">Batch</div>
+                                <div class="axis-label top" style="left: 50%">Layers</div>
+                                <div class="axis-label top" style="left: 70%">Units</div>
+                                <div class="axis-label top" style="left: 90%">Accuracy</div>
+                                <div class="data-line" id="parallel-line" style="top: 60px; left: 10%; width: 80%;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-title">Confusion Matrix</div>
+                            <div class="confusion-matrix">
+                                <div class="matrix-cell">0.85</div>
+                                <div class="matrix-cell">0.05</div>
+                                <div class="matrix-cell">0.10</div>
+                                <div class="matrix-cell">0.08</div>
+                                <div class="matrix-cell">0.82</div>
+                                <div class="matrix-cell">0.10</div>
+                                <div class="matrix-cell">0.12</div>
+                                <div class="matrix-cell">0.08</div>
+                                <div class="matrix-cell">0.80</div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-title">Model Architecture</div>
+                            <div
+                                style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: white;">
+                                <div style="font-size: 3em; margin-bottom: 10px;">🧠</div>
+                                <div style="text-align: center;">
+                                    <div id="model-arch">CNN Architecture</div>
+                                    <div style="font-size: 0.8em; opacity: 0.7; margin-top: 5px;">Conv2D → MaxPool →
+                                        Dense → Output</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="runs-tab" class="tab-content">
+                    <div id="runs-list">
+                        <!-- Runs will be added here -->
+                    </div>
+                </div>
+
+                <div id="sweeps-tab" class="tab-content">
+                    <div class="hyperparameter-sweep">
+                        <div class="sweep-title">🔄 Hyperparameter Sweep Progress</div>
+                        <div class="sweep-progress">
+                            <div class="sweep-fill" id="sweep-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="sweep-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="total-runs">0</div>
+                                <div>Total Runs</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="running-runs">0</div>
+                                <div>Running</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="finished-runs">0</div>
+                                <div>Finished</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="best-score">0.00</div>
+                                <div>Best Score</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sweep-config">
+                        <div class="sweep-title">🎛️ Sweep Configuration</div>
+                        <div class="sweep-params">
+                            <div class="param-item">
+                                <span class="param-name">learning_rate:</span> <span class="param-value">uniform(0.001,
+                                    0.1)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">batch_size:</span> <span class="param-value">choice([16, 32,
+                                    64, 128])</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">dropout:</span> <span class="param-value">uniform(0.1,
+                                    0.5)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">optimizer:</span> <span class="param-value">choice(['adam',
+                                    'sgd', 'rmsprop'])</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="artifacts-tab" class="tab-content">
+                    <div class="artifacts-panel">
+                        <div class="artifacts-title">📦 Model Artifacts</div>
+                        <div id="artifacts-list">
+                            <!-- Artifacts will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-panel">
+            <h3>🔬 Weights & Biases Key Features</h3>
+            <p>W&B provides comprehensive experiment tracking, hyperparameter sweeps, and collaborative ML development
+                tools. Log metrics, visualize training curves, compare experiments, and share insights with your team.
+                Features include automatic experiment tracking, hyperparameter optimization, model versioning, and
+                interactive dashboards.</p>
+        </div>
+    </div>
+
+    <script>
+        let runs = [];
+        let currentRunId = 1;
+        let sweepRunning = false;
+        let sweepRuns = [];
+        let particles = [];
+
+        function startRun() {
+            const runId = `run_${currentRunId++}`;
+            const run = {
+                id: runId,
+                name: `experiment_${runId}`,
+                status: 'running',
+                startTime: new Date(),
+                metrics: {
+                    accuracy: 0,
+                    loss: Math.random() * 0.5 + 0.5,
+                    f1: 0,
+                    val_acc: 0
+                },
+                config: {
+                    learning_rate: parseFloat(document.getElementById('learning-rate').value),
+                    batch_size: parseInt(document.getElementById('batch-size').value),
+                    model_type: document.getElementById('model-type').value
+                }
+            };
+
+            runs.unshift(run);
+            updateRunsList();
+            simulateTraining(run);
+            updateModelArchitecture(run.config.model_type);
+        }
+
+        function simulateTraining(run) {
+            let step = 0;
+            const maxSteps = 100;
+            const interval = setInterval(() => {
+                step++;
+                const progress = step / maxSteps;
+
+                // Simulate training metrics
+                const accuracy = 0.5 + progress * 0.4 + Math.random() * 0.1;
+                const loss = run.metrics.loss * (1 - progress * 0.8) + Math.random() * 0.1;
+                const f1 = 0.4 + progress * 0.5 + Math.random() * 0.1;
+                const valAcc = accuracy - Math.random() * 0.1;
+
+                run.metrics = { accuracy, loss, f1, val_acc: valAcc };
+
+                // Update UI
+                document.getElementById('accuracy').textContent = accuracy.toFixed(3);
+                document.getElementById('loss').textContent = loss.toFixed(3);
+                document.getElementById('f1-score').textContent = f1.toFixed(3);
+                document.getElementById('val-acc').textContent = valAcc.toFixed(3);
+
+                // Update loss curve
+                updateLossCurve(progress, loss);
+
+                if (step >= maxSteps) {
+                    clearInterval(interval);
+                    run.status = 'finished';
+                    run.endTime = new Date();
+                    updateRunsList();
+                    logArtifact(run);
+                }
+            }, 100);
+        }
+
+        function updateLossCurve(progress, currentLoss) {
+            const svg = document.querySelector('.loss-curve svg');
+            const path = document.getElementById('loss-path');
+            const point = document.getElementById('loss-point');
+
+            // Create a simple decreasing curve
+            const x = progress * 400;
+            const y = 150 - (progress * 100) + Math.sin(progress * Math.PI * 2) * 10;
+
+            // Update path (simplified)
+            const d = `M0,150 Q${x / 2},${150 - progress * 50} ${x},${y}`;
+            path.setAttribute('d', d);
+
+            // Update point
+            point.setAttribute('cx', x);
+            point.setAttribute('cy', y);
+        }
+
+        function updateModelArchitecture(modelType) {
+            const archElement = document.getElementById('model-arch');
+            const descriptions = {
+                cnn: 'CNN Architecture\nConv2D → MaxPool → Dense → Output',
+                rnn: 'RNN Architecture\nLSTM → Dense → Output',
+                transformer: 'Transformer Architecture\nMultiHead → FeedForward → Output',
+                mlp: 'MLP Architecture\nDense → Dropout → Dense → Output'
+            };
+
+            archElement.textContent = modelType.toUpperCase() + ' Architecture';
+            archElement.nextElementSibling.textContent = descriptions[modelType].split('\n')[1];
+        }
+
+        function logMetrics() {
+            if (runs.length === 0 || runs[0].status !== 'running') return;
+
+            const run = runs[0];
+            // Additional logging would happen here
+            console.log('Logging additional metrics for run:', run.id);
+        }
+
+        function finishRun() {
+            if (runs.length === 0 || runs[0].status !== 'running') return;
+
+            runs[0].status = 'finished';
+            runs[0].endTime = new Date();
+            updateRunsList();
+        }
+
+        function updateRunsList() {
+            const runsList = document.getElementById('runs-list');
+            runsList.innerHTML = '';
+
+            runs.slice(0, 10).forEach(run => {
+                const runCard = document.createElement('div');
+                runCard.className = 'run-card';
+
+                runCard.innerHTML = `
+                    <div class="run-header">
+                        <div class="run-name">${run.name}</div>
+                        <div class="run-status status-${run.status}">${run.status}</div>
+                    </div>
+                    <div class="run-metrics">
+                        <div class="metric-item">
+                            <div class="metric-name">Accuracy</div>
+                            <div class="metric-val">${run.metrics.accuracy.toFixed(3)}</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-name">Loss</div>
+                            <div class="metric-val">${run.metrics.loss.toFixed(3)}</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-name">F1</div>
+                            <div class="metric-val">${run.metrics.f1.toFixed(3)}</div>
+                        </div>
+                    </div>
+                `;
+
+                runsList.appendChild(runCard);
+            });
+        }
+
+        function startSweep() {
+            if (sweepRunning) return;
+
+            sweepRunning = true;
+            sweepRuns = [];
+            document.getElementById('sweep-progress').style.width = '0%';
+            document.getElementById('total-runs').textContent = '0';
+            document.getElementById('running-runs').textContent = '0';
+            document.getElementById('finished-runs').textContent = '0';
+            document.getElementById('best-score').textContent = '0.00';
+
+            simulateSweep();
+        }
+
+        function simulateSweep() {
+            let completedRuns = 0;
+            const totalRuns = 20;
+            let bestScore = 0;
+
+            const interval = setInterval(() => {
+                if (!sweepRunning || completedRuns >= totalRuns) {
+                    clearInterval(interval);
+                    sweepRunning = false;
+                    return;
+                }
+
+                // Simulate a sweep run
+                const score = 0.7 + Math.random() * 0.25;
+                bestScore = Math.max(bestScore, score);
+                completedRuns++;
+
+                const progress = (completedRuns / totalRuns) * 100;
+                document.getElementById('sweep-progress').style.width = progress + '%';
+                document.getElementById('total-runs').textContent = completedRuns;
+                document.getElementById('finished-runs').textContent = completedRuns;
+                document.getElementById('best-score').textContent = bestScore.toFixed(3);
+
+                // Update parallel coordinates visualization
+                updateParallelCoords(completedRuns, totalRuns);
+
+            }, 500);
+        }
+
+        function updateParallelCoords(completed, total) {
+            const line = document.getElementById('parallel-line');
+            const progress = completed / total;
+            line.style.top = (40 + progress * 40) + 'px';
+        }
+
+        function stopSweep() {
+            sweepRunning = false;
+        }
+
+        function logArtifact(run) {
+            const artifacts = [
+                { name: 'model.pkl', type: 'model', size: '45.2 MB' },
+                { name: 'config.yaml', type: 'config', size: '2.1 KB' },
+                { name: 'metrics.json', type: 'metrics', size: '15.8 KB' },
+                { name: 'plots.png', type: 'visualization', size: '892 KB' }
+            ];
+
+            const artifactsList = document.getElementById('artifacts-list');
+            artifactsList.innerHTML = '';
+
+            artifacts.forEach(artifact => {
+                const artifactItem = document.createElement('div');
+                artifactItem.className = 'artifact-item';
+
+                artifactItem.innerHTML = `
+                    <div>
+                        <div class="artifact-name">${artifact.name}</div>
+                        <div class="artifact-type">${artifact.type}</div>
+                    </div>
+                    <div class="artifact-size">${artifact.size}</div>
+                `;
+
+                artifactsList.appendChild(artifactItem);
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize demo
+        function initializeDemo() {
+            createParticles();
+
+            // Add some initial runs for demo
+            for (let i = 0; i < 3; i++) {
+                const run = {
+                    id: `run_${i + 1}`,
+                    name: `experiment_run_${i + 1}`,
+                    status: 'finished',
+                    metrics: {
+                        accuracy: 0.75 + Math.random() * 0.2,
+                        loss: Math.random() * 0.3 + 0.2,
+                        f1: 0.7 + Math.random() * 0.25,
+                        val_acc: 0.7 + Math.random() * 0.2
+                    },
+                    config: {
+                        learning_rate: 0.01,
+                        batch_size: 32,
+                        model_type: 'cnn'
+                    }
+                };
+                runs.push(run);
+            }
+
+            updateRunsList();
+            logArtifact(runs[0]);
+        }
+
+        // Start the demo
+        initializeDemo();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,643 @@
+# COMPREHENSIVE CURSOR AI PROMPT FOR EDUCATIONAL LEARNING PLATFORM
+
+## PROJECT OVERVIEW
+Build a modern, scalable, interactive learning platform designed for teaching 200+ students with progressive learning paths, rich multimedia content, and hands-on interactive exercises. The platform should enable fast, effective learning while providing an architecture-level understanding of modern web development.
+
+---
+
+## TECHNICAL STACK
+
+### Frontend
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript (strict mode)
+- **Styling**: Tailwind CSS with custom design tokens
+- **UI Components**: shadcn/ui for consistent, accessible components
+- **State Management**: React Context API + Zustand (for complex global state)
+- **Data Fetching**: SWR for client-side, built-in fetch for server components
+
+### Backend
+- **API Routes**: Next.js API routes with route handlers
+- **Database**: PostgreSQL (via Prisma ORM)
+- **Authentication**: NextAuth.js v5 with email/password, Google, GitHub providers
+- **File Storage**: Vercel Blob or AWS S3 for videos, PDFs, assets
+- **Real-time Features**: Pusher or Socket.io for live collaboration
+
+### Additional Tools
+- **Forms**: React Hook Form with Zod validation
+- **Charts/Analytics**: Recharts or Chart.js
+- **Video Player**: Video.js or Plyr with HLS support
+- **Code Editor**: Monaco Editor for interactive coding exercises
+- **Markdown**: MDX for rich content with embedded React components
+- **Testing**: Vitest + React Testing Library
+- **Deployment**: Vercel (recommended) or self-hosted
+
+---
+
+## CORE FEATURES & ARCHITECTURE
+
+### 1. USER MANAGEMENT & AUTHENTICATION
+
+**Requirements:**
+- Multi-role system: Students, Instructors, Admins
+- Email verification workflow
+- Password reset functionality
+- OAuth integration (Google, GitHub)
+- User profiles with progress tracking
+- Role-based access control (RBAC)
+
+**Database Schema:**
+```prisma
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          Role      @default(STUDENT)
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  accounts      Account[]
+  sessions      Session[]
+  enrollments   Enrollment[]
+  progress      Progress[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+```
+
+**Implementation Patterns:**
+- Server-side session validation
+- Middleware for protected routes
+- JWT tokens for API authentication
+
+---
+
+### 2. COURSE STRUCTURE & CONTENT MANAGEMENT
+
+**Hierarchical Structure:**
+```
+Course
+  ├── Modules (Sections)
+  │   ├── Lessons
+  │   │   ├── Content (Video, Text, Code, Quiz)
+  │   │   ├── Resources (PDFs, Links)
+  │   │   └── Exercises (Interactive)
+  │   └── Module Quiz
+  └── Final Assessment
+```
+
+**Database Schema:**
+```prisma
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  thumbnail   String?
+  level       Level    @default(BEGINNER)
+  published   Boolean  @default(false)
+  modules     Module[]
+  enrollments Enrollment[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Module {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  order       Int
+  lessons     Lesson[]
+  createdAt   DateTime @default(now())
+}
+
+model Lesson {
+  id          String       @id @default(cuid())
+  moduleId    String
+  module      Module       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title       String
+  order       Int
+  type        LessonType
+  content     Json         // Flexible content structure
+  duration    Int?         // in minutes
+  resources   Resource[]
+  progress    Progress[]
+  createdAt   DateTime     @default(now())
+}
+
+enum LessonType {
+  VIDEO
+  TEXT
+  CODE
+  QUIZ
+  INTERACTIVE
+}
+
+model Resource {
+  id        String   @id @default(cuid())
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title     String
+  type      ResourceType
+  url       String
+  createdAt DateTime @default(now())
+}
+
+enum ResourceType {
+  PDF
+  LINK
+  CODE_SNIPPET
+  SLIDE
+}
+```
+
+**Content Types:**
+1. **Video Lessons**: HLS streaming, playback speed control, captions
+2. **Text Content**: MDX with syntax highlighting, embedded components
+3. **Code Exercises**: Monaco Editor with test cases, auto-grading
+4. **Quizzes**: Multiple choice, code output prediction, fill-in-blank
+5. **Interactive Demos**: Live coding sandboxes, visualizations
+
+---
+
+### 3. PROGRESS TRACKING & GAMIFICATION
+
+**Requirements:**
+- Track lesson completion
+- Calculate course progress percentage
+- Award badges and certificates
+- Leaderboard (optional)
+- Learning streaks
+
+**Database Schema:**
+```prisma
+model Enrollment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrolledAt  DateTime @default(now())
+  completedAt DateTime?
+  progress    Int      @default(0) // percentage
+  
+  @@unique([userId, courseId])
+}
+
+model Progress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completed   Boolean  @default(false)
+  score       Int?     // for quizzes
+  timeSpent   Int?     // in seconds
+  completedAt DateTime?
+  
+  @@unique([userId, lessonId])
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  icon        String
+  criteria    Json     // completion criteria
+  userBadges  UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  badge     Badge    @relation(fields: [badgeId], references: [id])
+  earnedAt  DateTime @default(now())
+  
+  @@unique([userId, badgeId])
+}
+```
+
+---
+
+### 4. INTERACTIVE CODING ENVIRONMENT
+
+**Requirements:**
+- In-browser code editor (Monaco)
+- Multiple language support (JavaScript, Python, TypeScript, etc.)
+- Real-time syntax checking
+- Test case validation
+- Code execution sandbox (use Judge0 API or similar)
+- Solution comparison
+
+**Implementation:**
+```typescript
+// Example: Code Exercise Component
+interface CodeExercise {
+  id: string;
+  title: string;
+  instructions: string;
+  starterCode: string;
+  language: 'javascript' | 'python' | 'typescript';
+  testCases: TestCase[];
+  solution?: string;
+}
+
+interface TestCase {
+  input: any;
+  expectedOutput: any;
+  hidden?: boolean;
+}
+```
+
+---
+
+### 5. PROGRESSIVE LEARNING PATHS
+
+**Requirements:**
+- Prerequisite system (unlock lessons sequentially)
+- Skill trees / learning roadmaps
+- Personalized recommendations
+- Adaptive difficulty
+
+**Database Schema:**
+```prisma
+model LearningPath {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  courses     CourseInPath[]
+  createdAt   DateTime @default(now())
+}
+
+model CourseInPath {
+  id            String       @id @default(cuid())
+  pathId        String
+  path          LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  courseId      String
+  order         Int
+  prerequisites String[]     // Array of course IDs
+}
+```
+
+---
+
+### 6. ADMIN & INSTRUCTOR DASHBOARD
+
+**Features:**
+- Course creation & editing (WYSIWYG + MDX)
+- Student analytics dashboard
+- Bulk user management
+- Content upload (videos, PDFs)
+- Quiz builder
+- Announcements system
+
+**Key Pages:**
+- `/admin/courses` - Course management
+- `/admin/users` - User management
+- `/admin/analytics` - Platform analytics
+- `/instructor/courses/[id]/edit` - Course editor
+
+---
+
+### 7. STUDENT LEARNING INTERFACE
+
+**Key Pages:**
+```
+/dashboard - Student dashboard with enrolled courses
+/courses - Course catalog
+/courses/[slug] - Course overview
+/learn/[courseId]/[lessonId] - Lesson player
+/profile - User profile with badges, certificates
+/leaderboard - Community leaderboard (optional)
+```
+
+**Lesson Player Components:**
+- Video player with controls
+- Content area (scrollable)
+- Sidebar navigation (module/lesson tree)
+- Resource downloads
+- Discussion/comments (optional)
+- "Mark as Complete" button
+- Progress bar
+
+---
+
+### 8. OFFLINE SUPPORT (PWA)
+
+**Requirements:**
+- Service worker for offline caching
+- Download lessons for offline viewing
+- Sync progress when back online
+- App manifest for installation
+
+**Implementation:**
+```javascript
+// next.config.js
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development'
+});
+
+module.exports = withPWA({
+  // Next.js config
+});
+```
+
+---
+
+## FOLDER STRUCTURE
+
+```
+/src
+  /app
+    /(auth)
+      /login
+      /signup
+      /verify-email
+    /(dashboard)
+      /dashboard
+      /courses
+      /learn/[courseId]/[lessonId]
+      /profile
+    /(admin)
+      /admin
+        /courses
+        /users
+        /analytics
+    /api
+      /auth/[...nextauth]
+      /courses
+      /lessons
+      /progress
+      /upload
+  /components
+    /ui (shadcn components)
+    /course
+      /LessonPlayer
+      /VideoPlayer
+      /CodeEditor
+      /QuizComponent
+    /dashboard
+    /admin
+  /lib
+    /db (Prisma client)
+    /auth (NextAuth config)
+    /utils
+    /validators (Zod schemas)
+  /hooks
+  /types
+  /styles
+prisma
+  /schema.prisma
+public
+  /videos
+  /images
+```
+
+---
+
+## DESIGN SYSTEM & UI/UX
+
+### Design Tokens
+```css
+:root {
+  --primary: #6366f1; /* Indigo */
+  --secondary: #8b5cf6; /* Purple */
+  --success: #10b981; /* Green */
+  --warning: #f59e0b; /* Amber */
+  --error: #ef4444; /* Red */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --muted: #f1f5f9;
+  --border: #e2e8f0;
+}
+
+[data-theme="dark"] {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --muted: #1e293b;
+  --border: #334155;
+}
+```
+
+### Component Patterns
+- Consistent spacing (4px base grid)
+- Accessible focus states
+- Loading skeletons for async content
+- Toast notifications (sonner)
+- Modal dialogs (Radix UI)
+- Responsive breakpoints: sm(640px), md(768px), lg(1024px), xl(1280px)
+
+---
+
+## PERFORMANCE OPTIMIZATION
+
+1. **Image Optimization**: Next.js `<Image>` with blur placeholders
+2. **Code Splitting**: Dynamic imports for heavy components
+3. **Lazy Loading**: Videos, code editors load on demand
+4. **Caching Strategy**:
+   - Static pages: ISR with 1-hour revalidation
+   - User data: SWR with optimistic updates
+   - API routes: Redis caching (optional)
+5. **Database Optimization**:
+   - Indexes on frequently queried fields
+   - Connection pooling (Prisma)
+   - Pagination for large datasets
+
+---
+
+## SECURITY BEST PRACTICES
+
+1. **Authentication**: Secure session handling, CSRF protection
+2. **Authorization**: Server-side role checks, API route protection
+3. **Input Validation**: Zod schemas for all user inputs
+4. **SQL Injection**: Parameterized queries (Prisma handles this)
+5. **XSS Prevention**: Sanitize user-generated content
+6. **Rate Limiting**: Protect API routes (use Upstash Rate Limit)
+7. **Environment Variables**: Never expose secrets to client
+
+---
+
+## TESTING STRATEGY
+
+1. **Unit Tests**: Utility functions, validators
+2. **Component Tests**: React Testing Library
+3. **Integration Tests**: API routes
+4. **E2E Tests**: Playwright for critical user flows
+5. **Test Coverage**: Aim for >80% on core logic
+
+---
+
+## DEPLOYMENT CHECKLIST
+
+- [ ] Environment variables configured
+- [ ] Database migrations run
+- [ ] Image optimization configured
+- [ ] Error tracking setup (Sentry)
+- [ ] Analytics integrated (Vercel Analytics or Posthog)
+- [ ] Lighthouse score >90
+- [ ] SEO meta tags configured
+- [ ] Sitemap generated
+- [ ] robots.txt configured
+- [ ] SSL certificate active
+
+---
+
+## AI AGENT INSTRUCTIONS
+
+**When generating this project, follow these patterns:**
+
+1. **Start with Database Schema**: Generate complete Prisma schema first
+2. **Authentication Setup**: Implement NextAuth.js with user roles
+3. **Core Pages**: Build in this order:
+   - Auth pages (login, signup)
+   - Student dashboard
+   - Course catalog
+   - Lesson player
+   - Admin course creator
+4. **Incremental Features**: Add one feature at a time, test, commit
+5. **Type Safety**: Define TypeScript interfaces before components
+6. **Responsive Design**: Mobile-first approach
+7. **Accessibility**: ARIA labels, keyboard navigation, screen reader support
+8. **Error Handling**: Try-catch blocks, user-friendly error messages
+9. **Loading States**: Skeleton loaders, suspense boundaries
+10. **Documentation**: Comment complex logic, create README.md
+
+**Testing After Each Feature:**
+- Run `npm run build` to check for TypeScript errors
+- Test authentication flows
+- Verify database operations
+- Check responsive design
+- Validate accessibility (Axe DevTools)
+
+**Code Quality Standards:**
+- ESLint + Prettier configured
+- Husky pre-commit hooks
+- Conventional commits
+- Component composition over inheritance
+- Minimal prop drilling (use context when needed)
+
+---
+
+## EXAMPLE LESSON CONTENT STRUCTURE (JSON)
+
+```json
+{
+  "type": "VIDEO",
+  "videoUrl": "https://example.com/lesson1.m3u8",
+  "transcript": "Full transcript here...",
+  "quiz": {
+    "questions": [
+      {  a
+        "id": "q1",
+        "question": "What is the purpose of useState?",
+        "options": ["State management", "Effect handling", "Routing", "Styling"],
+        "correctAnswer": 0
+      }
+    ]
+  },
+  "codeExercise": {
+    "title": "Build a Counter",
+    "instructions": "Create a React counter component...",
+    "starterCode": "import React from 'react';\n\nfunction Counter() {\n  // Your code here\n}\n\nexport default Counter;",
+    "testCases": [
+      {
+        "description": "Initial count should be 0",
+        "test": "expect(screen.getByText('0')).toBeInTheDocument()"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## STUDENT EXPERIENCE GOALS
+
+1. **Fast Onboarding**: Get to first lesson in <2 minutes
+2. **Clear Progress**: Visual indicators of completion
+3. **Engaging Content**: Mix of videos, text, interactive exercises
+4. **Instant Feedback**: Real-time validation on quizzes/code
+5. **Mobile Learning**: Fully responsive, works on phones/tablets
+6. **Motivational**: Badges, streaks, certificates
+7. **Community**: Optional discussion forums (Discourse integration or custom)
+
+---
+
+## SCALABILITY CONSIDERATIONS
+
+1. **Database**: PostgreSQL with read replicas
+2. **CDN**: Vercel Edge Network or Cloudflare
+3. **Video Streaming**: HLS with adaptive bitrate
+4. **Caching**: Redis for session data, SWR for client
+5. **Background Jobs**: BullMQ for email sending, certificate generation
+6. **Monitoring**: Vercel Analytics + Sentry error tracking
+
+---
+
+## NEXT STEPS FOR AI AGENT
+
+**Phase 1: Foundation (Generate First)**
+1. Initialize Next.js 15 project with TypeScript
+2. Setup Tailwind CSS + shadcn/ui
+3. Configure Prisma with PostgreSQL
+4. Implement NextAuth.js
+5. Create basic folder structure
+
+**Phase 2: Core Features**
+1. User authentication flows
+2. Course listing page
+3. Single course view
+4. Lesson player (video + content)
+5. Progress tracking
+
+**Phase 3: Advanced Features**
+1. Code editor integration
+2. Quiz system
+3. Admin dashboard
+4. Certificate generation
+5. Analytics
+
+**Phase 4: Polish**
+1. PWA setup
+2. Performance optimization
+3. Accessibility audit
+4. Documentation
+5. Deployment
+
+---
+
+## SAMPLE PROMPTS FOR ITERATIVE DEVELOPMENT
+
+**Example 1:**
+"Create the Prisma schema for the User, Course, Module, Lesson, and Progress models as defined above. Include all relationships and enums."
+
+**Example 2:**
+"Build the NextAuth.js configuration with email/password and Google OAuth providers. Include role-based session data."
+
+**Example 3:**
+"Generate the lesson player component that displays video content, lesson navigation sidebar, and marks lessons as complete. Use React Server Components where appropriate."
+
+**Example 4:**
+"Create the admin course creation form with React Hook Form and Zod validation. Include fields for title, description, thumbnail upload, and module/lesson builder."
+
+---
+
+## FINAL NOTES
+
+- This platform should be **production-ready** with proper error handling, validation, and security
+- Code should be **maintainable** by junior developers (clear naming, comments)
+- Architecture should support **200+ concurrent users** initially, scalable to 1000+
+- Students should be able to **learn at their own pace** with clear progression
+- Instructors should be able to **create content easily** without technical knowledge of the platform internals
+
+**END OF PROMPT**

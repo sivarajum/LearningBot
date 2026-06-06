@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  dq-api:
+    build: .
+    container_name: dq_framework_api
+    command: python main.py api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+    environment:
+      - DQ_DATA_DIR=/app/data
+      - DQ_REPORTS_DIR=/app/reports
+      - API_PORT=8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  dq-ui:
+    build: .
+    container_name: dq_framework_ui
+    command: streamlit run src/ui.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+    environment:
+      - DQ_DATA_DIR=/app/data
+      - DQ_REPORTS_DIR=/app/reports
+    depends_on:
+      - dq-api
+    restart: unless-stopped

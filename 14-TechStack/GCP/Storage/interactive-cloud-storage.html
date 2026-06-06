@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Storage Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --gcp-blue: #4285F4;
+            --gcp-red: #EA4335;
+            --gcp-yellow: #FBBC05;
+            --gcp-green: #34A853;
+            --gcp-purple: #9C27B0;
+            --gcp-dark: #202124;
+            --gcp-light: #FFFFFF;
+            --gcp-gray: #F8F9FA;
+            --primary-color: #4285F4;
+            --secondary-color: #EA4335;
+            --accent-color: #34A853;
+            --warning-color: #FBBC05;
+            --info-color: #9C27B0;
+            --dark-color: #202124;
+            --light-color: #F8F9FA;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4285F4 0%, #9C27B0 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--gcp-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            min-height: 200px;
+        }
+
+        .btn-gcp {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gcp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-outline-gcp {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-gcp:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: var(--gcp-gray);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--gcp-dark);
+        }
+
+        .feature-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .interactive-section {
+            background: var(--gcp-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .storage-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #4285F4, #34A853);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        .bucket-card,
+        .object-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .object-item {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .perf-metric-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .execution-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--gcp-gray);
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--gcp-dark);
+        }
+
+        .stat-value {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .input-group-custom {
+            margin-bottom: 15px;
+        }
+
+        .input-group-custom label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--gcp-dark);
+        }
+
+        .input-group-custom input,
+        .input-group-custom select,
+        .input-group-custom textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-group-custom textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .badge-custom {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        .badge-standard {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-nearline {
+            background: #ffc107;
+            color: black;
+        }
+
+        .badge-coldline {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .badge-archive {
+            background: #6c757d;
+            color: white;
+        }
+
+        .badge-public {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-private {
+            background: #6c757d;
+            color: white;
+        }
+
+        .file-upload-area {
+            border: 2px dashed var(--primary-color);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: var(--gcp-gray);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            background: #e8f4fd;
+            border-color: var(--secondary-color);
+        }
+
+        .file-upload-area.dragover {
+            background: #d4edda;
+            border-color: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [buckets, setBuckets] = useState([
+                {
+                    id: 'my-app-bucket',
+                    name: 'my-app-bucket',
+                    location: 'us-central1',
+                    storageClass: 'STANDARD',
+                    created: '2024-01-15',
+                    public: false,
+                    versioning: true,
+                    objectCount: 45,
+                    totalSize: '2.3 GB'
+                },
+                {
+                    id: 'backup-storage',
+                    name: 'backup-storage',
+                    location: 'us-west1',
+                    storageClass: 'NEARLINE',
+                    created: '2024-01-10',
+                    public: false,
+                    versioning: false,
+                    objectCount: 1200,
+                    totalSize: '45.8 GB'
+                },
+                {
+                    id: 'archive-data',
+                    name: 'archive-data',
+                    location: 'us-east1',
+                    storageClass: 'COLDLINE',
+                    created: '2023-12-01',
+                    public: false,
+                    versioning: false,
+                    objectCount: 5000,
+                    totalSize: '1.2 TB'
+                }
+            ]);
+            const [objects, setObjects] = useState([
+                {
+                    id: 'user-uploads/image1.jpg',
+                    name: 'image1.jpg',
+                    bucket: 'my-app-bucket',
+                    size: '2.4 MB',
+                    type: 'image/jpeg',
+                    lastModified: '2024-01-15T14:30:00Z',
+                    storageClass: 'STANDARD',
+                    public: true
+                },
+                {
+                    id: 'documents/report.pdf',
+                    name: 'report.pdf',
+                    bucket: 'my-app-bucket',
+                    size: '1.8 MB',
+                    type: 'application/pdf',
+                    lastModified: '2024-01-15T12:15:00Z',
+                    storageClass: 'STANDARD',
+                    public: false
+                },
+                {
+                    id: 'backups/backup-2024-01.tar.gz',
+                    name: 'backup-2024-01.tar.gz',
+                    bucket: 'backup-storage',
+                    size: '15.2 GB',
+                    type: 'application/gzip',
+                    lastModified: '2024-01-14T02:00:00Z',
+                    storageClass: 'NEARLINE',
+                    public: false
+                }
+            ]);
+            const [selectedBucket, setSelectedBucket] = useState('my-app-bucket');
+            const [newBucket, setNewBucket] = useState({
+                name: '',
+                location: 'us-central1',
+                storageClass: 'STANDARD',
+                public: false,
+                versioning: false
+            });
+            const [uploadFile, setUploadFile] = useState(null);
+            const [projectState, setProjectState] = useState({
+                projectId: 'my-storage-project',
+                region: 'us-central1',
+                network: 'default'
+            });
+            const [performance, setPerformance] = useState({
+                buckets: 3,
+                objects: 5245,
+                totalStorage: '47.3 GB',
+                requestsPerSecond: 1250,
+                latency: 25,
+                cost: 12.45
+            });
+            const [codeOutput, setCodeOutput] = useState('');
+            const [isExecuting, setIsExecuting] = useState(false);
+            const [isDragOver, setIsDragOver] = useState(false);
+
+            const executeCode = async (code) => {
+                setIsExecuting(true);
+                setCodeOutput('Executing code...\n');
+
+                // Simulate code execution
+                setTimeout(() => {
+                    setCodeOutput(prev => prev + 'Code executed successfully!\n' +
+                        '✓ Bucket created: my-bucket\n' +
+                        '✓ File uploaded successfully\n' +
+                        '✓ File downloaded to local storage\n' +
+                        '✓ Access policy updated\n');
+                    setIsExecuting(false);
+                }, 2000);
+            };
+
+            const createBucket = () => {
+                if (newBucket.name) {
+                    const bucket = {
+                        id: newBucket.name,
+                        name: newBucket.name,
+                        location: newBucket.location,
+                        storageClass: newBucket.storageClass,
+                        created: new Date().toISOString().split('T')[0],
+                        public: newBucket.public,
+                        versioning: newBucket.versioning,
+                        objectCount: 0,
+                        totalSize: '0 B'
+                    };
+                    setBuckets([...buckets, bucket]);
+                    setNewBucket({
+                        name: '',
+                        location: 'us-central1',
+                        storageClass: 'STANDARD',
+                        public: false,
+                        versioning: false
+                    });
+                    setCodeOutput('Bucket created successfully!');
+                }
+            };
+
+            const uploadObject = () => {
+                if (uploadFile && selectedBucket) {
+                    const object = {
+                        id: `${selectedBucket}/${uploadFile.name}`,
+                        name: uploadFile.name,
+                        bucket: selectedBucket,
+                        size: `${(uploadFile.size / 1024 / 1024).toFixed(1)} MB`,
+                        type: uploadFile.type || 'application/octet-stream',
+                        lastModified: new Date().toISOString(),
+                        storageClass: buckets.find(b => b.id === selectedBucket)?.storageClass || 'STANDARD',
+                        public: false
+                    };
+                    setObjects([...objects, object]);
+                    setUploadFile(null);
+                    setCodeOutput('File uploaded successfully!');
+                }
+            };
+
+            const deleteObject = (objectId) => {
+                setObjects(objects.filter(obj => obj.id !== objectId));
+                setCodeOutput('Object deleted successfully!');
+            };
+
+            const togglePublicAccess = (objectId) => {
+                setObjects(objects.map(obj =>
+                    obj.id === objectId ? { ...obj, public: !obj.public } : obj
+                ));
+                setCodeOutput('Access policy updated!');
+            };
+
+            const handleFileSelect = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    setUploadFile(file);
+                }
+            };
+
+            const handleDragOver = (event) => {
+                event.preventDefault();
+                setIsDragOver(true);
+            };
+
+            const handleDragLeave = (event) => {
+                event.preventDefault();
+                setIsDragOver(false);
+            };
+
+            const handleDrop = (event) => {
+                event.preventDefault();
+                setIsDragOver(false);
+                const file = event.dataTransfer.files[0];
+                if (file) {
+                    setUploadFile(file);
+                }
+            };
+
+            const getStorageClassBadge = (storageClass) => {
+                const classes = {
+                    'STANDARD': 'badge-standard',
+                    'NEARLINE': 'badge-nearline',
+                    'COLDLINE': 'badge-coldline',
+                    'ARCHIVE': 'badge-archive'
+                };
+                return classes[storageClass] || 'badge-secondary';
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-cloud"></i> Cloud Storage</h1>
+                        <p>Unified object storage for developers and enterprises</p>
+                    </div>
+
+                    {/* Navigation Tabs */}
+                    <ul className="nav nav-tabs justify-content-center mb-4">
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('overview')}>
+                                <i className="fas fa-info-circle"></i> Overview
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'buckets' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('buckets')}>
+                                <i className="fas fa-folder"></i> Buckets
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'objects' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('objects')}>
+                                <i className="fas fa-file"></i> Objects
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'upload' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('upload')}>
+                                <i className="fas fa-upload"></i> Upload
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'code' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('code')}>
+                                <i className="fas fa-code"></i> Code Editor
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'performance' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('performance')}>
+                                <i className="fas fa-tachometer-alt"></i> Performance
+                            </button>
+                        </li>
+                    </ul>
+
+                    {/* Tab Content */}
+                    <div className="tab-content">
+                        {/* Overview Tab */}
+                        {activeTab === 'overview' && (
+                            <div>
+                                <div className="feature-grid">
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-infinity"></i>
+                                        </div>
+                                        <div className="feature-title">Global Scale</div>
+                                        <div className="feature-description">
+                                            Petabyte-scale storage with global distribution and 99.999999999% durability.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-layer-group"></i>
+                                        </div>
+                                        <div className="feature-title">Storage Classes</div>
+                                        <div className="feature-description">
+                                            Choose from Standard, Nearline, Coldline, and Archive based on access patterns.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div className="feature-title">Security & Compliance</div>
+                                        <div className="feature-description">
+                                            Enterprise-grade security with encryption, IAM, and compliance certifications.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-clock"></i>
+                                        </div>
+                                        <div className="feature-title">Lifecycle Management</div>
+                                        <div className="feature-description">
+                                            Automatically transition or delete objects based on age, storage class, or conditions.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="storage-flow">
+                                    <div className="flow-step">
+                                        <i className="fas fa-upload fa-2x"></i>
+                                        <div>Upload</div>
+                                        <small>Store objects in buckets</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-folder fa-2x"></i>
+                                        <div>Bucket</div>
+                                        <small>Organize and manage objects</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-share fa-2x"></i>
+                                        <div>Access</div>
+                                        <small>Share via URLs or APIs</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-users fa-2x"></i>
+                                        <div>Users</div>
+                                        <small>Consume data globally</small>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Buckets Tab */}
+                        {activeTab === 'buckets' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h3>Bucket Management</h3>
+                                    <button className="btn btn-gcp" data-bs-toggle="modal" data-bs-target="#createBucketModal">
+                                        <i className="fas fa-plus"></i> Create Bucket
+                                    </button>
+                                </div>
+
+                                <div className="row">
+                                    {buckets.map(bucket => (
+                                        <div key={bucket.id} className="col-md-4 mb-3">
+                                            <div className="bucket-card">
+                                                <h5>{bucket.name}</h5>
+                                                <p className="text-muted">Location: {bucket.location}</p>
+                                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                                    <span className={`badge ${getStorageClassBadge(bucket.storageClass)}`}>
+                                                        {bucket.storageClass}
+                                                    </span>
+                                                    {bucket.public && (
+                                                        <span className="badge badge-public">Public</span>
+                                                    )}
+                                                </div>
+                                                <div className="mb-2">
+                                                    <small>
+                                                        <i className="fas fa-calendar"></i> Created: {bucket.created}<br />
+                                                        <i className="fas fa-file"></i> Objects: {bucket.objectCount}<br />
+                                                        <i className="fas fa-hdd"></i> Size: {bucket.totalSize}
+                                                    </small>
+                                                </div>
+                                                <div className="d-flex gap-2">
+                                                    <button className="btn btn-sm btn-outline-primary">
+                                                        <i className="fas fa-cog"></i> Configure
+                                                    </button>
+                                                    <button className="btn btn-sm btn-outline-danger">
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Objects Tab */}
+                        {activeTab === 'objects' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h3>Object Management</h3>
+                                    <div className="d-flex gap-2">
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={selectedBucket}
+                                            onChange={(e) => setSelectedBucket(e.target.value)}
+                                            style={{ width: '200px' }}
+                                        >
+                                            {buckets.map(bucket => (
+                                                <option key={bucket.id} value={bucket.id}>{bucket.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="row">
+                                    {objects.filter(obj => obj.bucket === selectedBucket).map(object => (
+                                        <div key={object.id} className="col-md-6 mb-3">
+                                            <div className="object-card">
+                                                <div className="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 className="mb-1">
+                                                            <i className="fas fa-file"></i> {object.name}
+                                                        </h6>
+                                                        <small className="text-muted">
+                                                            Size: {object.size} | Type: {object.type}
+                                                        </small>
+                                                    </div>
+                                                    <div className="text-end">
+                                                        <span className={`badge ${getStorageClassBadge(object.storageClass)}`}>
+                                                            {object.storageClass}
+                                                        </span>
+                                                        {object.public && (
+                                                            <div className="mt-1">
+                                                                <span className="badge badge-public">Public</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="mt-2">
+                                                    <small className="text-muted">
+                                                        Modified: {new Date(object.lastModified).toLocaleString()}
+                                                    </small>
+                                                </div>
+                                                <div className="mt-3 d-flex gap-2">
+                                                    <button className="btn btn-sm btn-outline-success">
+                                                        <i className="fas fa-download"></i> Download
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm btn-outline-info"
+                                                        onClick={() => togglePublicAccess(object.id)}
+                                                    >
+                                                        <i className="fas fa-share"></i> {object.public ? 'Make Private' : 'Make Public'}
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm btn-outline-danger"
+                                                        onClick={() => deleteObject(object.id)}
+                                                    >
+                                                        <i className="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Upload Tab */}
+                        {activeTab === 'upload' && (
+                            <div>
+                                <h3>File Upload</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Drag & Drop Upload</h5>
+                                            <div
+                                                className={`file-upload-area ${isDragOver ? 'dragover' : ''}`}
+                                                onDragOver={handleDragOver}
+                                                onDragLeave={handleDragLeave}
+                                                onDrop={handleDrop}
+                                                onClick={() => document.getElementById('fileInput').click()}
+                                            >
+                                                <i className="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                                <h5>Drop files here or click to browse</h5>
+                                                <p className="text-muted">Supports any file type up to 5TB</p>
+                                                <input
+                                                    type="file"
+                                                    id="fileInput"
+                                                    style={{ display: 'none' }}
+                                                    onChange={handleFileSelect}
+                                                />
+                                            </div>
+                                            {uploadFile && (
+                                                <div className="mt-3 p-3 bg-light rounded">
+                                                    <h6>Selected File:</h6>
+                                                    <p><strong>{uploadFile.name}</strong></p>
+                                                    <p>Size: {(uploadFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                    <p>Type: {uploadFile.type || 'Unknown'}</p>
+                                                    <button
+                                                        className="btn btn-gcp mt-2"
+                                                        onClick={uploadObject}
+                                                    >
+                                                        <i className="fas fa-upload"></i> Upload to {selectedBucket}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Upload Configuration</h5>
+                                            <div className="input-group-custom">
+                                                <label>Target Bucket:</label>
+                                                <select
+                                                    value={selectedBucket}
+                                                    onChange={(e) => setSelectedBucket(e.target.value)}
+                                                >
+                                                    {buckets.map(bucket => (
+                                                        <option key={bucket.id} value={bucket.id}>{bucket.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="input-group-custom">
+                                                <label>Storage Class:</label>
+                                                <select>
+                                                    <option value="STANDARD">Standard</option>
+                                                    <option value="NEARLINE">Nearline</option>
+                                                    <option value="COLDLINE">Coldline</option>
+                                                    <option value="ARCHIVE">Archive</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-check">
+                                                <input className="form-check-input" type="checkbox" id="publicAccess" />
+                                                <label className="form-check-label" htmlFor="publicAccess">
+                                                    Make publicly accessible
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Code Editor Tab */}
+                        {activeTab === 'code' && (
+                            <div>
+                                <h3>Interactive Code Editor</h3>
+                                <div className="code-editor">
+                                    {`# Cloud Storage Python Example
+from google.cloud import storage
+import os
+
+# Initialize client
+storage_client = storage.Client()
+
+# Create bucket
+bucket_name = 'my-bucket-' + str(uuid.uuid4())[:8]
+bucket = storage_client.create_bucket(bucket_name)
+print(f'Bucket {bucket.name} created.')
+
+# Upload file
+blob = bucket.blob('my-file.txt')
+blob.upload_from_string('Hello, Cloud Storage!')
+print(f'File uploaded to {blob.name}')
+
+# Download file
+downloaded_blob = bucket.blob('my-file.txt')
+downloaded_content = downloaded_blob.download_as_text()
+print(f'Downloaded content: {downloaded_content}')
+
+# List objects
+blobs = storage_client.list_blobs(bucket_name)
+for blob in blobs:
+    print(f'Object: {blob.name}, Size: {blob.size} bytes')
+
+# Make object public
+blob = bucket.blob('my-file.txt')
+blob.make_public()
+print(f'Public URL: {blob.public_url}')
+
+# Delete object
+blob.delete()
+print('Object deleted.')
+
+# Delete bucket
+bucket.delete()
+print('Bucket deleted.')`}
+                                </div>
+                                <div className="mt-3">
+                                    <button
+                                        className="btn btn-gcp me-2"
+                                        onClick={() => executeCode('storage-code')}
+                                        disabled={isExecuting}
+                                    >
+                                        {isExecuting ? (
+                                            <>
+                                                <i className="fas fa-spinner fa-spin"></i> Executing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fas fa-play"></i> Run Code
+                                            </>
+                                        )}
+                                    </button>
+                                    <button className="btn btn-outline-gcp">
+                                        <i className="fas fa-download"></i> Download
+                                    </button>
+                                </div>
+                                {codeOutput && (
+                                    <div className="code-output">
+                                        {codeOutput}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Performance Tab */}
+                        {activeTab === 'performance' && (
+                            <div>
+                                <h3>Performance Metrics</h3>
+                                <div className="performance-metrics">
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.buckets}</div>
+                                        <div className="perf-metric-label">Buckets</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.objects.toLocaleString()}</div>
+                                        <div className="perf-metric-label">Total Objects</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.requestsPerSecond}</div>
+                                        <div className="perf-metric-label">Requests/sec</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.latency}ms</div>
+                                        <div className="perf-metric-label">Avg Latency</div>
+                                    </div>
+                                </div>
+
+                                <div className="execution-stats">
+                                    <div className="stat-item">
+                                        <span className="stat-label">Total Storage:</span>
+                                        <span className="stat-value">{performance.totalStorage}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Project ID:</span>
+                                        <span className="stat-value">{projectState.projectId}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Region:</span>
+                                        <span className="stat-value">{projectState.region}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Cost (24h):</span>
+                                        <span className="stat-value">${performance.cost}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Modals */}
+                    {/* Create Bucket Modal */}
+                    <div className="modal fade" id="createBucketModal" tabIndex="-1">
+                        <div className="modal-dialog modal-lg">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Create New Bucket</h5>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div className="modal-body">
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Bucket Name:</label>
+                                                <input
+                                                    type="text"
+                                                    value={newBucket.name}
+                                                    onChange={(e) => setNewBucket({ ...newBucket, name: e.target.value })}
+                                                    placeholder="e.g., my-bucket"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Location:</label>
+                                                <select
+                                                    value={newBucket.location}
+                                                    onChange={(e) => setNewBucket({ ...newBucket, location: e.target.value })}
+                                                >
+                                                    <option value="us-central1">US Central 1</option>
+                                                    <option value="us-west1">US West 1</option>
+                                                    <option value="us-east1">US East 1</option>
+                                                    <option value="europe-west1">Europe West 1</option>
+                                                    <option value="asia-southeast1">Asia Southeast 1</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Storage Class:</label>
+                                                <select
+                                                    value={newBucket.storageClass}
+                                                    onChange={(e) => setNewBucket({ ...newBucket, storageClass: e.target.value })}
+                                                >
+                                                    <option value="STANDARD">Standard</option>
+                                                    <option value="NEARLINE">Nearline</option>
+                                                    <option value="COLDLINE">Coldline</option>
+                                                    <option value="ARCHIVE">Archive</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-check mt-4">
+                                                <input
+                                                    className="form-check-input"
+                                                    type="checkbox"
+                                                    id="versioning"
+                                                    checked={newBucket.versioning}
+                                                    onChange={(e) => setNewBucket({ ...newBucket, versioning: e.target.checked })}
+                                                />
+                                                <label className="form-check-label" htmlFor="versioning">
+                                                    Enable versioning
+                                                </label>
+                                            </div>
+                                            <div className="form-check mt-2">
+                                                <input
+                                                    className="form-check-input"
+                                                    type="checkbox"
+                                                    id="public"
+                                                    checked={newBucket.public}
+                                                    onChange={(e) => setNewBucket({ ...newBucket, public: e.target.checked })}
+                                                />
+                                                <label className="form-check-label" htmlFor="public">
+                                                    Make bucket public
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" className="btn btn-gcp" onClick={createBucket} data-bs-dismiss="modal">Create Bucket</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-book"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/storage" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Storage Site</a></li>
+                                        <li><a href="https://cloud.google.com/storage/docs" target="_blank"><i className="fas fa-external-link-alt"></i> Documentation</a></li>
+                                        <li><a href="https://console.cloud.google.com/storage" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Console</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/storage/docs/quickstarts" target="_blank"><i className="fas fa-external-link-alt"></i> Quickstarts</a></li>
+                                        <li><a href="https://cloud.google.com/storage/docs/best-practices" target="_blank"><i className="fas fa-external-link-alt"></i> Best Practices</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/google-cloud-storage" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

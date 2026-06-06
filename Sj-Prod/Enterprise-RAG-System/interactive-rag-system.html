@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise RAG System - Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366F1;
+            --secondary-color: #10B981;
+            --accent-color: #F59E0B;
+            --dark-color: #1F2937;
+            --light-color: #F9FAFB;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6366F1 0%, #10B981 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+        }
+
+        .rag-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #6366F1, #10B981);
+            border-radius: 10px;
+            color: white;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            margin: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .document-card {
+            background: var(--light-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .chunk-display {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 2px 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .query-result {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .relevance-score {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        .score-high {
+            background: #10B981;
+            color: white;
+        }
+
+        .score-medium {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .score-low {
+            background: #EF4444;
+            color: white;
+        }
+
+        .btn-rag {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            min-height: 200px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [query, setQuery] = useState('What is the customer schema?');
+            const [results, setResults] = useState([]);
+            const [isProcessing, setIsProcessing] = useState(false);
+
+            const documents = [
+                { id: 1, title: 'Customer Schema', content: 'Customer table contains customer_id, name, email, signup_date, and region fields.' },
+                { id: 2, title: 'Transaction Schema', content: 'Transaction table stores transaction_id, customer_id, amount, and transaction_date.' },
+                { id: 3, title: 'Data Pipeline', content: 'Data flows from source systems to BigQuery through ETL pipelines using Airflow.' }
+            ];
+
+            const runRAG = () => {
+                setIsProcessing(true);
+                setTimeout(() => {
+                    setResults([
+                        { text: 'Customer table contains customer_id, name, email, signup_date, and region fields.', score: 0.95, source: 'Customer Schema' },
+                        { text: 'Transaction table stores transaction_id, customer_id, amount, and transaction_date.', score: 0.78, source: 'Transaction Schema' }
+                    ]);
+                    setIsProcessing(false);
+                }, 2000);
+            };
+
+            const getScoreClass = (score) => {
+                if (score >= 0.8) return 'score-high';
+                if (score >= 0.6) return 'score-medium';
+                return 'score-low';
+            };
+
+            return (
+                <div className="demo-container">
+                    <div className="header">
+                        <h1><i className="fas fa-search-plus"></i> Enterprise RAG System</h1>
+                        <p>Retrieval-Augmented Generation for Data Documentation</p>
+                    </div>
+
+                    <ul className="nav nav-tabs justify-content-center mb-4">
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('overview')}>
+                                Overview
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'query' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('query')}>
+                                Query System
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'architecture' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('architecture')}>
+                                Architecture
+                            </button>
+                        </li>
+                    </ul>
+
+                    {activeTab === 'overview' && (
+                        <div className="demo-card fade-in">
+                            <div className="card-header">
+                                <h3><i className="fas fa-info-circle"></i> RAG System Overview</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="rag-flow">
+                                    <div className="flow-step">
+                                        <i className="fas fa-file-alt fa-2x mb-2"></i>
+                                        <div>Documents</div>
+                                    </div>
+                                    <i className="fas fa-arrow-right"></i>
+                                    <div className="flow-step">
+                                        <i className="fas fa-code fa-2x mb-2"></i>
+                                        <div>Embedding</div>
+                                    </div>
+                                    <i className="fas fa-arrow-right"></i>
+                                    <div className="flow-step">
+                                        <i className="fas fa-database fa-2x mb-2"></i>
+                                        <div>Vector DB</div>
+                                    </div>
+                                    <i className="fas fa-arrow-right"></i>
+                                    <div className="flow-step">
+                                        <i className="fas fa-search fa-2x mb-2"></i>
+                                        <div>Retrieve</div>
+                                    </div>
+                                    <i className="fas fa-arrow-right"></i>
+                                    <div className="flow-step">
+                                        <i className="fas fa-brain fa-2x mb-2"></i>
+                                        <div>Generate</div>
+                                    </div>
+                                </div>
+
+                                <h5 className="mt-4">Indexed Documents:</h5>
+                                {documents.map(doc => (
+                                    <div key={doc.id} className="document-card">
+                                        <strong>{doc.title}</strong>
+                                        <p className="mb-0">{doc.content}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'query' && (
+                        <div className="demo-card fade-in">
+                            <div className="card-header">
+                                <h3><i className="fas fa-question-circle"></i> Query RAG System</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="mb-3">
+                                    <label>Enter your question:</label>
+                                    <textarea className="form-control" rows="3"
+                                        value={query}
+                                        onChange={(e) => setQuery(e.target.value)}></textarea>
+                                </div>
+                                <button className="btn btn-rag" onClick={runRAG} disabled={isProcessing}>
+                                    {isProcessing ? 'Processing...' : 'Ask Question'}
+                                </button>
+
+                                {results.length > 0 && (
+                                    <div className="mt-4">
+                                        <h5>Retrieved Context:</h5>
+                                        {results.map((result, idx) => (
+                                            <div key={idx} className="query-result fade-in">
+                                                <div className="d-flex justify-content-between align-items-center">
+                                                    <strong>Source: {result.source}</strong>
+                                                    <span className={`relevance-score ${getScoreClass(result.score)}`}>
+                                                        {(result.score * 100).toFixed(0)}% Match
+                                                    </span>
+                                                </div>
+                                                <p className="mt-2 mb-0">{result.text}</p>
+                                            </div>
+                                        ))}
+                                        <div className="query-result mt-3">
+                                            <h6>Generated Answer:</h6>
+                                            <p>The customer schema includes customer_id (primary key), name, email, signup_date, and region fields. The transaction schema contains transaction_id, customer_id (foreign key), amount, and transaction_date fields.</p>
+                                            <small className="text-muted">Sources: Customer Schema, Transaction Schema</small>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'architecture' && (
+                        <div className="demo-card fade-in">
+                            <div className="card-header">
+                                <h3><i className="fas fa-sitemap"></i> RAG Architecture</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="document-card">
+                                    <h5><i className="fas fa-file-alt text-primary"></i> Document Processing</h5>
+                                    <p><strong>LangChain:</strong> Loads PDFs, Markdown, text files</p>
+                                    <p><strong>Text Splitter:</strong> Chunks documents (500-1000 tokens)</p>
+                                    <p><strong>Embedding Model:</strong> Sentence Transformers (384-dim vectors)</p>
+                                </div>
+
+                                <div className="document-card">
+                                    <h5><i className="fas fa-database text-success"></i> Vector Storage</h5>
+                                    <p><strong>Pinecone/Chroma:</strong> Stores embeddings with metadata</p>
+                                    <p><strong>Indexing:</strong> HNSW for fast similarity search</p>
+                                </div>
+
+                                <div className="document-card">
+                                    <h5><i className="fas fa-search text-warning"></i> Retrieval</h5>
+                                    <p><strong>Query Embedding:</strong> Convert question to vector</p>
+                                    <p><strong>Similarity Search:</strong> Find top-K similar chunks</p>
+                                    <p><strong>Re-ranking:</strong> Improve relevance</p>
+                                </div>
+
+                                <div className="document-card">
+                                    <h5><i className="fas fa-brain text-danger"></i> Generation</h5>
+                                    <p><strong>LLM:</strong> OpenAI GPT-4 or local model</p>
+                                    <p><strong>Prompt:</strong> Context + Question → Answer</p>
+                                    <p><strong>Response:</strong> Answer with source citations</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+</html>
+

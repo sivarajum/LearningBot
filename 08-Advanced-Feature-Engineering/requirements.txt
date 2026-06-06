@@ -1,0 +1,32 @@
+# Module 08: Advanced Feature Engineering Requirements
+
+# Feature Stores
+feast>=0.36.0
+tecton>=0.7.0
+
+# Feature Engineering
+feature-engine>=1.6.0
+category-encoders>=2.6.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# Time Series
+tsfresh>=0.20.0
+
+# Validation
+great-expectations>=0.18.0
+
+# API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+
+# Testing
+pytest>=7.4.0
+

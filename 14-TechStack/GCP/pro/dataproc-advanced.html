@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataproc Advanced - GCP Learning Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ff6b35;
+        }
+
+        .sidebar-header .service-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .sidebar-header .service-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b35;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header .service-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #ff6b35;
+        }
+
+        .nav-item {
+            padding: 10px 15px;
+            margin: 2px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 107, 53, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #ff6b35;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .nav-item .nav-icon {
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .nav-item .nav-level {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-left: auto;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 320px;
+            padding: 30px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ff6b35;
+        }
+
+        .section-icon {
+            font-size: 35px;
+            margin-right: 15px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff6b35;
+            margin: 0;
+        }
+
+        .section-level {
+            background: #ff6b35;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .section-content {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .section-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 87, 34, 0.1));
+            border-left: 4px solid #ff6b35;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .highlight-box .highlight-title {
+            font-weight: bold;
+            color: #ff6b35;
+            margin-bottom: 10px;
+        }
+
+        /* Data Pipeline Animation */
+        .pipeline-animation {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pipeline-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .pipeline-diagram {
+            position: relative;
+            height: 500px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .pipeline-stage {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stage-gcs {
+            left: 50px;
+            top: 200px;
+            background: #34a853;
+        }
+
+        .stage-dataproc {
+            left: 250px;
+            top: 200px;
+            background: #ff6b35;
+        }
+
+        .stage-bq {
+            right: 50px;
+            top: 200px;
+            background: #4285f4;
+        }
+
+        .data-flow-particle {
+            position: absolute;
+            width: 25px;
+            height: 15px;
+            background: #ffc107;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            animation: dataPipelineFlow 6s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        .data-flow-particle:nth-child(2) {
+            animation-delay: 1s;
+        }
+
+        .data-flow-particle:nth-child(3) {
+            animation-delay: 2s;
+        }
+
+        .data-flow-particle:nth-child(4) {
+            animation-delay: 3s;
+        }
+
+        .data-flow-particle:nth-child(5) {
+            animation-delay: 4s;
+        }
+
+        @keyframes dataPipelineFlow {
+            0% {
+                left: 80px;
+                top: 215px;
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+
+            20% {
+                left: 200px;
+                top: 215px;
+                transform: scale(1.2) rotate(45deg);
+                opacity: 1;
+            }
+
+            40% {
+                left: 280px;
+                top: 215px;
+                transform: scale(1.5) rotate(90deg);
+                opacity: 0.8;
+            }
+
+            60% {
+                left: 400px;
+                top: 215px;
+                transform: scale(1.8) rotate(135deg);
+                opacity: 0.6;
+            }
+
+            80% {
+                left: 520px;
+                top: 215px;
+                transform: scale(1.5) rotate(180deg);
+                opacity: 0.8;
+            }
+
+            100% {
+                left: 580px;
+                top: 215px;
+                transform: scale(1) rotate(225deg);
+                opacity: 1;
+            }
+        }
+
+        .pipeline-arrow {
+            position: absolute;
+            left: 180px;
+            top: 225px;
+            width: 400px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .pipeline-arrow::after {
+            content: '🚀';
+            position: absolute;
+            right: -25px;
+            top: -12px;
+            font-size: 20px;
+            animation: pipelineRocket 2s ease-in-out infinite;
+        }
+
+        @keyframes pipelineRocket {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+        }
+
+        .pipeline-label {
+            position: absolute;
+            left: 320px;
+            top: 160px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .stage-details {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        /* Code Examples */
+        .code-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        .code-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .code-block .comment {
+            color: #68d391;
+        }
+
+        .code-block .keyword {
+            color: #63b3ed;
+        }
+
+        .code-block .string {
+            color: #fbb6ce;
+        }
+
+        /* Cluster Architecture */
+        .cluster-architecture {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .cluster-component {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 87, 34, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .cluster-component:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.3);
+        }
+
+        .component-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .component-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff5722;
+            margin-bottom: 10px;
+        }
+
+        .component-desc {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Performance Metrics */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .metric-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-level {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .cluster-architecture {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="service-icon">🔥</span>
+            <div class="service-title">Dataproc</div>
+            <div class="service-subtitle">Managed Hadoop/Spark</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🏗️ Fundamentals</div>
+            <div class="nav-item active" data-section="overview">
+                <span class="nav-icon">📋</span>
+                Overview & Architecture
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="cluster-types">
+                <span class="nav-icon">⚙️</span>
+                Cluster Types
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="job-types">
+                <span class="nav-icon">🎯</span>
+                Job Types
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔄 Data Pipelines</div>
+            <div class="nav-item" data-section="gcs-integration">
+                <span class="nav-icon">☁️</span>
+                Cloud Storage Integration
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="bq-integration">
+                <span class="nav-icon">📊</span>
+                BigQuery Integration
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="workflow-templates">
+                <span class="nav-icon">🔧</span>
+                Workflow Templates
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">⚡ Performance & Scaling</div>
+            <div class="nav-item" data-section="autoscaling">
+                <span class="nav-icon">📈</span>
+                Autoscaling
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="optimization">
+                <span class="nav-icon">🚀</span>
+                Performance Optimization
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="cost-optimization">
+                <span class="nav-icon">💰</span>
+                Cost Optimization
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔧 Advanced Features</div>
+            <div class="nav-item" data-section="custom-images">
+                <span class="nav-icon">🖼️</span>
+                Custom Images
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="kerberos">
+                <span class="nav-icon">🔐</span>
+                Kerberos Security
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="hybrid-cloud">
+                <span class="nav-icon">🌐</span>
+                Hybrid Cloud
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">📊 Monitoring & Management</div>
+            <div class="nav-item" data-section="monitoring">
+                <span class="nav-icon">📊</span>
+                Cluster Monitoring
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="logging">
+                <span class="nav-icon">📝</span>
+                Centralized Logging
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="disaster-recovery">
+                <span class="nav-icon">🛡️</span>
+                Disaster Recovery
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overview" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🔥</span>
+                <h2 class="section-title">Dataproc Overview</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Dataproc is a fully managed and highly scalable service for running Apache Spark, Apache Flink,
+                    Presto, and 30+ open source tools and frameworks. It simplifies running big data workloads by
+                    automating cluster management and providing seamless integration with other GCP services.
+                </p>
+
+                <div class="cluster-architecture">
+                    <div class="cluster-component">
+                        <span class="component-icon">👑</span>
+                        <div class="component-name">Master Node</div>
+                        <div class="component-desc">Cluster coordination and job scheduling</div>
+                    </div>
+                    <div class="cluster-component">
+                        <span class="component-icon">⚙️</span>
+                        <div class="component-name">Worker Nodes</div>
+                        <div class="component-desc">Data processing and computation</div>
+                    </div>
+                    <div class="cluster-component">
+                        <span class="component-icon">💾</span>
+                        <div class="component-name">HDFS</div>
+                        <div class="component-desc">Distributed file system</div>
+                    </div>
+                    <div class="cluster-component">
+                        <span class="component-icon">🔄</span>
+                        <div class="component-name">YARN</div>
+                        <div class="component-desc">Resource management</div>
+                    </div>
+                </div>
+
+                <div class="performance-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">3min</div>
+                        <div class="metric-label">Cluster Creation</div>
+                        <div class="metric-desc">From request to running</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">99.9%</div>
+                        <div class="metric-label">Uptime SLA</div>
+                        <div class="metric-desc">Enterprise reliability</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">30+</div>
+                        <div class="metric-label">Open Source Tools</div>
+                        <div class="metric-desc">Pre-installed frameworks</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Auto</div>
+                        <div class="metric-label">Scaling</div>
+                        <div class="metric-desc">Dynamic cluster sizing</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🚀 Key Benefits</div>
+                    <ul>
+                        <li><strong>Managed Service:</strong> No cluster management overhead</li>
+                        <li><strong>Fast Startup:</strong> Clusters ready in minutes, not hours</li>
+                        <li><strong>Cost Effective:</strong> Pay only for what you use</li>
+                        <li><strong>Integrated:</strong> Native integration with GCS, BigQuery, and other GCP services
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- GCS Integration Section -->
+        <div id="gcs-integration" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">☁️</span>
+                <h2 class="section-title">Cloud Storage Integration</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Dataproc clusters can directly read from and write to Cloud Storage buckets without
+                    copying data to HDFS. This provides seamless integration and eliminates data duplication.
+                </p>
+
+                <div class="pipeline-animation">
+                    <div class="pipeline-title">🔄 Data Processing Pipeline: GCS → Dataproc → GCS</div>
+                    <div class="pipeline-diagram">
+                        <div class="pipeline-stage stage-gcs">
+                            <div>📁 Cloud Storage</div>
+                            <div style="font-size: 10px;">Input Data</div>
+                        </div>
+                        <div class="pipeline-stage stage-dataproc">
+                            <div>🔥 Dataproc</div>
+                            <div style="font-size: 10px;">Spark Processing</div>
+                        </div>
+                        <div class="pipeline-stage stage-bq">
+                            <div>📊 BigQuery</div>
+                            <div style="font-size: 10px;">Analytics</div>
+                        </div>
+
+                        <!-- Animated data particles -->
+                        <div class="data-flow-particle"></div>
+                        <div class="data-flow-particle"></div>
+                        <div class="data-flow-particle"></div>
+                        <div class="data-flow-particle"></div>
+                        <div class="data-flow-particle"></div>
+
+                        <!-- Flow visualization -->
+                        <div class="pipeline-arrow"></div>
+                        <div class="pipeline-label">ETL Pipeline</div>
+
+                        <div class="stage-details">
+                            <strong>Data Flow:</strong> Raw data → Processing → Analytics-ready data
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-title">PySpark: Read from GCS and Process Data</div>
+                    <div class="code-block">
+                        <span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSession
+
+                        <span class="comment"># Create Spark session with GCS connector</span>
+                        spark = SparkSession.builder \
+                        .appName(<span class="string">"GCS-Dataproc-Integration"</span>) \
+                        .config(<span class="string">"spark.hadoop.fs.gs.impl"</span>, <span
+                            class="string">"com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem"</span>) \
+                        .config(<span class="string">"spark.hadoop.google.cloud.auth.service.account.enable"</span>,
+                        <span class="string">"true"</span>) \
+                        .getOrCreate()
+
+                        <span class="comment"># Read CSV from Cloud Storage</span>
+                        input_path = <span class="string">"gs://your-bucket/input-data/*.csv"</span>
+                        df = spark.read.csv(input_path, header=<span class="string">True</span>, inferSchema=<span
+                            class="string">True</span>)
+
+                        <span class="comment"># Data transformations</span>
+                        processed_df = df \
+                        .filter(df[<span class="string">"status"</span>] == <span class="string">"active"</span>) \
+                        .groupBy(<span class="string">"category"</span>) \
+                        .agg({<span class="string">"revenue"</span>: <span class="string">"sum"</span>, <span
+                            class="string">"orders"</span>: <span class="string">"count"</span>}) \
+                        .withColumnRenamed(<span class="string">"sum(revenue)"</span>, <span
+                            class="string">"total_revenue"</span>) \
+                        .withColumnRenamed(<span class="string">"count(orders)"</span>, <span
+                            class="string">"order_count"</span>)
+
+                        <span class="comment"># Write results back to Cloud Storage</span>
+                        output_path = <span class="string">"gs://your-bucket/processed-data/results.parquet"</span>
+                        processed_df.write.parquet(output_path, mode=<span class="string">"overwrite"</span>)
+
+                        <span class="keyword">print</span>(<span class="string">f"Processed {processed_df.count()}
+                            records"</span>)
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">⚡ GCS Integration Benefits</div>
+                    <ul>
+                        <li><strong>No Data Copying:</strong> Direct access to GCS objects</li>
+                        <li><strong>Cost Effective:</strong> No HDFS storage costs for data</li>
+                        <li><strong>Scalable:</strong> Unlimited storage capacity</li>
+                        <li><strong>Reliable:</strong> 99.999999999% durability</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- BigQuery Integration Section -->
+        <div id="bq-integration" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📊</span>
+                <h2 class="section-title">BigQuery Integration</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Dataproc integrates seamlessly with BigQuery for advanced analytics workflows.
+                    Process large datasets with Spark and load results directly into BigQuery for analysis.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Spark: Process Data and Load to BigQuery</div>
+                    <div class="code-block">
+                        <span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSession
+                        <span class="keyword">from</span> google.cloud <span class="keyword">import</span> bigquery
+
+                        <span class="comment"># Initialize Spark with BigQuery connector</span>
+                        spark = SparkSession.builder \
+                        .appName(<span class="string">"Dataproc-BigQuery-Integration"</span>) \
+                        .config(<span class="string">"spark.jars.packages"</span>, <span
+                            class="string">"com.google.cloud.spark:spark-bigquery-with-dependencies_2.12:0.23.2"</span>)
+                        \
+                        .getOrCreate()
+
+                        <span class="comment"># Read large dataset from Cloud Storage</span>
+                        raw_data = spark.read.parquet(<span class="string">"gs://data-lake/raw-events/*.parquet"</span>)
+
+                        <span class="comment"># Complex data processing with Spark</span>
+                        processed_data = raw_data \
+                        .filter(<span class="string">"event_type IN ('purchase', 'signup', 'login')"</span>) \
+                        .withColumn(<span class="string">"event_date"</span>, F.date_format(<span
+                            class="string">"event_timestamp"</span>, <span class="string">"yyyy-MM-dd"</span>)) \
+                        .groupBy(<span class="string">"user_id"</span>, <span class="string">"event_date"</span>) \
+                        .agg(
+                        F.count(<span class="string">"*"</span>).alias(<span class="string">"event_count"</span>),
+                        F.sum(<span class="string">"revenue"</span>).alias(<span class="string">"total_revenue"</span>),
+                        F.max(<span class="string">"event_timestamp"</span>).alias(<span
+                            class="string">"last_activity"</span>)
+                        ) \
+                        .withColumn(<span class="string">"user_segment"</span>,
+                        F.when(F.col(<span class="string">"total_revenue"</span>) > <span class="string">1000</span>,
+                        <span class="string">"high_value"</span>)
+                        .when(F.col(<span class="string">"total_revenue"</span>) > <span class="string">100</span>,
+                        <span class="string">"medium_value"</span>)
+                        .otherwise(<span class="string">"low_value"</span>)
+                        )
+
+                        <span class="comment"># Load processed data directly to BigQuery</span>
+                        processed_data.write \
+                        .format(<span class="string">"bigquery"</span>) \
+                        .option(<span class="string">"table"</span>, <span
+                            class="string">"project.dataset.user_analytics"</span>) \
+                        .option(<span class="string">"temporaryGcsBucket"</span>, <span
+                            class="string">"temp-bucket"</span>) \
+                        .mode(<span class="string">"overwrite"</span>) \
+                        .save()
+
+                        <span class="keyword">print</span>(<span class="string">f"Loaded {processed_data.count()} user
+                            analytics records to BigQuery"</span>)
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🔄 Complete Data Pipeline</div>
+                    <ul>
+                        <li><strong>Step 1:</strong> Raw data lands in Cloud Storage</li>
+                        <li><strong>Step 2:</strong> Dataproc processes data with Spark</li>
+                        <li><strong>Step 3:</strong> Results loaded directly to BigQuery</li>
+                        <li><strong>Step 4:</strong> Analytics and reporting in BigQuery</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Autoscaling Section -->
+        <div id="autoscaling" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📈</span>
+                <h2 class="section-title">Intelligent Autoscaling</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Dataproc's autoscaling automatically adjusts cluster size based on workload demands,
+                    optimizing both performance and cost. Scale up during peak processing and scale down during idle
+                    periods.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">gcloud: Create Autoscaling Cluster</div>
+                    <div class="code-block">
+                        <span class="comment"># Create cluster with autoscaling enabled</span>
+                        gcloud dataproc clusters create my-autoscaling-cluster \
+                        --region=us-central1 \
+                        --master-machine-type=n1-standard-4 \
+                        --master-boot-disk-size=500 \
+                        --num-workers=2 \
+                        --worker-machine-type=n1-standard-4 \
+                        --worker-boot-disk-size=500 \
+                        --image-version=2.0-debian10 \
+                        --enable-component-gateway \
+                        --optional-components=ANACONDA,JUPYTER \
+                        --max-idle=30m \
+                        --autoscaling-policy=my-autoscaling-policy
+
+                        <span class="comment"># Create autoscaling policy</span>
+                        gcloud dataproc autoscaling-policies import my-autoscaling-policy \
+                        --source=autoscaling-policy.yaml \
+                        --region=us-central1
+
+                        <span class="comment"># Autoscaling policy configuration (autoscaling-policy.yaml)</span>
+                        workerConfig:
+                        minInstances: 2
+                        maxInstances: 100
+                        weight: 1
+                        secondaryWorkerConfig:
+                        minInstances: 0
+                        maxInstances: 50
+                        weight: 1
+                        basicAlgorithm:
+                        cooldownPeriod: 2m
+                        yarnConfig:
+                        scaleUpFactor: 1.0
+                        scaleDownFactor: 1.0
+                        gracefulDecommissionTimeout: 1h
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🎯 Autoscaling Benefits</div>
+                    <ul>
+                        <li><strong>Cost Optimization:</strong> Scale down during idle periods</li>
+                        <li><strong>Performance:</strong> Scale up for large workloads</li>
+                        <li><strong>Automatic:</strong> No manual intervention required</li>
+                        <li><strong>Granular Control:</strong> Configure scaling policies per use case</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflow Templates Section -->
+        <div id="workflow-templates" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🔧</span>
+                <h2 class="section-title">Workflow Templates</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Workflow Templates allow you to define complex, multi-step data processing pipelines
+                    that can be executed repeatedly. Combine Dataproc jobs with other GCP services in orchestrated
+                    workflows.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-title">Workflow Template: Complete ETL Pipeline</div>
+                    <div class="code-block">
+                        {
+                        <span class="string">"name"</span>: <span
+                            class="string">"projects/project-id/locations/us-central1/workflowTemplates/etl-pipeline-template"</span>,
+                        <span class="string">"placement"</span>: {
+                        <span class="string">"managedCluster"</span>: {
+                        <span class="string">"clusterName"</span>: <span class="string">"etl-cluster"</span>,
+                        <span class="string">"config"</span>: {
+                        <span class="string">"gceClusterConfig"</span>: {
+                        <span class="string">"zoneUri"</span>: <span class="string">"us-central1-a"</span>
+                        },
+                        <span class="string">"masterConfig"</span>: {
+                        <span class="string">"numInstances"</span>: 1,
+                        <span class="string">"machineTypeUri"</span>: <span class="string">"n1-standard-4"</span>
+                        },
+                        <span class="string">"workerConfig"</span>: {
+                        <span class="string">"numInstances"</span>: 2,
+                        <span class="string">"machineTypeUri"</span>: <span class="string">"n1-standard-4"</span>
+                        }
+                        }
+                        }
+                        },
+                        <span class="string">"jobs"</span>: [
+                        {
+                        <span class="string">"stepId"</span>: <span class="string">"extract-data"</span>,
+                        <span class="string">"sparkJob"</span>: {
+                        <span class="string">"mainClass"</span>: <span class="string">"com.example.ExtractData"</span>,
+                        <span class="string">"jarFileUris"</span>: [<span
+                            class="string">"gs://bucket/jars/extract.jar"</span>],
+                        <span class="string">"args"</span>: [<span class="string">"gs://input-bucket/data/"</span>,
+                        <span class="string">"gs://temp-bucket/extracted/"</span>]
+                        }
+                        },
+                        {
+                        <span class="string">"stepId"</span>: <span class="string">"transform-data"</span>,
+                        <span class="string">"sparkJob"</span>: {
+                        <span class="string">"mainClass"</span>: <span
+                            class="string">"com.example.TransformData"</span>,
+                        <span class="string">"jarFileUris"</span>: [<span
+                            class="string">"gs://bucket/jars/transform.jar"</span>],
+                        <span class="string">"args"</span>: [<span class="string">"gs://temp-bucket/extracted/"</span>,
+                        <span class="string">"gs://temp-bucket/transformed/"</span>]
+                        }
+                        },
+                        {
+                        <span class="string">"stepId"</span>: <span class="string">"load-to-bq"</span>,
+                        <span class="string">"sparkJob"</span>: {
+                        <span class="string">"mainClass"</span>: <span
+                            class="string">"com.example.LoadToBigQuery"</span>,
+                        <span class="string">"jarFileUris"</span>: [<span
+                            class="string">"gs://bucket/jars/load.jar"</span>],
+                        <span class="string">"args"</span>: [<span
+                            class="string">"gs://temp-bucket/transformed/"</span>, <span
+                            class="string">"project:dataset.table"</span>]
+                        }
+                        }
+                        ]
+                        }
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🔄 Workflow Template Features</div>
+                    <ul>
+                        <li><strong>Reusable:</strong> Define once, execute multiple times</li>
+                        <li><strong>Orchestrated:</strong> Automatic job sequencing and dependency management</li>
+                        <li><strong>Managed Clusters:</strong> Auto-create clusters for workflow execution</li>
+                        <li><strong>Error Handling:</strong> Built-in retry logic and failure recovery</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.content-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                        section.classList.remove('visible');
+                    });
+
+                    // Show selected section
+                    const sectionId = this.dataset.section;
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        setTimeout(() => {
+                            targetSection.classList.add('visible');
+                        }, 100);
+
+                        // Smooth scroll to section
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Show first section by default
+            const firstSection = document.getElementById('overview');
+            if (firstSection) {
+                firstSection.style.display = 'block';
+                setTimeout(() => {
+                    firstSection.classList.add('visible');
+                }, 100);
+            }
+
+            // Intersection Observer for animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Create pipeline animation particles
+            function createPipelineParticles() {
+                const diagram = document.querySelector('.pipeline-diagram');
+                if (!diagram) return;
+
+                for (let i = 0; i < 6; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'data-flow-particle';
+                    particle.style.left = '80px';
+                    particle.style.top = '215px';
+                    particle.style.animationDelay = (i * 0.8) + 's';
+                    diagram.appendChild(particle);
+                }
+            }
+
+            createPipelineParticles();
+        });
+    </script>
+</body>
+
+</html>

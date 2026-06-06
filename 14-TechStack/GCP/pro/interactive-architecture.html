@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP Components - Interactive Animated Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            to {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        .architecture {
+            position: relative;
+            height: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .service {
+            position: absolute;
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .service:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .service.bigquery {
+            background: linear-gradient(45deg, #4285F4, #1E88E5);
+            left: 20%;
+            top: 60%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .service.cloud-storage {
+            background: linear-gradient(45deg, #34A853, #2E7D32);
+            left: 70%;
+            top: 60%;
+            animation: float 7s ease-in-out infinite reverse;
+        }
+
+        .service.vertex-ai {
+            background: linear-gradient(45deg, #EA4335, #D33B2C);
+            left: 45%;
+            top: 20%;
+            animation: float 5s ease-in-out infinite;
+        }
+
+        .service.cloud-run {
+            background: linear-gradient(45deg, #FBBC05, #F57C00);
+            left: 25%;
+            top: 35%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        .service.cloud-functions {
+            background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+            left: 65%;
+            top: 35%;
+            animation: float 6.5s ease-in-out infinite;
+        }
+
+        .service.dataflow {
+            background: linear-gradient(45deg, #00ACC1, #00838F);
+            left: 45%;
+            top: 70%;
+            animation: float 7.5s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .data-flow {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #FFD700;
+            border-radius: 50%;
+            animation: flow 3s linear infinite;
+            pointer-events: none;
+        }
+
+        .data-flow.flow-1 {
+            left: 30%;
+            top: 45%;
+            animation-duration: 4s;
+        }
+
+        .data-flow.flow-2 {
+            left: 55%;
+            top: 30%;
+            animation-duration: 3.5s;
+            animation-delay: 1s;
+        }
+
+        .data-flow.flow-3 {
+            left: 40%;
+            top: 50%;
+            animation-duration: 5s;
+            animation-delay: 2s;
+        }
+
+        .data-flow.flow-4 {
+            left: 60%;
+            top: 55%;
+            animation-duration: 4.5s;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes flow {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            90% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+        }
+
+        .scaling-indicator {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .scaling-indicator.cloud-run {
+            left: 25%;
+            top: 50%;
+            animation-delay: 0s;
+        }
+
+        .scaling-indicator.dataflow {
+            left: 45%;
+            top: 85%;
+            animation-delay: 1s;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: connectionFlow 2s ease-in-out infinite;
+        }
+
+        .connection-line.line-1 {
+            width: 200px;
+            left: 35%;
+            top: 45%;
+            transform: rotate(45deg);
+        }
+
+        .connection-line.line-2 {
+            width: 150px;
+            left: 50%;
+            top: 40%;
+            transform: rotate(-30deg);
+        }
+
+        .connection-line.line-3 {
+            width: 180px;
+            left: 30%;
+            top: 65%;
+            transform: rotate(15deg);
+        }
+
+        @keyframes connectionFlow {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .legend {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .legend h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #3367D6;
+            transform: translateY(-2px);
+        }
+
+        .info-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            max-width: 300px;
+            display: none;
+        }
+
+        .info-panel.show {
+            display: block;
+        }
+
+        .info-panel h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: particleFloat 10s linear infinite;
+        }
+
+        .particle:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 20%;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(3) {
+            left: 30%;
+            animation-delay: 4s;
+        }
+
+        .particle:nth-child(4) {
+            left: 40%;
+            animation-delay: 6s;
+        }
+
+        .particle:nth-child(5) {
+            left: 50%;
+            animation-delay: 8s;
+        }
+
+        .particle:nth-child(6) {
+            left: 60%;
+            animation-delay: 1s;
+        }
+
+        .particle:nth-child(7) {
+            left: 70%;
+            animation-delay: 3s;
+        }
+
+        .particle:nth-child(8) {
+            left: 80%;
+            animation-delay: 5s;
+        }
+
+        .particle:nth-child(9) {
+            left: 90%;
+            animation-delay: 7s;
+        }
+
+        .particle:nth-child(10) {
+            left: 95%;
+            animation-delay: 9s;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                top: 100%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: -5%;
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .architecture {
+                height: 600px;
+            }
+
+            .legend {
+                position: static;
+                margin-bottom: 20px;
+            }
+
+            .controls,
+            .info-panel {
+                position: static;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 GCP Components - Interactive Architecture</h1>
+            <p>Watch the services move and interact in real-time!</p>
+        </div>
+
+        <div class="architecture">
+            <!-- Animated background particles -->
+            <div class="particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+
+            <!-- Connection lines -->
+            <div class="connection-line line-1"></div>
+            <div class="connection-line line-2"></div>
+            <div class="connection-line line-3"></div>
+
+            <!-- GCP Services -->
+            <div class="service bigquery" onclick="showInfo('bigquery')">
+                <div style="font-size: 24px; margin-bottom: 5px;">📊</div>
+                <div>BigQuery</div>
+                <div style="font-size: 12px; opacity: 0.8;">Data Warehouse</div>
+            </div>
+
+            <div class="service cloud-storage" onclick="showInfo('cloud-storage')">
+                <div style="font-size: 24px; margin-bottom: 5px;">☁️</div>
+                <div>Cloud Storage</div>
+                <div style="font-size: 12px; opacity: 0.8;">Object Storage</div>
+            </div>
+
+            <div class="service vertex-ai" onclick="showInfo('vertex-ai')">
+                <div style="font-size: 24px; margin-bottom: 5px;">🤖</div>
+                <div>Vertex AI</div>
+                <div style="font-size: 12px; opacity: 0.8;">ML Platform</div>
+            </div>
+
+            <div class="service cloud-run" onclick="showInfo('cloud-run')">
+                <div style="font-size: 24px; margin-bottom: 5px;">🚀</div>
+                <div>Cloud Run</div>
+                <div style="font-size: 12px; opacity: 0.8;">Serverless Containers</div>
+            </div>
+
+            <div class="service cloud-functions" onclick="showInfo('cloud-functions')">
+                <div style="font-size: 24px; margin-bottom: 5px;">⚡</div>
+                <div>Cloud Functions</div>
+                <div style="font-size: 12px; opacity: 0.8;">Serverless Functions</div>
+            </div>
+
+            <div class="service dataflow" onclick="showInfo('dataflow')">
+                <div style="font-size: 24px; margin-bottom: 5px;">🌊</div>
+                <div>Dataflow</div>
+                <div style="font-size: 12px; opacity: 0.8;">Stream Processing</div>
+            </div>
+
+            <!-- Data flow animations -->
+            <div class="data-flow flow-1"></div>
+            <div class="data-flow flow-2"></div>
+            <div class="data-flow flow-3"></div>
+            <div class="data-flow flow-4"></div>
+
+            <!-- Scaling indicators -->
+            <div class="scaling-indicator cloud-run">
+                🔄 Auto-scaling Active
+            </div>
+
+            <div class="scaling-indicator dataflow">
+                📈 Processing 10GB/min
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <h3>🎨 Service Categories</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(45deg, #4285F4, #1E88E5);"></div>
+                <span>Data Analytics</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(45deg, #34A853, #2E7D32);"></div>
+                <span>Storage</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(45deg, #EA4335, #D33B2C);"></div>
+                <span>AI/ML</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(45deg, #FBBC05, #F57C00);"></div>
+                <span>Compute</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(45deg, #9C27B0, #7B1FA2);"></div>
+                <span>Serverless</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(45deg, #00ACC1, #00838F);"></div>
+                <span>Data Processing</span>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="control-btn" onclick="toggleAnimations()">⏸️ Pause Animations</button>
+            <button class="control-btn" onclick="resetView()">🔄 Reset View</button>
+            <button class="control-btn" onclick="showAllInfo()">ℹ️ Show All Info</button>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="info-panel" id="infoPanel">
+            <h4 id="infoTitle">Service Information</h4>
+            <p id="infoContent">Click on any service to see details about its capabilities and use cases.</p>
+        </div>
+    </div>
+
+    <script>
+        let animationsPaused = false;
+
+        function showInfo(service) {
+            const infoPanel = document.getElementById('infoPanel');
+            const infoTitle = document.getElementById('infoTitle');
+            const infoContent = document.getElementById('infoContent');
+
+            const serviceInfo = {
+                'bigquery': {
+                    title: '📊 BigQuery - Data Warehouse',
+                    content: 'Petabyte-scale analytics data warehouse. SQL queries on massive datasets. Perfect for business intelligence and advanced analytics.'
+                },
+                'cloud-storage': {
+                    title: '☁️ Cloud Storage - Object Storage',
+                    content: 'Unified object storage with global edge caching. Store and retrieve any amount of data from anywhere. Integrated with AI/ML services.'
+                },
+                'vertex-ai': {
+                    title: '🤖 Vertex AI - ML Platform',
+                    content: 'Unified ML platform for building, deploying, and scaling ML models. Includes AutoML, custom training, and model monitoring.'
+                },
+                'cloud-run': {
+                    title: '🚀 Cloud Run - Serverless Containers',
+                    content: 'Run containerized applications in a fully managed, serverless environment. Auto-scaling from zero to millions of requests.'
+                },
+                'cloud-functions': {
+                    title: '⚡ Cloud Functions - Serverless Functions',
+                    content: 'Event-driven serverless compute service. Run code in response to events without managing servers. Pay only for compute time.'
+                },
+                'dataflow': {
+                    title: '🌊 Dataflow - Stream Processing',
+                    content: 'Unified stream and batch data processing. Build pipelines that can handle both real-time and historical data processing.'
+                }
+            };
+
+            const info = serviceInfo[service];
+            if (info) {
+                infoTitle.textContent = info.title;
+                infoContent.textContent = info.content;
+                infoPanel.classList.add('show');
+            }
+        }
+
+        function toggleAnimations() {
+            const btn = event.target;
+            animationsPaused = !animationsPaused;
+
+            const allAnimated = document.querySelectorAll('.service, .data-flow, .scaling-indicator, .connection-line, .particle');
+
+            if (animationsPaused) {
+                allAnimated.forEach(el => {
+                    el.style.animationPlayState = 'paused';
+                });
+                btn.textContent = '▶️ Resume Animations';
+            } else {
+                allAnimated.forEach(el => {
+                    el.style.animationPlayState = 'running';
+                });
+                btn.textContent = '⏸️ Pause Animations';
+            }
+        }
+
+        function resetView() {
+            // Reset any transforms or positions if needed
+            const services = document.querySelectorAll('.service');
+            services.forEach(service => {
+                service.style.transform = '';
+            });
+
+            // Hide info panel
+            document.getElementById('infoPanel').classList.remove('show');
+        }
+
+        function showAllInfo() {
+            const infoPanel = document.getElementById('infoPanel');
+            const infoTitle = document.getElementById('infoTitle');
+            const infoContent = document.getElementById('infoContent');
+
+            infoTitle.textContent = '🎯 GCP Services Overview';
+            infoContent.innerHTML = `
+                <strong>BigQuery:</strong> Petabyte-scale data warehouse<br>
+                <strong>Cloud Storage:</strong> Unified object storage<br>
+                <strong>Vertex AI:</strong> Unified ML platform<br>
+                <strong>Cloud Run:</strong> Serverless containers<br>
+                <strong>Cloud Functions:</strong> Event-driven functions<br>
+                <strong>Dataflow:</strong> Stream & batch processing<br><br>
+                <em>Click individual services for detailed information!</em>
+            `;
+
+            infoPanel.classList.add('show');
+        }
+
+        // Add some interactive features
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add click outside to close info panel
+            document.addEventListener('click', function (e) {
+                const infoPanel = document.getElementById('infoPanel');
+                const services = document.querySelectorAll('.service');
+
+                let clickedOnService = false;
+                services.forEach(service => {
+                    if (service.contains(e.target)) {
+                        clickedOnService = true;
+                    }
+                });
+
+                if (!infoPanel.contains(e.target) && !clickedOnService) {
+                    infoPanel.classList.remove('show');
+                }
+            });
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                if (e.key === ' ') { // Spacebar
+                    e.preventDefault();
+                    toggleAnimations();
+                } else if (e.key === 'r' || e.key === 'R') {
+                    resetView();
+                } else if (e.key === 'i' || e.key === 'I') {
+                    showAllInfo();
+                }
+            });
+        });
+
+        // Add some dynamic effects
+        setInterval(() => {
+            if (!animationsPaused) {
+                const particles = document.querySelectorAll('.particle');
+                particles.forEach(particle => {
+                    const randomX = Math.random() * 100;
+                    particle.style.left = randomX + '%';
+                });
+            }
+        }, 10000);
+    </script>
+</body>
+
+</html>

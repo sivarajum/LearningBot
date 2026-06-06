@@ -1,0 +1,74 @@
+{
+  "pipelines": [
+    {
+      "name": "sales",
+      "schedule": "@daily",
+      "description": "Daily sales data ingestion and aggregation",
+      "sources": [
+        {"type": "postgres", "table": "raw_sales", "connection_id": "postgres_sales"},
+        {"type": "s3", "bucket": "data-lake-raw", "prefix": "sales/", "connection_id": "aws_default"}
+      ],
+      "destination": {"type": "bigquery", "dataset": "dw_sales", "table": "fact_sales"},
+      "owner": "data-engineering",
+      "tags": ["sales", "revenue", "daily"],
+      "retries": 3,
+      "retry_delay_minutes": 5,
+      "sla_hours": 4
+    },
+    {
+      "name": "inventory",
+      "schedule": "@hourly",
+      "description": "Hourly inventory sync from warehouse systems",
+      "sources": [
+        {"type": "api", "endpoint": "https://wms.internal/inventory", "connection_id": "wms_api"},
+        {"type": "kafka", "topic": "inventory-updates", "connection_id": "kafka_default"}
+      ],
+      "destination": {"type": "postgres", "schema": "staging", "table": "inventory_snapshot"},
+      "owner": "supply-chain-eng",
+      "tags": ["inventory", "supply-chain", "hourly"],
+      "retries": 2,
+      "retry_delay_minutes": 2,
+      "sla_hours": 1
+    },
+    {
+      "name": "customer_360",
+      "schedule": "0 2 * * *",
+      "description": "Nightly customer 360 view rebuild from all touchpoints",
+      "sources": [
+        {"type": "postgres", "table": "crm_customers", "connection_id": "postgres_crm"},
+        {"type": "postgres", "table": "web_events", "connection_id": "postgres_web"},
+        {"type": "postgres", "table": "purchase_history", "connection_id": "postgres_txn"}
+      ],
+      "destination": {"type": "bigquery", "dataset": "dw_customers", "table": "dim_customer_360"},
+      "owner": "data-engineering",
+      "tags": ["customers", "crm", "360-view"],
+      "retries": 3,
+      "retry_delay_minutes": 10,
+      "sla_hours": 6
+    },
+    {
+      "name": "marketing_attribution",
+      "schedule": "0 6 * * *",
+      "description": "Morning attribution model run for previous day campaigns",
+      "sources": [
+        {"type": "s3", "bucket": "marketing-data", "prefix": "campaigns/", "connection_id": "aws_default"},
+        {"type": "api", "endpoint": "https://ads.google.com/api/v1", "connection_id": "google_ads"},
+        {"type": "api", "endpoint": "https://graph.facebook.com/v18.0", "connection_id": "meta_ads"}
+      ],
+      "destination": {"type": "bigquery", "dataset": "dw_marketing", "table": "fact_attribution"},
+      "owner": "marketing-data",
+      "tags": ["marketing", "attribution", "campaigns"],
+      "retries": 2,
+      "retry_delay_minutes": 5,
+      "sla_hours": 3
+    }
+  ],
+  "global_settings": {
+    "default_pool": "default_pool",
+    "email_on_failure": true,
+    "email_on_retry": false,
+    "alert_email": "data-alerts@company.com",
+    "max_active_runs": 1,
+    "catchup": false
+  }
+}

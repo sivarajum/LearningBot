@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Apache Airflow DAG Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #017CEE 0%, #00A8E8 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .dag-viewer {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            min-height: 600px;
+        }
+
+        .control-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+        }
+
+        .control-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #017CEE, #00A8E8);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px 0;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(1, 124, 238, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(1, 124, 238, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #ff9800);
+        }
+
+        .dag-selector {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #017CEE;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .dag-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .dag-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .dag-info-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .dag-info-value {
+            color: #017CEE;
+            font-weight: 500;
+        }
+
+        .dag-canvas {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #fafafa;
+            position: relative;
+            overflow: auto;
+        }
+
+        .task-node {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            background: white;
+            border: 3px solid #017CEE;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(1, 124, 238, 0.3);
+        }
+
+        .task-node.pending {
+            border-color: #6c757d;
+            background: #f8f9fa;
+        }
+
+        .task-node.running {
+            border-color: #ffc107;
+            background: #fff3cd;
+            animation: pulse 1.5s infinite;
+        }
+
+        .task-node.success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .task-node.failed {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .task-node.skipped {
+            border-color: #6c757d;
+            background: #e9ecef;
+            opacity: 0.6;
+        }
+
+        .task-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .task-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .task-status {
+            font-size: 10px;
+            margin-top: 5px;
+            color: #666;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .dag-edge {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .execution-log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid transparent;
+        }
+
+        .log-entry.info {
+            border-left-color: #017CEE;
+        }
+
+        .log-entry.success {
+            border-left-color: #28a745;
+        }
+
+        .log-entry.error {
+            border-left-color: #dc3545;
+        }
+
+        .log-entry.warning {
+            border-left-color: #ffc107;
+        }
+
+        .metrics-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #017CEE;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .task-details {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .task-details.active {
+            display: block;
+        }
+
+        .task-details h4 {
+            color: #017CEE;
+            margin-bottom: 10px;
+        }
+
+        .task-details-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .task-details-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-wind"></i> Apache Airflow DAG Simulator</h1>
+            <p>Interactive workflow orchestration and monitoring</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="control-panel">
+                <div class="control-section">
+                    <h3><i class="fas fa-project-diagram"></i> DAG Selection</h3>
+                    <select id="dagSelector" class="dag-selector">
+                        <option value="etl_pipeline">ETL Pipeline</option>
+                        <option value="ml_training">ML Training Pipeline</option>
+                        <option value="data_quality">Data Quality Check</option>
+                        <option value="reporting">Daily Reporting</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <div class="dag-info" id="dagInfo">
+                        <div class="dag-info-item">
+                            <span class="dag-info-label">DAG ID:</span>
+                            <span class="dag-info-value" id="dagId">etl_pipeline</span>
+                        </div>
+                        <div class="dag-info-item">
+                            <span class="dag-info-label">Schedule:</span>
+                            <span class="dag-info-value" id="dagSchedule">Daily @ 2 AM</span>
+                        </div>
+                        <div class="dag-info-item">
+                            <span class="dag-info-label">Tasks:</span>
+                            <span class="dag-info-value" id="dagTasks">6</span>
+                        </div>
+                        <div class="dag-info-item">
+                            <span class="dag-info-label">Status:</span>
+                            <span class="dag-info-value" id="dagStatus">Running</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3><i class="fas fa-play-circle"></i> Execution Control</h3>
+                    <button class="btn btn-success" id="startBtn">
+                        <i class="fas fa-play"></i> Start DAG Run
+                    </button>
+                    <button class="btn btn-danger" id="stopBtn">
+                        <i class="fas fa-stop"></i> Stop Execution
+                    </button>
+                    <button class="btn" id="resetBtn">
+                        <i class="fas fa-redo"></i> Reset DAG
+                    </button>
+                </div>
+
+                <div class="control-section">
+                    <h3><i class="fas fa-chart-line"></i> Execution Speed</h3>
+                    <input type="range" id="speedSlider" min="1" max="5" value="2" style="width: 100%;">
+                    <div style="text-align: center; margin-top: 5px;">
+                        <span id="speedValue">2x</span>
+                    </div>
+                </div>
+
+                <div class="metrics-panel">
+                    <div class="metric-card">
+                        <div class="metric-value" id="successCount">0</div>
+                        <div class="metric-label">Success</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="failedCount">0</div>
+                        <div class="metric-label">Failed</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="runningCount">0</div>
+                        <div class="metric-label">Running</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="totalCount">6</div>
+                        <div class="metric-label">Total Tasks</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dag-viewer">
+                <div class="dag-canvas" id="dagCanvas">
+                    <!-- DAG nodes and edges will be rendered here -->
+                </div>
+                <div class="execution-log" id="executionLog">
+                    <div class="log-entry info">Ready to execute DAG. Click "Start DAG Run" to begin.</div>
+                </div>
+                <div class="task-details" id="taskDetails">
+                    <h4>Task Details</h4>
+                    <div id="taskDetailsContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        // DAG Definitions
+        const dags = {
+            etl_pipeline: {
+                id: 'etl_pipeline',
+                schedule: 'Daily @ 2 AM',
+                tasks: [
+                    { id: 'extract', label: 'Extract Data', type: 'bash', x: 100, y: 100, dependencies: [] },
+                    { id: 'validate', label: 'Validate', type: 'python', x: 100, y: 250, dependencies: ['extract'] },
+                    { id: 'transform', label: 'Transform', type: 'python', x: 100, y: 400, dependencies: ['validate'] },
+                    { id: 'load_staging', label: 'Load Staging', type: 'sql', x: 300, y: 400, dependencies: ['transform'] },
+                    { id: 'load_production', label: 'Load Production', type: 'sql', x: 500, y: 400, dependencies: ['load_staging'] },
+                    { id: 'send_notification', label: 'Send Notification', type: 'email', x: 500, y: 250, dependencies: ['load_production'] }
+                ]
+            },
+            ml_training: {
+                id: 'ml_training',
+                schedule: 'Weekly @ Sunday 3 AM',
+                tasks: [
+                    { id: 'data_prep', label: 'Data Prep', type: 'python', x: 100, y: 150, dependencies: [] },
+                    { id: 'feature_eng', label: 'Feature Eng', type: 'python', x: 100, y: 300, dependencies: ['data_prep'] },
+                    { id: 'train_model', label: 'Train Model', type: 'python', x: 300, y: 300, dependencies: ['feature_eng'] },
+                    { id: 'evaluate', label: 'Evaluate', type: 'python', x: 500, y: 300, dependencies: ['train_model'] },
+                    { id: 'deploy', label: 'Deploy', type: 'bash', x: 500, y: 150, dependencies: ['evaluate'] }
+                ]
+            },
+            data_quality: {
+                id: 'data_quality',
+                schedule: 'Hourly',
+                tasks: [
+                    { id: 'check_schema', label: 'Check Schema', type: 'python', x: 100, y: 200, dependencies: [] },
+                    { id: 'check_null', label: 'Check Nulls', type: 'python', x: 300, y: 200, dependencies: ['check_schema'] },
+                    { id: 'check_duplicates', label: 'Check Duplicates', type: 'python', x: 500, y: 200, dependencies: ['check_schema'] },
+                    { id: 'generate_report', label: 'Generate Report', type: 'python', x: 400, y: 350, dependencies: ['check_null', 'check_duplicates'] }
+                ]
+            },
+            reporting: {
+                id: 'reporting',
+                schedule: 'Daily @ 6 AM',
+                tasks: [
+                    { id: 'aggregate_data', label: 'Aggregate Data', type: 'sql', x: 200, y: 150, dependencies: [] },
+                    { id: 'create_charts', label: 'Create Charts', type: 'python', x: 200, y: 300, dependencies: ['aggregate_data'] },
+                    { id: 'generate_pdf', label: 'Generate PDF', type: 'python', x: 400, y: 300, dependencies: ['create_charts'] },
+                    { id: 'send_email', label: 'Send Email', type: 'email', x: 400, y: 150, dependencies: ['generate_pdf'] }
+                ]
+            }
+        };
+
+        let currentDag = dags.etl_pipeline;
+        let executionState = {};
+        let isRunning = false;
+        let executionSpeed = 2;
+        let executionInterval = null;
+
+        const taskIcons = {
+            bash: 'fa-terminal',
+            python: 'fa-code',
+            sql: 'fa-database',
+            email: 'fa-envelope'
+        };
+
+        function init() {
+            renderDAG();
+            setupEventListeners();
+            updateDAGInfo();
+        }
+
+        function setupEventListeners() {
+            document.getElementById('dagSelector').addEventListener('change', (e) => {
+                currentDag = dags[e.target.value];
+                resetDAG();
+                renderDAG();
+                updateDAGInfo();
+            });
+
+            document.getElementById('startBtn').addEventListener('click', startExecution);
+            document.getElementById('stopBtn').addEventListener('click', stopExecution);
+            document.getElementById('resetBtn').addEventListener('click', resetDAG);
+            document.getElementById('speedSlider').addEventListener('input', (e) => {
+                executionSpeed = parseInt(e.target.value);
+                document.getElementById('speedValue').textContent = executionSpeed + 'x';
+            });
+        }
+
+        function renderDAG() {
+            const canvas = document.getElementById('dagCanvas');
+            canvas.innerHTML = '';
+
+            // Initialize execution state
+            currentDag.tasks.forEach(task => {
+                executionState[task.id] = 'pending';
+            });
+
+            // Render edges first (so they appear behind nodes)
+            currentDag.tasks.forEach(task => {
+                task.dependencies.forEach(depId => {
+                    const depTask = currentDag.tasks.find(t => t.id === depId);
+                    if (depTask) {
+                        drawEdge(depTask, task);
+                    }
+                });
+            });
+
+            // Render nodes
+            currentDag.tasks.forEach(task => {
+                renderTaskNode(task);
+            });
+        }
+
+        function renderTaskNode(task) {
+            const canvas = document.getElementById('dagCanvas');
+            const node = document.createElement('div');
+            node.className = `task-node ${executionState[task.id]}`;
+            node.id = `task-${task.id}`;
+            node.style.left = task.x + 'px';
+            node.style.top = task.y + 'px';
+            node.dataset.taskId = task.id;
+
+            node.innerHTML = `
+                <div class="task-icon">
+                    <i class="fas ${taskIcons[task.type] || 'fa-circle'}"></i>
+                </div>
+                <div class="task-label">${task.label}</div>
+                <div class="task-status">${executionState[task.id]}</div>
+            `;
+
+            node.addEventListener('click', () => showTaskDetails(task));
+            canvas.appendChild(node);
+        }
+
+        function drawEdge(fromTask, toTask) {
+            const canvas = document.getElementById('dagCanvas');
+            const edge = document.createElement('svg');
+            edge.className = 'dag-edge';
+            edge.style.width = '100%';
+            edge.style.height = '100%';
+            edge.style.position = 'absolute';
+            edge.style.top = '0';
+            edge.style.left = '0';
+            edge.style.pointerEvents = 'none';
+
+            const fromX = fromTask.x + 60;
+            const fromY = fromTask.y + 40;
+            const toX = toTask.x + 60;
+            const toY = toTask.y + 40;
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', fromX);
+            line.setAttribute('y1', fromY);
+            line.setAttribute('x2', toX);
+            line.setAttribute('y2', toY);
+            line.setAttribute('stroke', '#017CEE');
+            line.setAttribute('stroke-width', '2');
+            line.setAttribute('marker-end', 'url(#arrowhead)');
+
+            // Add arrowhead marker
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+            marker.setAttribute('id', 'arrowhead');
+            marker.setAttribute('markerWidth', '10');
+            marker.setAttribute('markerHeight', '10');
+            marker.setAttribute('refX', '9');
+            marker.setAttribute('refY', '3');
+            marker.setAttribute('orient', 'auto');
+            const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            polygon.setAttribute('points', '0 0, 10 3, 0 6');
+            polygon.setAttribute('fill', '#017CEE');
+            marker.appendChild(polygon);
+            defs.appendChild(marker);
+
+            edge.appendChild(defs);
+            edge.appendChild(line);
+            canvas.appendChild(edge);
+        }
+
+        function updateTaskStatus(taskId, status) {
+            executionState[taskId] = status;
+            const node = document.getElementById(`task-${taskId}`);
+            if (node) {
+                node.className = `task-node ${status}`;
+                const statusEl = node.querySelector('.task-status');
+                if (statusEl) {
+                    statusEl.textContent = status;
+                }
+            }
+            updateMetrics();
+        }
+
+        function updateMetrics() {
+            const counts = {
+                success: 0,
+                failed: 0,
+                running: 0,
+                total: currentDag.tasks.length
+            };
+
+            Object.values(executionState).forEach(status => {
+                if (status === 'success') counts.success++;
+                else if (status === 'failed') counts.failed++;
+                else if (status === 'running') counts.running++;
+            });
+
+            document.getElementById('successCount').textContent = counts.success;
+            document.getElementById('failedCount').textContent = counts.failed;
+            document.getElementById('runningCount').textContent = counts.running;
+            document.getElementById('totalCount').textContent = counts.total;
+        }
+
+        function addLogEntry(message, type = 'info') {
+            const log = document.getElementById('executionLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function getReadyTasks() {
+            return currentDag.tasks.filter(task => {
+                if (executionState[task.id] !== 'pending') return false;
+                return task.dependencies.every(depId => 
+                    executionState[depId] === 'success'
+                );
+            });
+        }
+
+        async function executeTask(task) {
+            updateTaskStatus(task.id, 'running');
+            addLogEntry(`Starting task: ${task.label}`, 'info');
+
+            // Simulate task execution
+            const duration = Math.random() * 2000 + 1000; // 1-3 seconds
+            await new Promise(resolve => setTimeout(resolve, duration / executionSpeed));
+
+            // Randomly succeed or fail (90% success rate)
+            const success = Math.random() > 0.1;
+            if (success) {
+                updateTaskStatus(task.id, 'success');
+                addLogEntry(`Task completed successfully: ${task.label}`, 'success');
+            } else {
+                updateTaskStatus(task.id, 'failed');
+                addLogEntry(`Task failed: ${task.label}`, 'error');
+            }
+        }
+
+        async function startExecution() {
+            if (isRunning) return;
+            isRunning = true;
+            addLogEntry('Starting DAG execution...', 'info');
+            document.getElementById('dagStatus').textContent = 'Running';
+
+            while (isRunning) {
+                const readyTasks = getReadyTasks();
+                
+                if (readyTasks.length === 0) {
+                    const allDone = Object.values(executionState).every(s => 
+                        s === 'success' || s === 'failed' || s === 'skipped'
+                    );
+                    if (allDone) {
+                        addLogEntry('DAG execution completed!', 'success');
+                        stopExecution();
+                        break;
+                    }
+                    // Wait a bit before checking again
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    continue;
+                }
+
+                // Execute ready tasks in parallel
+                await Promise.all(readyTasks.map(task => executeTask(task)));
+            }
+        }
+
+        function stopExecution() {
+            isRunning = false;
+            document.getElementById('dagStatus').textContent = 'Stopped';
+            addLogEntry('DAG execution stopped', 'warning');
+        }
+
+        function resetDAG() {
+            stopExecution();
+            currentDag.tasks.forEach(task => {
+                executionState[task.id] = 'pending';
+            });
+            document.getElementById('executionLog').innerHTML = 
+                '<div class="log-entry info">DAG reset. Ready to execute.</div>';
+            updateMetrics();
+            renderDAG();
+            document.getElementById('dagStatus').textContent = 'Ready';
+        }
+
+        function updateDAGInfo() {
+            document.getElementById('dagId').textContent = currentDag.id;
+            document.getElementById('dagSchedule').textContent = currentDag.schedule;
+            document.getElementById('dagTasks').textContent = currentDag.tasks.length;
+        }
+
+        function showTaskDetails(task) {
+            const details = document.getElementById('taskDetails');
+            const content = document.getElementById('taskDetailsContent');
+            
+            content.innerHTML = `
+                <div class="task-details-item">
+                    <span>Task ID:</span>
+                    <span>${task.id}</span>
+                </div>
+                <div class="task-details-item">
+                    <span>Type:</span>
+                    <span>${task.type}</span>
+                </div>
+                <div class="task-details-item">
+                    <span>Status:</span>
+                    <span>${executionState[task.id]}</span>
+                </div>
+                <div class="task-details-item">
+                    <span>Dependencies:</span>
+                    <span>${task.dependencies.length > 0 ? task.dependencies.join(', ') : 'None'}</span>
+                </div>
+            `;
+            
+            details.classList.add('active');
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+
+</html>
+

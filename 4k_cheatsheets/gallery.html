@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearningBot 4K Cheat Sheets Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0F1419 0%, #1a2f4e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00D9FF, #FF6B6B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #b0b0b0;
+            margin-bottom: 5px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #00D9FF;
+        }
+
+        .category {
+            margin-bottom: 80px;
+        }
+
+        .category-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2A3F5F;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: #1A1F2E;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid #2A3F5F;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: #00D9FF;
+            box-shadow: 0 20px 40px rgba(0, 217, 255, 0.2);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #2A3F5F, #1F2F4E);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: rgba(255, 255, 255, 0.1);
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: #b0b0b0;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: rgba(0, 217, 255, 0.1);
+            color: #00D9FF;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(0, 217, 255, 0.3);
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #00D9FF, #4ECDC4);
+            color: #0F1419;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid #2A3F5F;
+            color: #b0b0b0;
+            font-size: 0.95rem;
+        }
+
+        .footer-text {
+            margin-bottom: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .footer-link {
+            color: #00D9FF;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 LearningBot 4K Cheat Sheets</h1>
+            <p class="subtitle">Professional Reference Material for Tech & AI Learning</p>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-value">17</span>
+                    <span>Professional Cheat Sheets</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">3840x2160</span>
+                    <span>4K Resolution</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">300 DPI</span>
+                    <span>Print Quality</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">~5 MB</span>
+                    <span>Total Size</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Core Learning Modules -->
+        <section class="category">
+            <div class="category-title">
+                <span class="category-icon">🎯</span>
+                Core Learning Modules
+            </div>
+            <div class="gallery">
+                <div class="card">
+                    <div class="card-image">📊</div>
+                    <div class="card-content">
+                        <div class="card-title">ML Fundamentals</div>
+                        <p class="card-description">Supervised, Unsupervised & Reinforcement Learning essentials</p>
+                        <div class="card-tags">
+                            <span class="tag">Machine Learning</span>
+                            <span class="tag">Algorithms</span>
+                        </div>
+                        <button class="download-btn">View 4K (285 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">☁️</div>
+                    <div class="card-content">
+                        <div class="card-title">Cloud AI Platform</div>
+                        <p class="card-description">Vertex AI, Generative AI & Google Cloud Services</p>
+                        <div class="card-tags">
+                            <span class="tag">Cloud</span>
+                            <span class="tag">AI/ML</span>
+                        </div>
+                        <button class="download-btn">View 4K (314 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">🤖</div>
+                    <div class="card-content">
+                        <div class="card-title">LLM Essentials</div>
+                        <p class="card-description">Transformers, Models, Optimization & Safety</p>
+                        <div class="card-tags">
+                            <span class="tag">LLM</span>
+                            <span class="tag">NLP</span>
+                        </div>
+                        <button class="download-btn">View 4K (285 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">📚</div>
+                    <div class="card-content">
+                        <div class="card-title">RAG Essentials</div>
+                        <p class="card-description">Retrieval Augmented Generation Architecture & Tools</p>
+                        <div class="card-tags">
+                            <span class="tag">RAG</span>
+                            <span class="tag">GenAI</span>
+                        </div>
+                        <button class="download-btn">View 4K (313 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">🚀</div>
+                    <div class="card-content">
+                        <div class="card-title">MLOps Automation</div>
+                        <p class="card-description">CI/CD, Monitoring, Deployment & Infrastructure</p>
+                        <div class="card-tags">
+                            <span class="tag">MLOps</span>
+                            <span class="tag">DevOps</span>
+                        </div>
+                        <button class="download-btn">View 4K (294 KB)</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advanced Technical Skills -->
+        <section class="category">
+            <div class="category-title">
+                <span class="category-icon">🛠️</span>
+                Advanced Technical Skills
+            </div>
+            <div class="gallery">
+                <div class="card">
+                    <div class="card-image">📈</div>
+                    <div class="card-content">
+                        <div class="card-title">Data Engineering</div>
+                        <p class="card-description">Pipelines, Warehousing, ETL & Real-time Processing</p>
+                        <div class="card-tags">
+                            <span class="tag">Data</span>
+                            <span class="tag">Engineering</span>
+                        </div>
+                        <button class="download-btn">View 4K (290 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">🎨</div>
+                    <div class="card-content">
+                        <div class="card-title">Feature Engineering</div>
+                        <p class="card-description">Selection, Transformation, Creation & Automation</p>
+                        <div class="card-tags">
+                            <span class="tag">Features</span>
+                            <span class="tag">ML</span>
+                        </div>
+                        <button class="download-btn">View 4K (270 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">🏗️</div>
+                    <div class="card-content">
+                        <div class="card-title">System Design</div>
+                        <p class="card-description">Architecture, Scalability, Caching & Resilience</p>
+                        <div class="card-tags">
+                            <span class="tag">Systems</span>
+                            <span class="tag">Architecture</span>
+                        </div>
+                        <button class="download-btn">View 4K (279 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">⚙️</div>
+                    <div class="card-content">
+                        <div class="card-title">Kubernetes</div>
+                        <p class="card-description">Container Orchestration, Networking & Deployment</p>
+                        <div class="card-tags">
+                            <span class="tag">K8s</span>
+                            <span class="tag">Containers</span>
+                        </div>
+                        <button class="download-btn">View 4K (291 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">💻</div>
+                    <div class="card-content">
+                        <div class="card-title">Backend Development</div>
+                        <p class="card-description">REST APIs, Security, Testing & Performance</p>
+                        <div class="card-tags">
+                            <span class="tag">Backend</span>
+                            <span class="tag">APIs</span>
+                        </div>
+                        <button class="download-btn">View 4K (296 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">🐍</div>
+                    <div class="card-content">
+                        <div class="card-title">Python Mastery</div>
+                        <p class="card-description">Advanced Techniques, Testing & Performance</p>
+                        <div class="card-tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Programming</span>
+                        </div>
+                        <button class="download-btn">View 4K (284 KB)</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TechStack Categories -->
+        <section class="category">
+            <div class="category-title">
+                <span class="category-icon">☁️</span>
+                TechStack Categories
+            </div>
+            <div class="gallery">
+                <div class="card">
+                    <div class="card-image">📊</div>
+                    <div class="card-content">
+                        <div class="card-title">BigQuery</div>
+                        <p class="card-description">Data Warehouse, Optimization, Cost & Security</p>
+                        <div class="card-tags">
+                            <span class="tag">GCP</span>
+                            <span class="tag">BigQuery</span>
+                        </div>
+                        <button class="download-btn">View 4K (267 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">☁️</div>
+                    <div class="card-content">
+                        <div class="card-title">Google Cloud Platform</div>
+                        <p class="card-description">Compute, Storage, AI/ML & All Major Services</p>
+                        <div class="card-tags">
+                            <span class="tag">GCP</span>
+                            <span class="tag">Cloud</span>
+                        </div>
+                        <button class="download-btn">View 4K (291 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">🟠</div>
+                    <div class="card-content">
+                        <div class="card-title">Amazon Web Services</div>
+                        <p class="card-description">EC2, Lambda, S3, RDS & Complete AWS Ecosystem</p>
+                        <div class="card-tags">
+                            <span class="tag">AWS</span>
+                            <span class="tag">Cloud</span>
+                        </div>
+                        <button class="download-btn">View 4K (296 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">⚡</div>
+                    <div class="card-content">
+                        <div class="card-title">Apache Spark</div>
+                        <p class="card-description">RDDs, DataFrames, ML, Streaming & Tuning</p>
+                        <div class="card-tags">
+                            <span class="tag">Spark</span>
+                            <span class="tag">BigData</span>
+                        </div>
+                        <button class="download-btn">View 4K (268 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">📨</div>
+                    <div class="card-content">
+                        <div class="card-title">Apache Kafka</div>
+                        <p class="card-description">Topics, Producers, Streaming & Deployment</p>
+                        <div class="card-tags">
+                            <span class="tag">Kafka</span>
+                            <span class="tag">Streaming</span>
+                        </div>
+                        <button class="download-btn">View 4K (265 KB)</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">🐳</div>
+                    <div class="card-content">
+                        <div class="card-title">Docker</div>
+                        <p class="card-description">Containers, Networking, Volumes & Deployment</p>
+                        <div class="card-tags">
+                            <span class="tag">Docker</span>
+                            <span class="tag">Containers</span>
+                        </div>
+                        <button class="download-btn">View 4K (273 KB)</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-text">
+            🎓 <strong>LearningBot 4K Cheat Sheets</strong> — Professional Reference Material
+        </div>
+        <div class="footer-text">
+            Generated: May 14, 2026 | Version 1.0 | Educational Use
+        </div>
+        <div class="footer-links">
+            <a href="README.md" class="footer-link">📖 Documentation</a>
+            <a href="4k_cheatsheets/" class="footer-link">📁 Download All</a>
+            <a href="https://github.com" class="footer-link">🔗 GitHub</a>
+        </div>
+    </footer>
+</body>
+</html>

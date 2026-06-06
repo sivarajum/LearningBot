@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Run Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --gcp-blue: #4285F4;
+            --gcp-red: #EA4335;
+            --gcp-yellow: #FBBC05;
+            --gcp-green: #34A853;
+            --gcp-purple: #9C27B0;
+            --gcp-dark: #202124;
+            --gcp-light: #FFFFFF;
+            --gcp-gray: #F8F9FA;
+            --primary-color: #4285F4;
+            --secondary-color: #EA4335;
+            --accent-color: #34A853;
+            --warning-color: #FBBC05;
+            --info-color: #9C27B0;
+            --dark-color: #202124;
+            --light-color: #F8F9FA;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4285F4 0%, #9C27B0 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--gcp-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            min-height: 200px;
+        }
+
+        .btn-gcp {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gcp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-outline-gcp {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-gcp:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: var(--gcp-gray);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--gcp-dark);
+        }
+
+        .feature-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .interactive-section {
+            background: var(--gcp-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .service-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #4285F4, #34A853);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        .service-card,
+        .revision-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-item {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .perf-metric-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .execution-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--gcp-gray);
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--gcp-dark);
+        }
+
+        .stat-value {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .input-group-custom {
+            margin-bottom: 15px;
+        }
+
+        .input-group-custom label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--gcp-dark);
+        }
+
+        .input-group-custom input,
+        .input-group-custom select,
+        .input-group-custom textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-group-custom textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .badge-custom {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        .badge-active {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-inactive {
+            background: #6c757d;
+            color: white;
+        }
+
+        .badge-traffic {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .badge-cpu {
+            background: #ffc107;
+            color: black;
+        }
+
+        .badge-memory {
+            background: #dc3545;
+            color: white;
+        }
+
+        .env-var-item {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .env-var-item strong {
+            color: var(--primary-color);
+        }
+
+        .traffic-bar {
+            background: var(--gcp-gray);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .traffic-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [services, setServices] = useState([
+                {
+                    id: 'hello-world-service',
+                    name: 'hello-world-service',
+                    image: 'gcr.io/cloudrun/hello',
+                    region: 'us-central1',
+                    status: 'active',
+                    url: 'https://hello-world-service-abc123.run.app',
+                    created: '2024-01-15T10:00:00Z',
+                    lastDeployed: '2024-01-15T14:30:00Z',
+                    cpu: '1000m',
+                    memory: '512Mi',
+                    minInstances: 0,
+                    maxInstances: 100,
+                    timeout: 300,
+                    traffic: 100
+                },
+                {
+                    id: 'api-service',
+                    name: 'api-service',
+                    image: 'gcr.io/my-project/api-service:v1.2.3',
+                    region: 'us-west1',
+                    status: 'active',
+                    url: 'https://api-service-xyz789.run.app',
+                    created: '2024-01-10T09:15:00Z',
+                    lastDeployed: '2024-01-14T16:45:00Z',
+                    cpu: '2000m',
+                    memory: '1Gi',
+                    minInstances: 1,
+                    maxInstances: 50,
+                    timeout: 900,
+                    traffic: 75
+                },
+                {
+                    id: 'batch-processor',
+                    name: 'batch-processor',
+                    image: 'gcr.io/my-project/batch-processor:latest',
+                    region: 'europe-west1',
+                    status: 'inactive',
+                    url: 'https://batch-processor-def456.run.app',
+                    created: '2024-01-05T11:30:00Z',
+                    lastDeployed: '2024-01-12T08:20:00Z',
+                    cpu: '4000m',
+                    memory: '2Gi',
+                    minInstances: 0,
+                    maxInstances: 10,
+                    timeout: 3600,
+                    traffic: 0
+                }
+            ]);
+            const [revisions, setRevisions] = useState([
+                {
+                    id: 'hello-world-service-00001',
+                    serviceId: 'hello-world-service',
+                    image: 'gcr.io/cloudrun/hello',
+                    tag: 'latest',
+                    created: '2024-01-15T14:30:00Z',
+                    traffic: 100,
+                    status: 'active'
+                },
+                {
+                    id: 'api-service-00002',
+                    serviceId: 'api-service',
+                    image: 'gcr.io/my-project/api-service:v1.2.3',
+                    tag: 'v1.2.3',
+                    created: '2024-01-14T16:45:00Z',
+                    traffic: 75,
+                    status: 'active'
+                },
+                {
+                    id: 'api-service-00001',
+                    serviceId: 'api-service',
+                    image: 'gcr.io/my-project/api-service:v1.2.2',
+                    tag: 'v1.2.2',
+                    created: '2024-01-10T12:20:00Z',
+                    traffic: 25,
+                    status: 'inactive'
+                }
+            ]);
+            const [envVars, setEnvVars] = useState([
+                { key: 'PORT', value: '8080' },
+                { key: 'NODE_ENV', value: 'production' },
+                { key: 'DATABASE_URL', value: 'postgresql://...' }
+            ]);
+            const [newService, setNewService] = useState({
+                name: '',
+                image: '',
+                region: 'us-central1',
+                cpu: '1000m',
+                memory: '512Mi',
+                minInstances: 0,
+                maxInstances: 100,
+                timeout: 300
+            });
+            const [newEnvVar, setNewEnvVar] = useState({ key: '', value: '' });
+            const [selectedService, setSelectedService] = useState('hello-world-service');
+            const [projectState, setProjectState] = useState({
+                projectId: 'my-run-project',
+                region: 'us-central1',
+                network: 'default'
+            });
+            const [performance, setPerformance] = useState({
+                services: 3,
+                totalRequests: 125000,
+                avgResponseTime: 45,
+                activeInstances: 12,
+                cost: 23.67
+            });
+            const [codeOutput, setCodeOutput] = useState('');
+            const [isExecuting, setIsExecuting] = useState(false);
+
+            const executeCode = async (code) => {
+                setIsExecuting(true);
+                setCodeOutput('Executing code...\n');
+
+                // Simulate code execution
+                setTimeout(() => {
+                    setCodeOutput(prev => prev + 'Code executed successfully!\n' +
+                        '✓ Service deployed successfully\n' +
+                        '✓ Traffic configured\n' +
+                        '✓ Environment variables set\n' +
+                        '✓ Service is now running\n');
+                    setIsExecuting(false);
+                }, 2000);
+            };
+
+            const deployService = () => {
+                if (newService.name && newService.image) {
+                    const service = {
+                        id: newService.name,
+                        name: newService.name,
+                        image: newService.image,
+                        region: newService.region,
+                        status: 'active',
+                        url: `https://${newService.name}-abc123.run.app`,
+                        created: new Date().toISOString(),
+                        lastDeployed: new Date().toISOString(),
+                        cpu: newService.cpu,
+                        memory: newService.memory,
+                        minInstances: newService.minInstances,
+                        maxInstances: newService.maxInstances,
+                        timeout: newService.timeout,
+                        traffic: 100
+                    };
+                    setServices([...services, service]);
+                    setNewService({
+                        name: '',
+                        image: '',
+                        region: 'us-central1',
+                        cpu: '1000m',
+                        memory: '512Mi',
+                        minInstances: 0,
+                        maxInstances: 100,
+                        timeout: 300
+                    });
+                    setCodeOutput('Service deployed successfully!');
+                }
+            };
+
+            const updateTraffic = (serviceId, revisionId, traffic) => {
+                setRevisions(revisions.map(rev =>
+                    rev.serviceId === serviceId
+                        ? { ...rev, traffic: rev.id === revisionId ? traffic : Math.max(0, rev.traffic - (traffic - rev.traffic)) }
+                        : rev
+                ));
+                setCodeOutput('Traffic updated successfully!');
+            };
+
+            const addEnvVar = () => {
+                if (newEnvVar.key && newEnvVar.value) {
+                    setEnvVars([...envVars, { key: newEnvVar.key, value: newEnvVar.value }]);
+                    setNewEnvVar({ key: '', value: '' });
+                    setCodeOutput('Environment variable added!');
+                }
+            };
+
+            const removeEnvVar = (index) => {
+                setEnvVars(envVars.filter((_, i) => i !== index));
+                setCodeOutput('Environment variable removed!');
+            };
+
+            const scaleService = (serviceId, minInstances, maxInstances) => {
+                setServices(services.map(service =>
+                    service.id === serviceId
+                        ? { ...service, minInstances, maxInstances }
+                        : service
+                ));
+                setCodeOutput('Service scaling updated!');
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-rocket"></i> Cloud Run</h1>
+                        <p>Serverless containerized applications with automatic scaling</p>
+                    </div>
+
+                    {/* Navigation Tabs */}
+                    <ul className="nav nav-tabs justify-content-center mb-4">
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('overview')}>
+                                <i className="fas fa-info-circle"></i> Overview
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'services' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('services')}>
+                                <i className="fas fa-server"></i> Services
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'revisions' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('revisions')}>
+                                <i className="fas fa-history"></i> Revisions
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'deploy' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('deploy')}>
+                                <i className="fas fa-upload"></i> Deploy
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'code' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('code')}>
+                                <i className="fas fa-code"></i> Code Editor
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'performance' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('performance')}>
+                                <i className="fas fa-tachometer-alt"></i> Performance
+                            </button>
+                        </li>
+                    </ul>
+
+                    {/* Tab Content */}
+                    <div className="tab-content">
+                        {/* Overview Tab */}
+                        {activeTab === 'overview' && (
+                            <div>
+                                <div className="feature-grid">
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-infinity"></i>
+                                        </div>
+                                        <div className="feature-title">Auto Scaling</div>
+                                        <div className="feature-description">
+                                            Automatically scale from zero to thousands of instances based on traffic.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-box"></i>
+                                        </div>
+                                        <div className="feature-title">Container Native</div>
+                                        <div className="feature-description">
+                                            Run any containerized application without managing infrastructure.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-route"></i>
+                                        </div>
+                                        <div className="feature-title">Traffic Management</div>
+                                        <div className="feature-description">
+                                            Split traffic between revisions for gradual rollouts and A/B testing.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div className="feature-title">Secure by Default</div>
+                                        <div className="feature-description">
+                                            Built-in HTTPS, IAM integration, and VPC connectivity options.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="service-flow">
+                                    <div className="flow-step">
+                                        <i className="fas fa-code"></i>
+                                        <div>Container</div>
+                                        <small>Build your app</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-upload"></i>
+                                        <div>Deploy</div>
+                                        <small>Push to Cloud Run</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-rocket"></i>
+                                        <div>Scale</div>
+                                        <small>Auto-scale on demand</small>
+                                    </div>
+                                    <div className="flow-arrow">→</div>
+                                    <div className="flow-step">
+                                        <i className="fas fa-users"></i>
+                                        <div>Serve</div>
+                                        <small>Handle requests</small>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Services Tab */}
+                        {activeTab === 'services' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h3>Service Management</h3>
+                                    <button className="btn btn-gcp" data-bs-toggle="modal" data-bs-target="#deployServiceModal">
+                                        <i className="fas fa-plus"></i> Deploy Service
+                                    </button>
+                                </div>
+
+                                <div className="row">
+                                    {services.map(service => (
+                                        <div key={service.id} className="col-md-6 mb-3">
+                                            <div className="service-card">
+                                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                                    <h5>{service.name}</h5>
+                                                    <span className={`badge ${service.status === 'active' ? 'badge-active' : 'badge-inactive'}`}>
+                                                        {service.status.toUpperCase()}
+                                                    </span>
+                                                </div>
+                                                <p className="text-muted mb-2">{service.url}</p>
+                                                <div className="mb-2">
+                                                    <small>
+                                                        <i className="fas fa-map-marker-alt"></i> {service.region}<br />
+                                                        <i className="fas fa-clock"></i> Last deployed: {new Date(service.lastDeployed).toLocaleString()}
+                                                    </small>
+                                                </div>
+                                                <div className="mb-2">
+                                                    <span className="badge badge-cpu">{service.cpu} CPU</span>
+                                                    <span className="badge badge-memory">{service.memory} RAM</span>
+                                                </div>
+                                                <div className="mb-3">
+                                                    <div className="traffic-bar">
+                                                        <div className="traffic-fill" style={{ width: `${service.traffic}%` }}></div>
+                                                    </div>
+                                                    <small>Traffic: {service.traffic}%</small>
+                                                </div>
+                                                <div className="d-flex gap-2">
+                                                    <button className="btn btn-sm btn-outline-success">
+                                                        <i className="fas fa-play"></i> Test
+                                                    </button>
+                                                    <button className="btn btn-sm btn-outline-primary">
+                                                        <i className="fas fa-cog"></i> Configure
+                                                    </button>
+                                                    <button className="btn btn-sm btn-outline-danger">
+                                                        <i className="fas fa-stop"></i> Stop
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Revisions Tab */}
+                        {activeTab === 'revisions' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h3>Revision Management</h3>
+                                    <div className="d-flex gap-2">
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={selectedService}
+                                            onChange={(e) => setSelectedService(e.target.value)}
+                                            style={{ width: '200px' }}
+                                        >
+                                            {services.map(service => (
+                                                <option key={service.id} value={service.id}>{service.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="row">
+                                    {revisions.filter(rev => rev.serviceId === selectedService).map(revision => (
+                                        <div key={revision.id} className="col-md-6 mb-3">
+                                            <div className="revision-card">
+                                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                                    <h6>{revision.tag}</h6>
+                                                    <span className={`badge ${revision.status === 'active' ? 'badge-active' : 'badge-inactive'}`}>
+                                                        {revision.status}
+                                                    </span>
+                                                </div>
+                                                <p className="text-muted small mb-2">{revision.image}</p>
+                                                <div className="mb-2">
+                                                    <small>Created: {new Date(revision.created).toLocaleString()}</small>
+                                                </div>
+                                                <div className="mb-3">
+                                                    <label className="form-label small">Traffic Distribution: {revision.traffic}%</label>
+                                                    <input
+                                                        type="range"
+                                                        className="form-range"
+                                                        min="0"
+                                                        max="100"
+                                                        value={revision.traffic}
+                                                        onChange={(e) => updateTraffic(selectedService, revision.id, parseInt(e.target.value))}
+                                                    />
+                                                </div>
+                                                <div className="d-flex gap-2">
+                                                    <button className="btn btn-sm btn-outline-info">
+                                                        <i className="fas fa-eye"></i> View Logs
+                                                    </button>
+                                                    <button className="btn btn-sm btn-outline-warning">
+                                                        <i className="fas fa-undo"></i> Rollback
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Deploy Tab */}
+                        {activeTab === 'deploy' && (
+                            <div>
+                                <h3>Deploy Configuration</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Environment Variables</h5>
+                                            <div className="mb-3">
+                                                {envVars.map((envVar, index) => (
+                                                    <div key={index} className="env-var-item">
+                                                        <div>
+                                                            <strong>{envVar.key}</strong>: {envVar.value}
+                                                        </div>
+                                                        <button
+                                                            className="btn btn-sm btn-outline-danger"
+                                                            onClick={() => removeEnvVar(index)}
+                                                        >
+                                                            <i className="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="input-group-custom">
+                                                <label>Key:</label>
+                                                <input
+                                                    type="text"
+                                                    value={newEnvVar.key}
+                                                    onChange={(e) => setNewEnvVar({ ...newEnvVar, key: e.target.value })}
+                                                    placeholder="e.g., DATABASE_URL"
+                                                />
+                                            </div>
+                                            <div className="input-group-custom">
+                                                <label>Value:</label>
+                                                <input
+                                                    type="text"
+                                                    value={newEnvVar.value}
+                                                    onChange={(e) => setNewEnvVar({ ...newEnvVar, value: e.target.value })}
+                                                    placeholder="e.g., postgresql://..."
+                                                />
+                                            </div>
+                                            <button className="btn btn-gcp" onClick={addEnvVar}>
+                                                <i className="fas fa-plus"></i> Add Environment Variable
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Scaling Configuration</h5>
+                                            <div className="input-group-custom">
+                                                <label>Minimum Instances:</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    max="100"
+                                                    value={services.find(s => s.id === selectedService)?.minInstances || 0}
+                                                    onChange={(e) => {
+                                                        const service = services.find(s => s.id === selectedService);
+                                                        if (service) {
+                                                            scaleService(selectedService, parseInt(e.target.value), service.maxInstances);
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="input-group-custom">
+                                                <label>Maximum Instances:</label>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="1000"
+                                                    value={services.find(s => s.id === selectedService)?.maxInstances || 100}
+                                                    onChange={(e) => {
+                                                        const service = services.find(s => s.id === selectedService);
+                                                        if (service) {
+                                                            scaleService(selectedService, service.minInstances, parseInt(e.target.value));
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="input-group-custom">
+                                                <label>Request Timeout (seconds):</label>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="3600"
+                                                    value={services.find(s => s.id === selectedService)?.timeout || 300}
+                                                />
+                                            </div>
+                                            <div className="mt-3">
+                                                <button className="btn btn-gcp">
+                                                    <i className="fas fa-save"></i> Update Configuration
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Code Editor Tab */}
+                        {activeTab === 'code' && (
+                            <div>
+                                <h3>Interactive Code Editor</h3>
+                                <div className="code-editor">
+                                    {`# Cloud Run Python Example
+from flask import Flask
+import os
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    return 'Hello from Cloud Run!'
+
+@app.route('/health')
+def health():
+    return {'status': 'healthy'}
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
+
+# Dockerfile
+FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "app.py"]
+
+# requirements.txt
+Flask==2.3.3
+
+# Deploy command
+gcloud run deploy my-service \\
+  --source . \\
+  --platform managed \\
+  --region us-central1 \\
+  --allow-unauthenticated \\
+  --set-env-vars PORT=8080`}
+                                </div>
+                                <div className="mt-3">
+                                    <button
+                                        className="btn btn-gcp me-2"
+                                        onClick={() => executeCode('run-code')}
+                                        disabled={isExecuting}
+                                    >
+                                        {isExecuting ? (
+                                            <>
+                                                <i className="fas fa-spinner fa-spin"></i> Executing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fas fa-play"></i> Run Code
+                                            </>
+                                        )}
+                                    </button>
+                                    <button className="btn btn-outline-gcp">
+                                        <i className="fas fa-download"></i> Download
+                                    </button>
+                                </div>
+                                {codeOutput && (
+                                    <div className="code-output">
+                                        {codeOutput}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Performance Tab */}
+                        {activeTab === 'performance' && (
+                            <div>
+                                <h3>Performance Metrics</h3>
+                                <div className="performance-metrics">
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.services}</div>
+                                        <div className="perf-metric-label">Active Services</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.totalRequests.toLocaleString()}</div>
+                                        <div className="perf-metric-label">Total Requests</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.avgResponseTime}ms</div>
+                                        <div className="perf-metric-label">Avg Response Time</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.activeInstances}</div>
+                                        <div className="perf-metric-label">Active Instances</div>
+                                    </div>
+                                </div>
+
+                                <div className="execution-stats">
+                                    <div className="stat-item">
+                                        <span className="stat-label">Project ID:</span>
+                                        <span className="stat-value">{projectState.projectId}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Region:</span>
+                                        <span className="stat-value">{projectState.region}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Network:</span>
+                                        <span className="stat-value">{projectState.network}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Cost (24h):</span>
+                                        <span className="stat-value">${performance.cost}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Modals */}
+                    {/* Deploy Service Modal */}
+                    <div className="modal fade" id="deployServiceModal" tabIndex="-1">
+                        <div className="modal-dialog modal-lg">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Deploy New Service</h5>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div className="modal-body">
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Service Name:</label>
+                                                <input
+                                                    type="text"
+                                                    value={newService.name}
+                                                    onChange={(e) => setNewService({ ...newService, name: e.target.value })}
+                                                    placeholder="e.g., my-service"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Container Image:</label>
+                                                <input
+                                                    type="text"
+                                                    value={newService.image}
+                                                    onChange={(e) => setNewService({ ...newService, image: e.target.value })}
+                                                    placeholder="gcr.io/project/image:tag"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Region:</label>
+                                                <select
+                                                    value={newService.region}
+                                                    onChange={(e) => setNewService({ ...newService, region: e.target.value })}
+                                                >
+                                                    <option value="us-central1">US Central 1</option>
+                                                    <option value="us-west1">US West 1</option>
+                                                    <option value="us-east1">US East 1</option>
+                                                    <option value="europe-west1">Europe West 1</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>CPU Allocation:</label>
+                                                <select
+                                                    value={newService.cpu}
+                                                    onChange={(e) => setNewService({ ...newService, cpu: e.target.value })}
+                                                >
+                                                    <option value="1000m">1 vCPU</option>
+                                                    <option value="2000m">2 vCPUs</option>
+                                                    <option value="4000m">4 vCPUs</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Memory:</label>
+                                                <select
+                                                    value={newService.memory}
+                                                    onChange={(e) => setNewService({ ...newService, memory: e.target.value })}
+                                                >
+                                                    <option value="512Mi">512 MB</option>
+                                                    <option value="1Gi">1 GB</option>
+                                                    <option value="2Gi">2 GB</option>
+                                                    <option value="4Gi">4 GB</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Request Timeout (seconds):</label>
+                                                <input
+                                                    type="number"
+                                                    value={newService.timeout}
+                                                    onChange={(e) => setNewService({ ...newService, timeout: parseInt(e.target.value) })}
+                                                    min="1"
+                                                    max="3600"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Min Instances:</label>
+                                                <input
+                                                    type="number"
+                                                    value={newService.minInstances}
+                                                    onChange={(e) => setNewService({ ...newService, minInstances: parseInt(e.target.value) })}
+                                                    min="0"
+                                                    max="100"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="input-group-custom">
+                                                <label>Max Instances:</label>
+                                                <input
+                                                    type="number"
+                                                    value={newService.maxInstances}
+                                                    onChange={(e) => setNewService({ ...newService, maxInstances: parseInt(e.target.value) })}
+                                                    min="1"
+                                                    max="1000"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" className="btn btn-gcp" onClick={deployService} data-bs-dismiss="modal">Deploy Service</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-book"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/run" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Run Site</a></li>
+                                        <li><a href="https://cloud.google.com/run/docs" target="_blank"><i className="fas fa-external-link-alt"></i> Documentation</a></li>
+                                        <li><a href="https://console.cloud.google.com/run" target="_blank"><i className="fas fa-external-link-alt"></i> Cloud Console</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://cloud.google.com/run/docs/quickstarts" target="_blank"><i className="fas fa-external-link-alt"></i> Quickstarts</a></li>
+                                        <li><a href="https://cloud.google.com/run/docs/tutorials" target="_blank"><i className="fas fa-external-link-alt"></i> Tutorials</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/google-cloud-run" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

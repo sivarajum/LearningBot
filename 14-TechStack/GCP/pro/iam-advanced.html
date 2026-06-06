@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAM Advanced - GCP Learning Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fbbc04 0%, #ffca28 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #fbbc04;
+        }
+
+        .sidebar-header .service-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .sidebar-header .service-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fbbc04;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header .service-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(251, 188, 4, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #fbbc04;
+        }
+
+        .nav-item {
+            padding: 10px 15px;
+            margin: 2px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(251, 188, 4, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #fbbc04;
+            color: white;
+            box-shadow: 0 4px 12px rgba(251, 188, 4, 0.3);
+        }
+
+        .nav-item .nav-icon {
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .nav-item .nav-level {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-left: auto;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 320px;
+            padding: 30px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #fbbc04;
+        }
+
+        .section-icon {
+            font-size: 35px;
+            margin-right: 15px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fbbc04;
+            margin: 0;
+        }
+
+        .section-level {
+            background: #fbbc04;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .section-content {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .section-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(251, 188, 4, 0.1), rgba(255, 202, 40, 0.1));
+            border-left: 4px solid #fbbc04;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .highlight-box .highlight-title {
+            font-weight: bold;
+            color: #fbbc04;
+            margin-bottom: 10px;
+        }
+
+        /* IAM Architecture Animation */
+        .iam-architecture {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .architecture-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .architecture-diagram {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, #fbbc04 0%, #ffca28 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .architecture-stage {
+            position: absolute;
+            width: 90px;
+            height: 65px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stage-user {
+            left: 50px;
+            top: 170px;
+            background: #4caf50;
+        }
+
+        .stage-role {
+            left: 180px;
+            top: 170px;
+            background: #fbbc04;
+        }
+
+        .stage-policy {
+            left: 310px;
+            top: 170px;
+            background: #1565c0;
+        }
+
+        .stage-resource {
+            right: 50px;
+            top: 170px;
+            background: #e91e63;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .connection-line.line1 {
+            left: 140px;
+            top: 190px;
+            width: 100px;
+        }
+
+        .connection-line.line2 {
+            left: 270px;
+            top: 190px;
+            width: 100px;
+        }
+
+        .connection-line.line3 {
+            left: 400px;
+            top: 190px;
+            width: 100px;
+        }
+
+        .architecture-label {
+            position: absolute;
+            left: 280px;
+            top: 120px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Code Examples */
+        .code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .code-tab {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            background: #4285f4;
+            color: white;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #cccccc;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #555;
+            color: white;
+        }
+
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .code-block {
+            display: none;
+        }
+
+        .code-block.active {
+            display: block;
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #d4d4d4;
+        }
+
+        .code-block .line-numbers {
+            display: inline-block;
+            width: 30px;
+            color: #858585;
+            margin-right: 10px;
+            user-select: none;
+        }
+
+        /* Principal Types Grid */
+        .principal-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .principal-type {
+            background: linear-gradient(135deg, rgba(251, 188, 4, 0.1), rgba(255, 202, 40, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(251, 188, 4, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .principal-type:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(251, 188, 4, 0.3);
+        }
+
+        .principal-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .principal-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+
+        .principal-desc {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Performance Metrics */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .metric-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-level {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .principal-types {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="service-icon">🔐</span>
+            <div class="service-title">Identity & Access Management</div>
+            <div class="service-subtitle">IAM & Security</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🏗️ Fundamentals</div>
+            <div class="nav-item active" data-section="overview">
+                <span class="nav-icon">📋</span>
+                Overview & Architecture
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="principals">
+                <span class="nav-icon">👥</span>
+                Principals & Identities
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="roles">
+                <span class="nav-icon">🎭</span>
+                Roles & Permissions
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔑 Access Management</div>
+            <div class="nav-item" data-section="policies">
+                <span class="nav-icon">📄</span>
+                IAM Policies
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="service-accounts">
+                <span class="nav-icon">🤖</span>
+                Service Accounts
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="workload-identity">
+                <span class="nav-icon">🔄</span>
+                Workload Identity
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🛡️ Security & Compliance</div>
+            <div class="nav-item" data-section="conditional-access">
+                <span class="nav-icon">🚪</span>
+                Conditional Access
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="audit-logs">
+                <span class="nav-icon">📊</span>
+                Audit Logs & Monitoring
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="security-best-practices">
+                <span class="nav-icon">✅</span>
+                Security Best Practices
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🏢 Organization</div>
+            <div class="nav-item" data-section="resource-hierarchy">
+                <span class="nav-icon">🏗️</span>
+                Resource Hierarchy
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="folders">
+                <span class="nav-icon">📁</span>
+                Folders & Projects
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="custom-roles">
+                <span class="nav-icon">⚙️</span>
+                Custom Roles
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔧 Tools & Integration</div>
+            <div class="nav-item" data-section="iam-tools">
+                <span class="nav-icon">🛠️</span>
+                IAM Tools & APIs
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="troubleshooting">
+                <span class="nav-icon">🔍</span>
+                Troubleshooting
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overview" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🔐</span>
+                <h2 class="section-title">IAM Overview</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Identity and Access Management (IAM) enables you to manage access control by defining who
+                    (identity) has what access (role) for which resource. IAM provides fine-grained access control
+                    and is a critical component of Google Cloud security.
+                </p>
+
+                <div class="performance-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">1000+</div>
+                        <div class="metric-label">Permissions</div>
+                        <div class="metric-desc">Granular access control</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">3</div>
+                        <div class="metric-label">Role Types</div>
+                        <div class="metric-desc">Basic, Predefined, Custom</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Global</div>
+                        <div class="metric-label">Scope</div>
+                        <div class="metric-desc">Organization-wide policies</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">60s</div>
+                        <div class="metric-label">Propagation</div>
+                        <div class="metric-desc">Policy change delay</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🔐 Key Principles</div>
+                    <ul>
+                        <li><strong>Least Privilege:</strong> Grant only necessary permissions</li>
+                        <li><strong>Separation of Duties:</strong> Different roles for different tasks</li>
+                        <li><strong>Defense in Depth:</strong> Multiple layers of access control</li>
+                        <li><strong>Audit Everything:</strong> Comprehensive logging and monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Principals Section -->
+        <div id="principals" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">👥</span>
+                <h2 class="section-title">Principals & Identity Types</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Principals are identities that can be granted access to resources. GCP supports various
+                    types of principals including Google accounts, service accounts, and groups.
+                </p>
+
+                <div class="principal-types">
+                    <div class="principal-type">
+                        <span class="principal-icon">👤</span>
+                        <div class="principal-name">Google Accounts</div>
+                        <div class="principal-desc">Individual user accounts with @gmail.com or custom domains</div>
+                    </div>
+                    <div class="principal-type">
+                        <span class="principal-icon">🤖</span>
+                        <div class="principal-name">Service Accounts</div>
+                        <div class="principal-desc">Accounts for applications and services to authenticate</div>
+                    </div>
+                    <div class="principal-type">
+                        <span class="principal-icon">👥</span>
+                        <div class="principal-name">Google Groups</div>
+                        <div class="principal-desc">Collections of users for simplified access management</div>
+                    </div>
+                    <div class="principal-type">
+                        <span class="principal-icon">🌐</span>
+                        <div class="principal-name">Domain Users</div>
+                        <div class="principal-desc">Users from Google Workspace or Cloud Identity domains</div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'iam-principals')">gcloud</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="iam-principals" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># List all IAM principals in a project</span><br><span class="line-numbers"> 2</span>gcloud projects get-iam-policy my-project --format="table(bindings.role,bindings.members)"<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Add user to project with specific role</span><br><span class="line-numbers"> 5</span>gcloud projects add-iam-policy-binding my-project \<br><span class="line-numbers"> 6</span>  --member="user:alice@example.com" \<br><span class="line-numbers"> 7</span>  --role="roles/viewer"<br><span class="line-numbers"> 8</span><br><span class="line-numbers"> 9</span><span class="comment"># Add service account to project</span><br><span class="line-numbers">10</span>gcloud projects add-iam-policy-binding my-project \<br><span class="line-numbers">11</span>  --member="serviceAccount:my-service@my-project.iam.gserviceaccount.com" \<br><span class="line-numbers">12</span>  --role="roles/editor"<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="comment"># Add Google Group to project</span><br><span class="line-numbers">15</span>gcloud projects add-iam-policy-binding my-project \<br><span class="line-numbers">16</span>  --member="group:developers@mycompany.com" \<br><span class="line-numbers">17</span>  --role="roles/cloudbuild.builds.editor"<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span><span class="comment"># Create service account</span><br><span class="line-numbers">20</span>gcloud iam service-accounts create my-service-account \<br><span class="line-numbers">21</span>  --description="My service account" \<br><span class="line-numbers">22</span>  --display-name="My Service Account"<br><span class="line-numbers">23</span><br><span class="line-numbers">24</span><span class="comment"># List service accounts</span><br><span class="line-numbers">25</span>gcloud iam service-accounts list<br><span class="line-numbers">26</span><br><span class="line-numbers">27</span><span class="comment"># Create service account key</span><br><span class="line-numbers">28</span>gcloud iam service-accounts keys create key.json \<br><span class="line-numbers">29</span>  --iam-account=my-service-account@my-project.iam.gserviceaccount.com</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roles Section -->
+        <div id="roles" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🎭</span>
+                <h2 class="section-title">Roles & Permission Hierarchy</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Roles are collections of permissions that can be granted to principals. GCP provides
+                    basic roles, predefined roles, and allows creation of custom roles for specific needs.
+                </p>
+
+                <div class="iam-architecture">
+                    <div class="architecture-title">🔐 IAM Flow: Principal → Role → Permissions → Resource</div>
+                    <div class="architecture-diagram">
+                        <div class="architecture-stage stage-user">
+                            <div>👤 Principal</div>
+                            <div style="font-size: 8px;">Identity</div>
+                        </div>
+                        <div class="architecture-stage stage-role">
+                            <div>🎭 Role</div>
+                            <div style="font-size: 8px;">Permissions</div>
+                        </div>
+                        <div class="architecture-stage stage-policy">
+                            <div>📄 Policy</div>
+                            <div style="font-size: 8px;">Binding</div>
+                        </div>
+                        <div class="architecture-stage stage-resource">
+                            <div>🔒 Resource</div>
+                            <div style="font-size: 8px;">Access</div>
+                        </div>
+
+                        <!-- Connection lines -->
+                        <div class="connection-line line1"></div>
+                        <div class="connection-line line2"></div>
+                        <div class="connection-line line3"></div>
+
+                        <div class="architecture-label">Access Control Flow</div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'iam-roles')">gcloud</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="iam-roles" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># List predefined roles</span><br><span class="line-numbers"> 2</span>gcloud iam roles list --filter="name:*compute*"<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Describe a specific role</span><br><span class="line-numbers"> 5</span>gcloud iam roles describe roles/compute.instanceAdmin<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span><span class="comment"># Create custom role</span><br><span class="line-numbers"> 8</span>gcloud iam roles create my-custom-role \<br><span class="line-numbers"> 9</span>  --project=my-project \<br><span class="line-numbers">10</span>  --title="My Custom Role" \<br><span class="line-numbers">11</span>  --description="Custom role for specific permissions" \<br><span class="line-numbers">12</span>  --permissions="compute.instances.get,compute.instances.list,compute.disks.get"<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="comment"># Update custom role</span><br><span class="line-numbers">15</span>gcloud iam roles update my-custom-role \<br><span class="line-numbers">16</span>  --project=my-project \<br><span class="line-numbers">17</span>  --add-permissions="compute.instances.start"<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span><span class="comment"># List custom roles</span><br><span class="line-numbers">20</span>gcloud iam roles list --filter="name:*my-custom*" --project=my-project<br><span class="line-numbers">21</span><br><span class="line-numbers">22</span><span class="comment"># Delete custom role</span><br><span class="line-numbers">23</span>gcloud iam roles delete my-custom-role --project=my-project<br><span class="line-numbers">24</span><br><span class="line-numbers">25</span><span class="comment"># Test IAM permissions</span><br><span class="line-numbers">26</span>gcloud iam permissions test-iam-permissions \<br><span class="line-numbers">27</span>  --member="user:alice@example.com" \<br><span class="line-numbers">28</span>  --resource="//cloudresourcemanager.googleapis.com/projects/my-project" \<br><span class="line-numbers">29</span>  --permissions="compute.instances.create,compute.disks.create"</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🎭 Role Types</div>
+                    <ul>
+                        <li><strong>Basic Roles:</strong> Owner, Editor, Viewer (broad permissions)</li>
+                        <li><strong>Predefined Roles:</strong> Service-specific roles (e.g., compute.admin)</li>
+                        <li><strong>Custom Roles:</strong> User-defined combinations of permissions</li>
+                        <li><strong>Primitive Roles:</strong> Legacy roles (avoid for new projects)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Accounts Section -->
+        <div id="service-accounts" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🤖</span>
+                <h2 class="section-title">Service Accounts & Authentication</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Service accounts are special accounts for applications and services to authenticate with
+                    Google Cloud APIs. They provide secure, key-based authentication without user interaction.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active"
+                                onclick="switchTab(this, 'iam-service-accounts')">gcloud</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="iam-service-accounts" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Create service account</span><br><span class="line-numbers"> 2</span>gcloud iam service-accounts create my-app-service \<br><span class="line-numbers"> 3</span>  --description="Service account for my application" \<br><span class="line-numbers"> 4</span>  --display-name="My App Service Account"<br><span class="line-numbers"> 5</span><br><span class="line-numbers"> 6</span><span class="comment"># Create service account key</span><br><span class="line-numbers"> 7</span>gcloud iam service-accounts keys create ~/key.json \<br><span class="line-numbers"> 8</span>  --iam-account=my-app-service@my-project.iam.gserviceaccount.com<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># List service account keys</span><br><span class="line-numbers">11</span>gcloud iam service-accounts keys list \<br><span class="line-numbers">12</span>  --iam-account=my-app-service@my-project.iam.gserviceaccount.com<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="comment"># Delete old service account key</span><br><span class="line-numbers">15</span>gcloud iam service-accounts keys delete KEY_ID \<br><span class="line-numbers">16</span>  --iam-account=my-app-service@my-project.iam.gserviceaccount.com<br><span class="line-numbers">17</span><br><span class="line-numbers">18</span><span class="comment"># Grant roles to service account</span><br><span class="line-numbers">19</span>gcloud projects add-iam-policy-binding my-project \<br><span class="line-numbers">20</span>  --member="serviceAccount:my-app-service@my-project.iam.gserviceaccount.com" \<br><span class="line-numbers">21</span>  --role="roles/storage.objectViewer"<br><span class="line-numbers">22</span><br><span class="line-numbers">23</span><span class="comment"># Use service account impersonation</span><br><span class="line-numbers">24</span>gcloud auth activate-service-account my-app-service@my-project.iam.gserviceaccount.com \<br><span class="line-numbers">25</span>  --key-file=~/key.json<br><span class="line-numbers">26</span><br><span class="line-numbers">27</span><span class="comment"># Create service account with limited permissions</span><br><span class="line-numbers">28</span>gcloud iam service-accounts create restricted-service \<br><span class="line-numbers">29</span>  --description="Restricted service account" \<br><span class="line-numbers">30</span>  --display-name="Restricted Service"<br><span class="line-numbers">31</span><br><span class="line-numbers">32</span><span class="comment"># Disable service account</span><br><span class="line-numbers">33</span>gcloud iam service-accounts disable my-app-service@my-project.iam.gserviceaccount.com<br><span class="line-numbers">34</span><br><span class="line-numbers">35</span><span class="comment"># Delete service account</span><br><span class="line-numbers">36</span>gcloud iam service-accounts delete my-app-service@my-project.iam.gserviceaccount.com</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🤖 Service Account Best Practices</div>
+                    <ul>
+                        <li><strong>Principle of Least Privilege:</strong> Grant minimal required permissions</li>
+                        <li><strong>Key Rotation:</strong> Regularly rotate service account keys</li>
+                        <li><strong>Separate Accounts:</strong> Use different accounts for different services</li>
+                        <li><strong>Workload Identity:</strong> Use workload identity instead of keys when possible</li>
+                        <li><strong>Monitoring:</strong> Monitor service account usage and anomalies</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Policies Section -->
+        <div id="policies" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📄</span>
+                <h2 class="section-title">IAM Policies & Bindings</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    IAM policies define who has what access to which resources. Policies are attached to resources
+                    and contain bindings that associate principals with roles. Understanding policy structure is
+                    crucial for effective access management.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'iam-policies')">gcloud</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="iam-policies" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Create policy binding</span><br><span class="line-numbers"> 2</span>gcloud projects add-iam-policy-binding my-project \<br><span class="line-numbers"> 3</span>  --member="user:bob@example.com" \<br><span class="line-numbers"> 4</span>  --role="roles/compute.instanceAdmin.v1"<br><span class="line-numbers"> 5</span><br><span class="line-numbers"> 6</span><span class="comment"># Remove policy binding</span><br><span class="line-numbers"> 7</span>gcloud projects remove-iam-policy-binding my-project \<br><span class="line-numbers"> 8</span>  --member="user:bob@example.com" \<br><span class="line-numbers"> 9</span>  --role="roles/compute.instanceAdmin.v1"<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span><span class="comment"># Get IAM policy</span><br><span class="line-numbers">12</span>gcloud projects get-iam-policy my-project --format="table(bindings.role,bindings.members)"<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="comment"># Set IAM policy from file</span><br><span class="line-numbers">15</span>gcloud projects set-iam-policy my-project policy.json<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span><span class="comment"># Check effective permissions</span><br><span class="line-numbers">18</span>gcloud iam permissions test-iam-permissions \<br><span class="line-numbers">19</span>  --member="user:alice@example.com" \<br><span class="line-numbers">20</span>  --resource="//cloudresourcemanager.googleapis.com/projects/my-project" \<br><span class="line-numbers">21</span>  --permissions="compute.instances.create,compute.disks.create"<br><span class="line-numbers">22</span><br><span class="line-numbers">23</span><span class="comment"># List service account keys</span><br><span class="line-numbers">24</span>gcloud iam service-accounts keys list \<br><span class="line-numbers">25</span>  --iam-account=my-service-account@my-project.iam.gserviceaccount.com<br><span class="line-numbers">26</span><br><span class="line-numbers">27</span><span class="comment"># Create service account key</span><br><span class="line-numbers">28</span>gcloud iam service-accounts keys create key.json \<br><span class="line-numbers">29</span>  --iam-account=my-service-account@my-project.iam.gserviceaccount.com<br><span class="line-numbers">30</span><br><span class="line-numbers">31</span><span class="comment"># Delete service account key</span><br><span class="line-numbers">32</span>gcloud iam service-accounts keys delete KEY_ID \<br><span class="line-numbers">33</span>  --iam-account=my-service-account@my-project.iam.gserviceaccount.com</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">📄 Policy Structure</div>
+                    <ul>
+                        <li><strong>Bindings:</strong> Associate members with roles</li>
+                        <li><strong>Members:</strong> Principals (users, groups, service accounts)</li>
+                        <li><strong>Roles:</strong> Collections of permissions</li>
+                        <li><strong>Conditions:</strong> Optional constraints on when binding applies</li>
+                        <li><strong>Version:</strong> Policy version (1 or 2 for conditions)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.content-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                        section.classList.remove('visible');
+                    });
+
+                    // Show selected section
+                    const sectionId = this.dataset.section;
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        setTimeout(() => {
+                            targetSection.classList.add('visible');
+                        }, 100);
+
+                        // Smooth scroll to section
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Show first section by default
+            const firstSection = document.getElementById('overview');
+            if (firstSection) {
+                firstSection.style.display = 'block';
+                setTimeout(() => {
+                    firstSection.classList.add('visible');
+                }, 100);
+            }
+
+            // Intersection Observer for animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        // Tab switching functionality
+        function switchTab(clickedTab, targetId) {
+            const container = clickedTab.closest('.code-container');
+            const tabs = container.querySelectorAll('.code-tab');
+            const codeBlocks = container.querySelectorAll('.code-block');
+
+            // Remove active class from all tabs and code blocks
+            tabs.forEach(tab => tab.classList.remove('active'));
+            codeBlocks.forEach(block => block.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding code block
+            clickedTab.classList.add('active');
+            const targetBlock = container.querySelector(`#${targetId}`);
+            if (targetBlock) {
+                targetBlock.classList.add('active');
+            }
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const container = button.closest('.code-container');
+            const activeCodeBlock = container.querySelector('.code-block.active code');
+
+            if (activeCodeBlock) {
+                // Extract text content, removing line numbers and HTML tags
+                const textToCopy = activeCodeBlock.innerText || activeCodeBlock.textContent;
+
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Visual feedback
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '✅ Copied!';
+                    button.style.background = '#4caf50';
+
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = textToCopy;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '✅ Copied!';
+                    button.style.background = '#4caf50';
+
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

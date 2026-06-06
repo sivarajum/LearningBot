@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Run Advanced - GCP Learning Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00acc1 0%, #26c6da 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #00acc1;
+        }
+
+        .sidebar-header .service-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .sidebar-header .service-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00acc1;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header .service-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(0, 172, 193, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #00acc1;
+        }
+
+        .nav-item {
+            padding: 10px 15px;
+            margin: 2px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(0, 172, 193, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #00acc1;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 172, 193, 0.3);
+        }
+
+        .nav-item .nav-icon {
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .nav-item .nav-level {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-left: auto;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 320px;
+            padding: 30px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 0 auto 30px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            max-width: 1200px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #00acc1;
+        }
+
+        .section-icon {
+            font-size: 35px;
+            margin-right: 15px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00acc1;
+            margin: 0;
+        }
+
+        .section-level {
+            background: #00acc1;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .section-content {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .section-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(0, 172, 193, 0.1), rgba(38, 198, 218, 0.1));
+            border-left: 4px solid #00acc1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .highlight-box .highlight-title {
+            font-weight: bold;
+            color: #00acc1;
+            margin-bottom: 10px;
+        }
+
+        /* Cloud Run Architecture Animation */
+        .cloud-run-architecture {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .architecture-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .architecture-diagram {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, #00acc1 0%, #26c6da 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .architecture-stage {
+            position: absolute;
+            width: 100px;
+            height: 70px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 11px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stage-request {
+            left: 50px;
+            top: 165px;
+            background: #4caf50;
+        }
+
+        .stage-container {
+            left: 200px;
+            top: 165px;
+            background: #00acc1;
+        }
+
+        .stage-response {
+            right: 50px;
+            top: 165px;
+            background: #9c27b0;
+        }
+
+        .request-particle {
+            position: absolute;
+            width: 20px;
+            height: 15px;
+            background: #ffc107;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            animation: requestFlow 3s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        .request-particle:nth-child(2) {
+            animation-delay: 0.7s;
+        }
+
+        .request-particle:nth-child(3) {
+            animation-delay: 1.4s;
+        }
+
+        @keyframes requestFlow {
+            0% {
+                left: 75px;
+                top: 180px;
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+
+            25% {
+                left: 220px;
+                top: 180px;
+                transform: scale(1.3) rotate(45deg);
+                opacity: 1;
+            }
+
+            50% {
+                left: 350px;
+                top: 180px;
+                transform: scale(1.6) rotate(90deg);
+                opacity: 0.8;
+            }
+
+            75% {
+                left: 480px;
+                top: 180px;
+                transform: scale(1.3) rotate(135deg);
+                opacity: 1;
+            }
+
+            100% {
+                left: 530px;
+                top: 180px;
+                transform: scale(1) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        .architecture-arrow {
+            position: absolute;
+            left: 150px;
+            top: 185px;
+            width: 360px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .architecture-arrow::after {
+            content: '🚀';
+            position: absolute;
+            right: -25px;
+            top: -12px;
+            font-size: 20px;
+            animation: cloudRunRocket 2s ease-in-out infinite;
+        }
+
+        @keyframes cloudRunRocket {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.4);
+            }
+        }
+
+        .architecture-label {
+            position: absolute;
+            left: 320px;
+            top: 120px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Code Examples */
+        .code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .code-tab {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            background: #4285f4;
+            color: white;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #cccccc;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #555;
+            color: white;
+        }
+
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .code-block {
+            display: none;
+        }
+
+        .code-block.active {
+            display: block;
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #d4d4d4;
+        }
+
+        .code-block .line-numbers {
+            display: inline-block;
+            width: 30px;
+            color: #858585;
+            margin-right: 10px;
+            user-select: none;
+        }
+
+        /* Service Types Grid */
+        .service-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .service-type {
+            background: linear-gradient(135deg, rgba(0, 172, 193, 0.1), rgba(38, 198, 218, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(0, 172, 193, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .service-type:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 172, 193, 0.3);
+        }
+
+        .service-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .service-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00838f;
+            margin-bottom: 10px;
+        }
+
+        .service-desc {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Performance Metrics */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .metric-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-level {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .service-types {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Content Grid Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin: 30px auto;
+            max-width: 1200px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: left;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .content-card h3 {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00acc1;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .content-card h3::before {
+            content: "📋";
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .content-card p {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #00acc1 0%, #26c6da 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(0, 172, 193, 0.05);
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(0, 172, 193, 0.1);
+        }
+
+        .comparison-table td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .comparison-table td strong {
+            color: #00acc1;
+        }
+
+        /* Decision Tree Styles */
+        .decision-tree {
+            max-width: 800px;
+            margin: 20px auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .decision-node {
+            position: relative;
+            background: white;
+            border: 2px solid #00acc1;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 172, 193, 0.1);
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .decision-node.root {
+            background: linear-gradient(135deg, #00acc1, #26c6da);
+            color: white;
+            border-color: #00acc1;
+            box-shadow: 0 4px 12px rgba(0, 172, 193, 0.3);
+        }
+
+        .decision-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .decision-edges {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .decision-edge {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px;
+        }
+
+        .decision-edge::before {
+            content: '';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 25px;
+            background: #00acc1;
+        }
+
+        .decision-edge.yes::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 8px solid #4CAF50;
+        }
+
+        .decision-edge.no::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 8px solid #f44336;
+        }
+
+        .edge-label {
+            background: white;
+            border: 2px solid #00acc1;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: #00acc1;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .decision-edge.yes .edge-label {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .decision-edge.no .edge-label {
+            border-color: #f44336;
+            color: #f44336;
+        }
+
+        .decision-result {
+            background: white;
+            border: 2px solid #666;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            line-height: 1.4;
+            text-align: center;
+            max-width: 200px;
+        }
+
+        .decision-result.success {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+        }
+
+        .decision-result.warning {
+            border-color: #ff9800;
+            background: linear-gradient(135deg, #fff3e0, #fff8e1);
+        }
+
+        .decision-result strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .decision-edges {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .decision-edge {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .decision-result {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="service-icon">🏃</span>
+            <div class="service-title">Cloud Run</div>
+            <div class="service-subtitle">Serverless Containers</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🏗️ Fundamentals</div>
+            <div class="nav-item active" data-section="overview">
+                <span class="nav-icon">📋</span>
+                Overview & Architecture
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="service-types">
+                <span class="nav-icon">🔄</span>
+                Service Types
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="when-to-use">
+                <span class="nav-icon">🎯</span>
+                When to Use Cloud Run
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="deployment">
+                <span class="nav-icon">🚀</span>
+                Deployment Strategies
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">⚙️ Configuration</div>
+            <div class="nav-item" data-section="scaling">
+                <span class="nav-icon">📈</span>
+                Autoscaling & Performance
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="environment">
+                <span class="nav-icon">🌍</span>
+                Environment Variables
+                <span class="nav-level">Basic</span>
+            </div>
+            <div class="nav-item" data-section="networking">
+                <span class="nav-icon">🌐</span>
+                Networking & Security
+                <span class="nav-level">Intermediate</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🔗 Integration</div>
+            <div class="nav-item" data-section="eventarc">
+                <span class="nav-icon">⚡</span>
+                Eventarc Integration
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="cloud-build">
+                <span class="nav-icon">🔨</span>
+                Cloud Build CI/CD
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="vpc">
+                <span class="nav-icon">🔒</span>
+                VPC Networking
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">📊 Monitoring</div>
+            <div class="nav-item" data-section="logging">
+                <span class="nav-icon">📝</span>
+                Logging & Monitoring
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="debugging">
+                <span class="nav-icon">🐛</span>
+                Debugging & Troubleshooting
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="performance">
+                <span class="nav-icon">⚡</span>
+                Performance Optimization
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">🚀 Advanced Features</div>
+            <div class="nav-item" data-section="jobs">
+                <span class="nav-icon">⚙️</span>
+                Cloud Run Jobs
+                <span class="nav-level">Advanced</span>
+            </div>
+            <div class="nav-item" data-section="functions">
+                <span class="nav-icon">λ</span>
+                Cloud Functions vs Run
+                <span class="nav-level">Intermediate</span>
+            </div>
+            <div class="nav-item" data-section="multi-region">
+                <span class="nav-icon">🌍</span>
+                Multi-region Deployment
+                <span class="nav-level">Advanced</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overview" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🏃</span>
+                <h2 class="section-title">Cloud Run Overview</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Cloud Run is Google's fully managed serverless platform for running containerized applications.
+                    It automatically scales your applications based on traffic, from zero to millions of requests,
+                    and you only pay for the compute time you use.
+                </p>
+
+                <div class="performance-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">0ms</div>
+                        <div class="metric-label">Cold Start</div>
+                        <div class="metric-desc">Instant scaling from zero</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">HTTP</div>
+                        <div class="metric-label">Any Language</div>
+                        <div class="metric-desc">Containerized apps</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Auto</div>
+                        <div class="metric-label">Scaling</div>
+                        <div class="metric-desc">Zero to millions</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">Pay-per-use</div>
+                        <div class="metric-label">Billing</div>
+                        <div class="metric-desc">Only for compute time</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🏃 Key Capabilities</div>
+                    <ul>
+                        <li><strong>Serverless:</strong> No infrastructure management required</li>
+                        <li><strong>Container-native:</strong> Run any containerized application</li>
+                        <li><strong>Auto-scaling:</strong> Scale to zero when no traffic</li>
+                        <li><strong>Fast deployments:</strong> Deploy in seconds with zero downtime</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- When to Use Cloud Run Section -->
+        <div id="when-to-use" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">When to Use Cloud Run</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Cloud Run is ideal for containerized applications that need serverless execution.
+                    Choose Cloud Run when you want the flexibility of containers with the simplicity
+                    of serverless scaling, especially for web applications, APIs, and microservices.
+                </p>
+
+                <div class="decision-tree">
+                    <div class="decision-node root">
+                        <div class="decision-title">Need Containerized Apps?</div>
+                        <div class="decision-edges">
+                            <div class="decision-edge yes">
+                                <div class="edge-label">Yes</div>
+                                <div class="decision-node">
+                                    <div class="decision-title">Want Serverless Scaling?</div>
+                                    <div class="decision-edges">
+                                        <div class="decision-edge yes">
+                                            <div class="edge-label">Yes</div>
+                                            <div class="decision-node">
+                                                <div class="decision-title">HTTP/Web Apps?</div>
+                                                <div class="decision-edges">
+                                                    <div class="decision-edge yes">
+                                                        <div class="edge-label">Yes</div>
+                                                        <div class="decision-result success">
+                                                            <strong>✅ Cloud Run</strong><br>
+                                                            Perfect for web apps, APIs, and microservices
+                                                        </div>
+                                                    </div>
+                                                    <div class="decision-edge no">
+                                                        <div class="edge-label">No</div>
+                                                        <div class="decision-result warning">
+                                                            <strong>⚠️ Consider Cloud Run Jobs</strong><br>
+                                                            For batch processing and background tasks
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="decision-edge no">
+                                            <div class="edge-label">No</div>
+                                            <div class="decision-result">
+                                                <strong>🔄 GKE</strong><br>
+                                                For persistent workloads and complex orchestration
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="decision-edge no">
+                                <div class="edge-label">No</div>
+                                <div class="decision-node">
+                                    <div class="decision-title">Simple Functions?</div>
+                                    <div class="decision-edges">
+                                        <div class="decision-edge yes">
+                                            <div class="edge-label">Yes</div>
+                                            <div class="decision-result">
+                                                <strong>λ Cloud Functions</strong><br>
+                                                For event-driven, stateless functions
+                                            </div>
+                                        </div>
+                                        <div class="decision-edge no">
+                                            <div class="edge-label">No</div>
+                                            <div class="decision-result">
+                                                <strong>🖥️ Compute Engine</strong><br>
+                                                For VMs and persistent infrastructure
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Best For</th>
+                                <th>Scaling</th>
+                                <th>Cold Start</th>
+                                <th>Execution Time</th>
+                                <th>Cost Model</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Cloud Run</strong></td>
+                                <td>Containerized web apps, APIs, microservices</td>
+                                <td>0 to 1000+ instances</td>
+                                <td>1-3 seconds</td>
+                                <td>Up to 60 minutes</td>
+                                <td>Per CPU-second + memory</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud Functions</strong></td>
+                                <td>Event-driven functions, simple APIs</td>
+                                <td>0 to 1000 instances</td>
+                                <td>100-500ms</td>
+                                <td>Max 9 minutes</td>
+                                <td>Per invocation + duration</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GKE</strong></td>
+                                <td>Complex apps, stateful workloads</td>
+                                <td>Manual/Auto scaling</td>
+                                <td>Seconds to minutes</td>
+                                <td>Continuous</td>
+                                <td>Per node-hour</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Compute Engine</strong></td>
+                                <td>Persistent VMs, custom infrastructure</td>
+                                <td>Manual scaling</td>
+                                <td>VM boot time</td>
+                                <td>Continuous</td>
+                                <td>Per VM-hour</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'migration-webapp')">Web App
+                                Migration</button>
+                            <button class="code-tab" onclick="switchTab(this, 'migration-api')">API Migration</button>
+                            <button class="code-tab"
+                                onclick="switchTab(this, 'migration-microservices')">Microservices</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="migration-webapp" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Migrate existing web app to Cloud Run</span><br><span class="line-numbers"> 2</span><span class="comment"># 1. Containerize your application</span><br><span class="line-numbers"> 3</span>FROM node:18-slim<br><span class="line-numbers"> 4</span>WORKDIR /app<br><span class="line-numbers"> 5</span>COPY package*.json ./<br><span class="line-numbers"> 6</span>RUN npm ci --only=production<br><span class="line-numbers"> 7</span>COPY . .<br><span class="line-numbers"> 8</span>EXPOSE 8080<br><span class="line-numbers"> 9</span>CMD ["npm", "start"]<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span><span class="comment"># 2. Deploy to Cloud Run</span><br><span class="line-numbers">12</span>gcloud run deploy my-webapp \<br><span class="line-numbers">13</span>  --source . \<br><span class="line-numbers">14</span>  --platform managed \<br><span class="line-numbers">15</span>  --region us-central1 \<br><span class="line-numbers">16</span>  --allow-unauthenticated \<br><span class="line-numbers">17</span>  --port 8080<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span><span class="comment"># Benefits: Auto-scaling, pay-per-use, no server management</span></code>
+                        </div>
+                        <div id="migration-api" class="code-block">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Migrate REST API to Cloud Run</span><br><span class="line-numbers"> 2</span><span class="comment"># 1. Ensure stateless design</span><br><span class="line-numbers"> 3</span>app.get('/api/users/:id', async (req, res) => {<br><span class="line-numbers"> 4</span>  const userId = req.params.id;<br><span class="line-numbers"> 5</span>  <span class="comment">// Use external database (Cloud SQL, Firestore)</span><br><span class="line-numbers"> 6</span>  const user = await getUserFromDatabase(userId);<br><span class="line-numbers"> 7</span>  res.json(user);<br><span class="line-numbers"> 8</span>});<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># 2. Deploy with proper scaling</span><br><span class="line-numbers">11</span>gcloud run deploy my-api \<br><span class="line-numbers">12</span>  --source . \<br><span class="line-numbers">13</span>  --concurrency 80 \<br><span class="line-numbers">14</span>  --max-instances 100 \<br><span class="line-numbers">15</span>  --platform managed<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span><span class="comment"># Benefits: Automatic scaling, high availability</span></code>
+                        </div>
+                        <div id="migration-microservices" class="code-block">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Deploy microservices architecture</span><br><span class="line-numbers"> 2</span><span class="comment"># 1. Independent service deployment</span><br><span class="line-numbers"> 3</span>gcloud run deploy user-service \<br><span class="line-numbers"> 4</span>  --image gcr.io/project/user-service:v1 \<br><span class="line-numbers"> 5</span>  --platform managed \<br><span class="line-numbers"> 6</span>  --allow-unauthenticated<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span>gcloud run deploy order-service \<br><span class="line-numbers"> 9</span>  --image gcr.io/project/order-service:v1 \<br><span class="line-numbers">10</span>  --platform managed \<br><span class="line-numbers">11</span>  --allow-unauthenticated<br><span class="line-numbers">12</span><br><span class="line-numbers">13</span><span class="comment"># 2. Service discovery via HTTP</span><br><span class="line-numbers">14</span>const userServiceUrl = process.env.USER_SERVICE_URL;<br><span class="line-numbers">15</span>const orderServiceUrl = process.env.ORDER_SERVICE_URL;<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span><span class="comment"># Benefits: Independent scaling, technology diversity</span></code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">✅ Cloud Run Use Cases</div>
+                    <ul>
+                        <li><strong>Web Applications:</strong> React, Vue, Angular apps with server-side rendering</li>
+                        <li><strong>REST APIs:</strong> Backend services for mobile apps and SPAs</li>
+                        <li><strong>Microservices:</strong> Decomposed applications with independent scaling</li>
+                        <li><strong>Data Processing:</strong> ETL pipelines, image processing, ML inference</li>
+                        <li><strong>Development Tools:</strong> CI/CD helpers, code generators, dev servers</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box warning">
+                    <div class="highlight-title">⚠️ When NOT to Use Cloud Run</div>
+                    <ul>
+                        <li><strong>Long-running Tasks:</strong> Use Cloud Run Jobs for batch processing >15min</li>
+                        <li><strong>Stateful Applications:</strong> Consider GKE for persistent state requirements</li>
+                        <li><strong>High-performance Computing:</strong> Use Compute Engine for GPU workloads</li>
+                        <li><strong>Legacy Applications:</strong> May require containerization effort</li>
+                        <li><strong>Real-time Requirements:</strong> Consider cold start latency for sub-second SLAs
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Types Section -->
+        <div id="service-types" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🔄</span>
+                <h2 class="section-title">Service Types & Use Cases</h2>
+                <span class="section-level">Basic</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Cloud Run offers different service types optimized for various workloads.
+                    Choose the right type based on your application's requirements for concurrency,
+                    startup time, and resource utilization.
+                </p>
+
+                <div class="service-types">
+                    <div class="service-type">
+                        <span class="service-icon">🌐</span>
+                        <div class="service-name">HTTP Services</div>
+                        <div class="service-desc">Web applications, APIs, and microservices that handle HTTP requests
+                        </div>
+                    </div>
+                    <div class="service-type">
+                        <span class="service-icon">⚙️</span>
+                        <div class="service-name">Background Jobs</div>
+                        <div class="service-desc">Asynchronous processing, data pipelines, and batch operations</div>
+                    </div>
+                    <div class="service-type">
+                        <span class="service-icon">🎯</span>
+                        <div class="service-name">Event-driven</div>
+                        <div class="service-desc">Respond to events from Pub/Sub, Cloud Storage, and other services
+                        </div>
+                    </div>
+                    <div class="service-type">
+                        <span class="service-icon">🔄</span>
+                        <div class="service-name">Microservices</div>
+                        <div class="service-desc">Decomposed applications with independent scaling and deployment</div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'dockerfile')">Dockerfile</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="dockerfile" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Use Node.js runtime as base image</span><br><span class="line-numbers"> 2</span>FROM node:18-slim<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment"># Set working directory</span><br><span class="line-numbers"> 5</span>WORKDIR /app<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span><span class="comment"># Copy package files</span><br><span class="line-numbers"> 8</span>COPY package*.json ./<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># Install dependencies</span><br><span class="line-numbers">11</span>RUN npm ci --only=production<br><span class="line-numbers">12</span><br><span class="line-numbers">13</span><span class="comment"># Copy application code</span><br><span class="line-numbers">14</span>COPY . .<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Expose port</span><br><span class="line-numbers">17</span>EXPOSE 8080<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span><span class="comment"># Health check</span><br><span class="line-numbers">20</span>HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \<br><span class="line-numbers">21</span>  CMD curl -f http://localhost:8080/health || exit 1<br><span class="line-numbers">22</span><br><span class="line-numbers">23</span><span class="comment"># Start application</span><br><span class="line-numbers">24</span>CMD ["npm", "start"]</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployment Section -->
+        <div id="deployment" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">🚀</span>
+                <h2 class="section-title">Deployment Strategies</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Cloud Run supports multiple deployment strategies for different scenarios.
+                    From simple deployments to complex canary deployments and blue-green strategies,
+                    you can choose the approach that best fits your needs.
+                </p>
+
+                <div class="cloud-run-architecture">
+                    <div class="architecture-title">🚀 Request → Container → Response Flow</div>
+                    <div class="architecture-diagram">
+                        <div class="architecture-stage stage-request">
+                            <div>🌐 HTTP</div>
+                            <div style="font-size: 9px;">Request</div>
+                        </div>
+                        <div class="architecture-stage stage-container">
+                            <div>🐳 Container</div>
+                            <div style="font-size: 9px;">Process</div>
+                        </div>
+                        <div class="architecture-stage stage-response">
+                            <div>📤 Response</div>
+                            <div style="font-size: 9px;">Result</div>
+                        </div>
+
+                        <!-- Animated request particles -->
+                        <div class="request-particle"></div>
+                        <div class="request-particle"></div>
+                        <div class="request-particle"></div>
+
+                        <!-- Flow visualization -->
+                        <div class="architecture-arrow"></div>
+                        <div class="architecture-label">Serverless Execution</div>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'gcloud-deploy')">gcloud</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="gcloud-deploy" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="comment"># Build and deploy from source</span><br><span class="line-numbers"> 2</span>gcloud run deploy my-service \<br><span class="line-numbers"> 3</span>  --source . \<br><span class="line-numbers"> 4</span>  --platform managed \<br><span class="line-numbers"> 5</span>  --region us-central1 \<br><span class="line-numbers"> 6</span>  --allow-unauthenticated \<br><span class="line-numbers"> 7</span>  --set-env-vars NODE_ENV=production \<br><span class="line-numbers"> 8</span>  --memory 1Gi \<br><span class="line-numbers"> 9</span>  --cpu 1 \<br><span class="line-numbers">10</span>  --max-instances 10 \<br><span class="line-numbers">11</span>  --timeout 300 \<br><span class="line-numbers">12</span>  --concurrency 80<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="comment"># Deploy from container image</span><br><span class="line-numbers">15</span>gcloud run deploy my-service \<br><span class="line-numbers">16</span>  --image gcr.io/my-project/my-app:v1.0 \<br><span class="line-numbers">17</span>  --platform managed \<br><span class="line-numbers">18</span>  --region us-central1 \<br><span class="line-numbers">19</span>  --allow-unauthenticated<br><span class="line-numbers">20</span><br><span class="line-numbers">21</span><span class="comment"># Deploy with custom domain</span><br><span class="line-numbers">22</span>gcloud run domain-mappings create \<br><span class="line-numbers">23</span>  --service my-service \<br><span class="line-numbers">24</span>  --domain my-app.example.com \<br><span class="line-numbers">25</span>  --platform managed \<br><span class="line-numbers">26</span>  --region us-central1<br><span class="line-numbers">27</span><br><span class="line-numbers">28</span><span class="comment"># Canary deployment (traffic splitting)</span><br><span class="line-numbers">29</span>gcloud run services update-traffic my-service \<br><span class="line-numbers">30</span>  --to-revisions my-service-v2=90,my-service-v1=10 \<br><span class="line-numbers">31</span>  --platform managed \<br><span class="line-numbers">32</span>  --region us-central1<br><span class="line-numbers">33</span><br><span class="line-numbers">34</span><span class="comment"># Rollback deployment</span><br><span class="line-numbers">35</span>gcloud run services update-traffic my-service \<br><span class="line-numbers">36</span>  --to-revisions my-service-v1=100 \<br><span class="line-numbers">37</span>  --platform managed \<br><span class="line-numbers">38</span>  --region us-central1</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🚀 Deployment Strategies</div>
+                    <ul>
+                        <li><strong>Direct Deployment:</strong> Simple deployment with immediate traffic</li>
+                        <li><strong>Canary Deployment:</strong> Gradual traffic shifting for testing</li>
+                        <li><strong>Blue-Green:</strong> Zero-downtime deployments with instant rollback</li>
+                        <li><strong>Progressive Rollout:</strong> Phased deployment with monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scaling Section -->
+        <div id="scaling" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">📈</span>
+                <h2 class="section-title">Autoscaling & Performance</h2>
+                <span class="section-level">Intermediate</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Cloud Run automatically scales your applications based on traffic patterns.
+                    Configure scaling parameters to optimize performance and cost while ensuring
+                    your application can handle traffic spikes.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active"
+                                onclick="switchTab(this, 'python-performance')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="python-performance" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, jsonify<br><span class="line-numbers"> 2</span><span class="keyword">import</span> logging<br><span class="line-numbers"> 3</span><span class="keyword">import</span> time<br><span class="line-numbers"> 4</span><span class="keyword">from</span> concurrent.futures <span class="keyword">import</span> ThreadPoolExecutor<br><span class="line-numbers"> 5</span><span class="keyword">import</span> asyncio<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span>app = Flask(__name__)<br><span class="line-numbers"> 8</span><br><span class="line-numbers"> 9</span><span class="comment"># Configure logging</span><br><span class="line-numbers">10</span>logging.basicConfig(level=logging.INFO)<br><span class="line-numbers">11</span>logger = logging.getLogger(__name__)<br><span class="line-numbers">12</span><br><span class="line-numbers">13</span><span class="comment"># Thread pool for CPU-bound tasks</span><br><span class="line-numbers">14</span>executor = ThreadPoolExecutor(max_workers=4)<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Health check endpoint</span><br><span class="line-numbers">17</span>@app.route('/health', methods=['GET'])<br><span class="line-numbers">18</span><span class="keyword">def</span> <span class="keyword">health_check</span>():<br><span class="line-numbers">19</span>    <span class="keyword">return</span> jsonify({<span class="string">'status'</span>: <span class="string">'healthy'</span>, <span class="string">'timestamp'</span>: time.time()})<br><span class="line-numbers">20</span><br><span class="line-numbers">21</span><span class="comment"># Main API endpoint with concurrency handling</span><br><span class="line-numbers">22</span>@app.route('/api/process', methods=['POST'])<br><span class="line-numbers">23</span><span class="keyword">def</span> <span class="keyword">process_request</span>():<br><span class="line-numbers">24</span>    start_time = time.time()<br><span class="line-numbers">25</span><br><span class="line-numbers">26</span>    <span class="keyword">try</span>:<br><span class="line-numbers">27</span>        data = request.get_json()<br><span class="line-numbers">28</span><br><span class="line-numbers">29</span>        <span class="comment"># Validate input</span><br><span class="line-numbers">30</span>        <span class="keyword">if</span> <span class="keyword">not</span> data <span class="keyword">or</span> <span class="string">'input'</span> <span class="keyword">not</span> <span class="keyword">in</span> data:<br><span class="line-numbers">31</span>            <span class="keyword">return</span> jsonify({<span class="string">'error'</span>: <span class="string">'Missing input data'</span>}), 400<br><span class="line-numbers">32</span><br><span class="line-numbers">33</span>        <span class="comment"># Process asynchronously for better concurrency</span><br><span class="line-numbers">34</span>        result = process_data_async(data[<span class="string">'input'</span>])<br><span class="line-numbers">35</span><br><span class="line-numbers">36</span>        processing_time = time.time() - start_time<br><span class="line-numbers">37</span>        logger.info(<span class="string">f"Request processed in {processing_time:.3f}s"</span>)<br><span class="line-numbers">38</span><br><span class="line-numbers">39</span>        <span class="keyword">return</span> jsonify({<br><span class="line-numbers">40</span>            <span class="string">'result'</span>: result,<br><span class="line-numbers">41</span>            <span class="string">'processing_time'</span>: processing_time,<br><span class="line-numbers">42</span>            <span class="string">'instance'</span>: request.headers.get(<span class="string">'X-Cloud-Trace-Context'</span>, <span class="string">'unknown'</span>)<br><span class="line-numbers">43</span>        })<br><span class="line-numbers">44</span><br><span class="line-numbers">45</span>    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:<br><span class="line-numbers">46</span>        logger.error(<span class="string">f"Error processing request: {str(e)}"</span>)<br><span class="line-numbers">47</span>        <span class="keyword">return</span> jsonify({<span class="string">'error'</span>: <span class="string">'Internal server error'</span>}), 500<br><span class="line-numbers">48</span><br><span class="line-numbers">49</span><span class="keyword">def</span> <span class="keyword">process_data_async</span>(input_data):<br><span class="line-numbers">50</span>    <span class="string">"""Process data with proper error handling and timeouts."""</span><br><span class="line-numbers">51</span>    <span class="keyword">try</span>:<br><span class="line-numbers">52</span>        <span class="comment"># Simulate processing with timeout</span><br><span class="line-numbers">53</span>        time.sleep(min(len(input_data) * 0.01, 2.0)) <span class="comment"># Max 2s processing</span><br><span class="line-numbers">54</span><br><span class="line-numbers">55</span>        <span class="comment"># CPU-bound processing in thread pool</span><br><span class="line-numbers">56</span>        future = executor.submit(heavy_computation, input_data)<br><span class="line-numbers">57</span>        result = future.result(timeout=5.0) <span class="comment"># 5s timeout</span><br><span class="line-numbers">58</span><br><span class="line-numbers">59</span>        <span class="keyword">return</span> result<br><span class="line-numbers">60</span><br><span class="line-numbers">61</span>    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:<br><span class="line-numbers">62</span>        logger.error(<span class="string">f"Processing error: {str(e)}"</span>)<br><span class="line-numbers">63</span>        <span class="keyword">raise</span><br><span class="line-numbers">64</span><br><span class="line-numbers">65</span><span class="keyword">def</span> <span class="keyword">heavy_computation</span>(data):<br><span class="line-numbers">66</span>    <span class="string">"""Simulate CPU-intensive computation."""</span><br><span class="line-numbers">67</span>    <span class="comment"># Simulate computation</span><br><span class="line-numbers">68</span>    result = <span class="string">0</span><br><span class="line-numbers">69</span>    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(data)):<br><span class="line-numbers">70</span>        result += ord(data[i]) * (i + <span class="string">1</span>)<br><span class="line-numbers">71</span><br><span class="line-numbers">72</span>    <span class="keyword">return</span> result<br><span class="line-numbers">73</span><br><span class="line-numbers">74</span><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:<br><span class="line-numbers">75</span>    <span class="comment"># Start server with proper configuration</span><br><span class="line-numbers">76</span>    app.run(host=<span class="string">'0.0.0.0'</span>, port=int(os.environ.get(<span class="string">'PORT'</span>, <span class="string">8080</span>)), threaded=<span class="string">True</span>)</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">⚡ Performance Optimization</div>
+                    <ul>
+                        <li><strong>Concurrency:</strong> Handle multiple requests per instance</li>
+                        <li><strong>CPU Allocation:</strong> Match CPU to workload requirements</li>
+                        <li><strong>Memory Limits:</strong> Set appropriate memory limits</li>
+                        <li><strong>Request Timeouts:</strong> Configure timeouts for reliability</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Eventarc Section -->
+        <div id="eventarc" class="content-section fade-in">
+            <div class="section-header">
+                <span class="section-icon">⚡</span>
+                <h2 class="section-title">Eventarc Integration</h2>
+                <span class="section-level">Advanced</span>
+            </div>
+
+            <div class="section-content">
+                <p>
+                    Eventarc enables event-driven architectures by connecting Cloud Run services
+                    to events from Google Cloud services and third-party applications. Build
+                    reactive, loosely-coupled systems that respond to changes in real-time.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="code-tab active" onclick="switchTab(this, 'python-eventarc')">Python</button>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <div id="python-eventarc" class="code-block active">
+                            <code><span class="line-numbers"> 1</span><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, jsonify<br><span class="line-numbers"> 2</span><span class="keyword">import</span> json<br><span class="line-numbers"> 3</span><span class="keyword">import</span> logging<br><span class="line-numbers"> 4</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> storage<br><span class="line-numbers"> 5</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> pubsub_v1<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span>app = Flask(__name__)<br><span class="line-numbers"> 8</span>logger = logging.getLogger(__name__)<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span><span class="comment"># Initialize clients</span><br><span class="line-numbers">11</span>storage_client = storage.Client()<br><span class="line-numbers">12</span>publisher = pubsub_v1.PublisherClient()<br><span class="line-numbers">13</span><br><span class="line-numbers">14</span><span class="comment"># Cloud Storage event handler</span><br><span class="line-numbers">15</span>@app.route('/storage-event', methods=['POST'])<br><span class="line-numbers">16</span><span class="keyword">def</span> <span class="keyword">handle_storage_event</span>():<br><span class="line-numbers">17</span>    <span class="string">"""Handle Cloud Storage events via Eventarc."""</span><br><span class="line-numbers">18</span>    <span class="keyword">try</span>:<br><span class="line-numbers">19</span>        envelope = request.get_json()<br><span class="line-numbers">20</span><br><span class="line-numbers">21</span>        <span class="comment"># Validate Eventarc event</span><br><span class="line-numbers">22</span>        <span class="keyword">if</span> <span class="keyword">not</span> envelope <span class="keyword">or</span> <span class="string">'message'</span> <span class="keyword">not</span> <span class="keyword">in</span> envelope:<br><span class="line-numbers">23</span>            <span class="keyword">return</span> jsonify({<span class="string">'error'</span>: <span class="string">'Invalid event format'</span>}), 400<br><span class="line-numbers">24</span><br><span class="line-numbers">25</span>        <span class="comment"># Decode Pub/Sub message</span><br><span class="line-numbers">26</span>        pubsub_message = envelope[<span class="string">'message'</span>]<br><span class="line-numbers">27</span>        event_data = json.loads(<br><span class="line-numbers">28</span>            pubsub_message[<span class="string">'data'</span>].decode(<span class="string">'utf-8'</span>)<br><span class="line-numbers">29</span>        )<br><span class="line-numbers">30</span><br><span class="line-numbers">31</span>        <span class="comment"># Process different event types</span><br><span class="line-numbers">32</span>        event_type = event_data.get(<span class="string">'eventType'</span>)<br><span class="line-numbers">33</span><br><span class="line-numbers">34</span>        <span class="keyword">if</span> event_type == <span class="string">'OBJECT_FINALIZE'</span>:<br><span class="line-numbers">35</span>            <span class="comment"># New file uploaded</span><br><span class="line-numbers">36</span>            bucket_name = event_data[<span class="string">'bucket'</span>]<br><span class="line-numbers">37</span>            file_name = event_data[<span class="string">'name'</span>]<br><span class="line-numbers">38</span><br><span class="line-numbers">39</span>            result = process_new_file(bucket_name, file_name)<br><span class="line-numbers">40</span>            logger.info(<span class="string">f"Processed new file: {file_name}"</span>)<br><span class="line-numbers">41</span><br><span class="line-numbers">42</span>        <span class="keyword">elif</span> event_type == <span class="string">'OBJECT_DELETE'</span>:<br><span class="line-numbers">43</span>            <span class="comment"># File deleted</span><br><span class="line-numbers">44</span>            bucket_name = event_data[<span class="string">'bucket'</span>]<br><span class="line-numbers">45</span>            file_name = event_data[<span class="string">'name'</span>]<br><span class="line-numbers">46</span><br><span class="line-numbers">47</span>            result = cleanup_deleted_file(bucket_name, file_name)<br><span class="line-numbers">48</span>            logger.info(<span class="string">f"Cleaned up deleted file: {file_name}"</span>)<br><span class="line-numbers">49</span><br><span class="line-numbers">50</span>        <span class="keyword">return</span> jsonify({<span class="string">'status'</span>: <span class="string">'processed'</span>, <span class="string">'result'</span>: result})<br><span class="line-numbers">51</span><br><span class="line-numbers">52</span>    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:<br><span class="line-numbers">53</span>        logger.error(<span class="string">f"Error processing storage event: {str(e)}"</span>)<br><span class="line-numbers">54</span>        <span class="keyword">return</span> jsonify({<span class="string">'error'</span>: <span class="string">'Processing failed'</span>}), 500<br><span class="line-numbers">55</span><br><span class="line-numbers">56</span><span class="keyword">def</span> <span class="keyword">process_new_file</span>(bucket_name, file_name):<br><span class="line-numbers">57</span>    <span class="string">"""Process newly uploaded file."""</span><br><span class="line-numbers">58</span>    bucket = storage_client.bucket(bucket_name)<br><span class="line-numbers">59</span>    blob = bucket.blob(file_name)<br><span class="line-numbers">60</span><br><span class="line-numbers">61</span>    <span class="comment"># Download and process file</span><br><span class="line-numbers">62</span>    content = blob.download_as_text()<br><span class="line-numbers">63</span><br><span class="line-numbers">64</span>    <span class="comment"># Process content (e.g., analyze, transform)</span><br><span class="line-numbers">65</span>    processed_content = content.upper() <span class="comment"># Example transformation</span><br><span class="line-numbers">66</span><br><span class="line-numbers">67</span>    <span class="comment"># Save processed result</span><br><span class="line-numbers">68</span>    processed_blob = bucket.blob(<span class="string">f"processed/{file_name}"</span>)<br><span class="line-numbers">69</span>    processed_blob.upload_from_string(processed_content)<br><span class="line-numbers">70</span><br><span class="line-numbers">71</span>    <span class="comment"># Publish completion event</span><br><span class="line-numbers">72</span>    topic_path = publisher.topic_path(<span class="string">'my-project'</span>, <span class="string">'file-processing-complete'</span>)<br><span class="line-numbers">73</span>    publisher.publish(<br><span class="line-numbers">74</span>        topic_path,<br><span class="line-numbers">75</span>        json.dumps({<br><span class="line-numbers">76</span>            <span class="string">'original_file'</span>: file_name,<br><span class="line-numbers">77</span>            <span class="string">'processed_file'</span>: <span class="string">f"processed/{file_name}"</span>,<br><span class="line-numbers">78</span>            <span class="string">'timestamp'</span>: json.dumps(datetime.now().isoformat())<br><span class="line-numbers">79</span>        }).encode(<span class="string">'utf-8'</span>)<br><span class="line-numbers">80</span>    )<br><span class="line-numbers">81</span><br><span class="line-numbers">82</span>    <span class="keyword">return</span> <span class="string">f"Processed {file_name}"</span><br><span class="line-numbers">83</span><br><span class="line-numbers">84</span><span class="keyword">def</span> <span class="keyword">cleanup_deleted_file</span>(bucket_name, file_name):<br><span class="line-numbers">85</span>    <span class="string">"""Clean up resources when file is deleted."""</span><br><span class="line-numbers">86</span>    <span class="comment"># Remove processed files, update databases, etc.</span><br><span class="line-numbers">87</span>    bucket = storage_client.bucket(bucket_name)<br><span class="line-numbers">88</span><br><span class="line-numbers">89</span>    <span class="comment"># Delete associated processed file</span><br><span class="line-numbers">90</span>    processed_blob = bucket.blob(<span class="string">f"processed/{file_name}"</span>)<br><span class="line-numbers">91</span>    <span class="keyword">if</span> processed_blob.exists():<br><span class="line-numbers">92</span>        processed_blob.delete()<br><span class="line-numbers">93</span><br><span class="line-numbers">94</span>    <span class="keyword">return</span> <span class="string">f"Cleaned up {file_name}"</span><br><span class="line-numbers">95</span><br><span class="line-numbers">96</span><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:<br><span class="line-numbers">97</span>    app.run(host=<span class="string">'0.0.0.0'</span>, port=int(os.environ.get(<span class="string">'PORT'</span>, <span class="string">8080</span>)))</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">⚡ Eventarc Benefits</div>
+                    <ul>
+                        <li><strong>Loose Coupling:</strong> Services react to events without direct dependencies</li>
+                        <li><strong>Scalability:</strong> Automatic scaling based on event volume</li>
+                        <li><strong>Reliability:</strong> Guaranteed event delivery with retries</li>
+                        <li><strong>Multi-source:</strong> Events from 90+ Google Cloud sources</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cloud Build CI/CD Section -->
+    <div id="cloud-build" class="content-section fade-in">
+        <div class="section-header">
+            <h2>🔨 Cloud Build CI/CD</h2>
+            <p>Advanced continuous integration and deployment pipelines for Cloud Run services</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>🏗️ Advanced Pipeline Configuration</h3>
+                <p>Build sophisticated CI/CD workflows with Cloud Build for Cloud Run deployments.</p>
+
+                <div class="code-container">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'yaml-cloudbuild')">YAML</button>
+                        <button class="code-tab" onclick="switchTab(this, 'json-cloudbuild')">JSON</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                </div>
+                <div class="code-content">
+                    <div id="yaml-cloudbuild" class="code-block active">
+                        <code><span class="line-numbers"> 1</span>steps:<br><span class="line-numbers"> 2</span><span class="comment"># Build and test</span><br><span class="line-numbers"> 3</span>- name: <span class="string">'gcr.io/cloud-builders/docker'</span><br><span class="line-numbers"> 4</span>  args: [<span class="string">'build'</span>, <span class="string">'-t'</span>, <span class="string">'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA'</span>, <span class="string">'.'</span>]<br><span class="line-numbers"> 5</span>  id: <span class="string">'build'</span><br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span><span class="comment"># Run unit tests</span><br><span class="line-numbers"> 8</span>- name: <span class="string">'gcr.io/cloud-builders/docker'</span><br><span class="line-numbers"> 9</span>  args: [<span class="string">'run'</span>, <span class="string">'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA'</span>, <span class="string">'npm'</span>, <span class="string">'test'</span>]<br><span class="line-numbers">10</span>  id: <span class="string">'test'</span><br><span class="line-numbers">11</span>  waitFor: [<span class="string">'build'</span>]<br><span class="line-numbers">12</span><br><span class="line-numbers">13</span><span class="comment"># Security scanning</span><br><span class="line-numbers">14</span>- name: <span class="string">'gcr.io/cloud-builders/gcloud'</span><br><span class="line-numbers">15</span>  args: [<span class="string">'artifacts'</span>, <span class="string">'docker'</span>, <span class="string">'images'</span>, <span class="string">'scan'</span>, <span class="string">'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA'</span>,<br><span class="line-numbers">16</span>         <span class="string">'--format'</span>, <span class="string">'table[no-heading](scan.vulnerabilitySummary.fixableCount)'</span>]<br><span class="line-numbers">17</span>  id: <span class="string">'scan'</span><br><span class="line-numbers">18</span>  waitFor: [<span class="string">'build'</span>]<br><span class="line-numbers">19</span><br><span class="line-numbers">20</span><span class="comment"># Deploy to staging</span><br><span class="line-numbers">21</span>- name: <span class="string">'gcr.io/cloud-builders/gcloud'</span><br><span class="line-numbers">22</span>  args: [<span class="string">'run'</span>, <span class="string">'deploy'</span>, <span class="string">'my-app-staging'</span>,<br><span class="line-numbers">23</span>         <span class="string">'--image'</span>, <span class="string">'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA'</span>,<br><span class="line-numbers">24</span>         <span class="string">'--region'</span>, <span class="string">'us-central1'</span>,<br><span class="line-numbers">25</span>         <span class="string">'--platform'</span>, <span class="string">'managed'</span>,<br><span class="line-numbers">26</span>         <span class="string">'--allow-unauthenticated'</span>]<br><span class="line-numbers">27</span>  id: <span class="string">'deploy-staging'</span><br><span class="line-numbers">28</span>  waitFor: [<span class="string">'test'</span>, <span class="string">'scan'</span>]<br><span class="line-numbers">29</span><br><span class="line-numbers">30</span><span class="comment"># Integration tests</span><br><span class="line-numbers">31</span>- name: <span class="string">'gcr.io/cloud-builders/curl'</span><br><span class="line-numbers">32</span>  args: [<span class="string">'https://my-app-staging-abc123.run.app/health'</span>]<br><span class="line-numbers">33</span>  id: <span class="string">'integration-test'</span><br><span class="line-numbers">34</span>  waitFor: [<span class="string">'deploy-staging'</span>]<br><span class="line-numbers">35</span><br><span class="line-numbers">36</span><span class="comment"># Deploy to production</span><br><span class="line-numbers">37</span>- name: <span class="string">'gcr.io/cloud-builders/gcloud'</span><br><span class="line-numbers">38</span>  args: [<span class="string">'run'</span>, <span class="string">'deploy'</span>, <span class="string">'my-app-prod'</span>,<br><span class="line-numbers">39</span>         <span class="string">'--image'</span>, <span class="string">'gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA'</span>,<br><span class="line-numbers">40</span>         <span class="string">'--region'</span>, <span class="string">'us-central1'</span>,<br><span class="line-numbers">41</span>         <span class="string">'--platform'</span>, <span class="string">'managed'</span>,<br><span class="line-numbers">42</span>         <span class="string">'--no-allow-unauthenticated'</span>]<br><span class="line-numbers">43</span>  id: <span class="string">'deploy-prod'</span><br><span class="line-numbers">44</span>  waitFor: [<span class="string">'integration-test'</span>]<br><span class="line-numbers">45</span><br><span class="line-numbers">46</span><span class="comment"># Tag release</span><br><span class="line-numbers">47</span>- name: <span class="string">'gcr.io/cloud-builders/git'</span><br><span class="line-numbers">48</span>  args: [<span class="string">'tag'</span>, <span class="string">'v1.0.0'</span>]<br><span class="line-numbers">49</span>  id: <span class="string">'tag-release'</span><br><span class="line-numbers">50</span>  waitFor: [<span class="string">'deploy-prod'</span>]<br><span class="line-numbers">51</span><br><span class="line-numbers">52</span>timeout: <span class="string">'1200s'</span><br><span class="line-numbers">53</span>options:<br><span class="line-numbers">54</span>  machineType: <span class="string">'E2_HIGHCPU_8'</span><br><span class="line-numbers">55</span>  substitutionOption: <span class="string">'ALLOW_LOOSE'</span></code>
+                    </div>
+                    <div id="json-cloudbuild" class="code-block">
+                        <code><span class="line-numbers"> 1</span>{<br><span class="line-numbers"> 2</span>  <span class="string">"steps"</span>: [<br><span class="line-numbers"> 3</span>    {<br><span class="line-numbers"> 4</span>      <span class="string">"name"</span>: <span class="string">"gcr.io/cloud-builders/docker"</span>,<br><span class="line-numbers"> 5</span>      <span class="string">"args"</span>: [<span class="string">"build"</span>, <span class="string">"-t"</span>, <span class="string">"gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA"</span>, <span class="string">"."</span>],<br><span class="line-numbers"> 6</span>      <span class="string">"id"</span>: <span class="string">"build"</span><br><span class="line-numbers"> 7</span>    },<br><span class="line-numbers"> 8</span>    {<br><span class="line-numbers"> 9</span>      <span class="string">"name"</span>: <span class="string">"gcr.io/cloud-builders/gcloud"</span>,<br><span class="line-numbers">10</span>      <span class="string">"args"</span>: [<br><span class="line-numbers">11</span>        <span class="string">"run"</span>, <span class="string">"deploy"</span>, <span class="string">"my-app-prod"</span>,<br><span class="line-numbers">12</span>        <span class="string">"--image"</span>, <span class="string">"gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA"</span>,<br><span class="line-numbers">13</span>        <span class="string">"--region"</span>, <span class="string">"us-central1"</span>,<br><span class="line-numbers">14</span>        <span class="string">"--platform"</span>, <span class="string">"managed"</span><br><span class="line-numbers">15</span>      ],<br><span class="line-numbers">16</span>      <span class="string">"id"</span>: <span class="string">"deploy"</span>,<br><span class="line-numbers">17</span>      <span class="string">"waitFor"</span>: [<span class="string">"build"</span>]<br><span class="line-numbers">18</span>    }<br><span class="line-numbers">19</span>  ],<br><span class="line-numbers">20</span>  <span class="string">"timeout"</span>: <span class="string">"1200s"</span>,<br><span class="line-numbers">21</span>  <span class="string">"options"</span>: {<br><span class="line-numbers">22</span>    <span class="string">"machineType"</span>: <span class="string">"E2_HIGHCPU_8"</span><br><span class="line-numbers">23</span>  }<br><span class="line-numbers">24</span>}</code>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🔨 Cloud Build Best Practices</div>
+                    <ul>
+                        <li><strong>Parallel Steps:</strong> Use waitFor to optimize build times</li>
+                        <li><strong>Security Scanning:</strong> Integrate vulnerability scanning in pipelines</li>
+                        <li><strong>Staged Deployments:</strong> Test in staging before production</li>
+                        <li><strong>Build Optimization:</strong> Use appropriate machine types and caching</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VPC Networking Section -->
+    <div id="vpc" class="content-section fade-in">
+        <div class="section-header">
+            <h2>🔒 VPC Networking</h2>
+            <p>Advanced networking configurations for secure and optimized Cloud Run services</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>🌐 Serverless VPC Access</h3>
+                <p>Connect Cloud Run services to VPC networks for secure resource access.</p>
+
+                <div class="code-container">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'bash-vpc')">Bash</button>
+                        <button class="code-tab" onclick="switchTab(this, 'terraform-vpc')">Terraform</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                </div>
+                <div class="code-content">
+                    <div id="bash-vpc" class="code-block active">
+                        <code><span class="line-numbers"> 1</span><span class="comment">#!/bin/bash</span><br><span class="line-numbers"> 2</span><br><span class="line-numbers"> 3</span><span class="comment"># Create VPC connector</span><br><span class="line-numbers"> 4</span>gcloud compute networks vpc-access connectors create my-connector \<br><span class="line-numbers"> 5</span>  --network my-vpc \<br><span class="line-numbers"> 6</span>  --region us-central1 \<br><span class="line-numbers"> 7</span>  --range 10.8.0.0/28 \<br><span class="line-numbers"> 8</span>  --min-instances 2 \<br><span class="line-numbers"> 9</span>  --max-instances 10 \<br><span class="line-numbers">10</span>  --machine-type e2-micro<br><span class="line-numbers">11</span><br><span class="line-numbers">12</span><span class="comment"># Deploy service with VPC connector</span><br><span class="line-numbers">13</span>gcloud run deploy my-service \<br><span class="line-numbers">14</span>  --image gcr.io/my-project/my-app:latest \<br><span class="line-numbers">15</span>  --vpc-connector my-connector \<br><span class="line-numbers">16</span>  --set-env-vars DATABASE_URL=10.0.1.100 \<br><span class="line-numbers">17</span>  --allow-unauthenticated \<br><span class="line-numbers">18</span>  --region us-central1<br><span class="line-numbers">19</span><br><span class="line-numbers">20</span><span class="comment"># Configure firewall rules for VPC</span><br><span class="line-numbers">21</span>gcloud compute firewall-rules create allow-vpc-connector \<br><span class="line-numbers">22</span>  --network my-vpc \<br><span class="line-numbers">23</span>  --allow tcp:3306 \<br><span class="line-numbers">24</span>  --source-ranges 10.8.0.0/28 \<br><span class="line-numbers">25</span>  --target-tags vpc-connector<br><span class="line-numbers">26</span><br><span class="line-numbers">27</span><span class="comment"># Test VPC connectivity</span><br><span class="line-numbers">28</span>gcloud run services logs read my-service \<br><span class="line-numbers">29</span>  --region us-central1 \<br><span class="line-numbers">30</span>  --limit 10</code>
+                    </div>
+                    <div id="terraform-vpc" class="code-block">
+                        <code><span class="line-numbers"> 1</span>resource <span class="string">"google_vpc_access_connector"</span> <span class="string">"connector"</span> {<br><span class="line-numbers"> 2</span>  name          = <span class="string">"my-vpc-connector"</span><br><span class="line-numbers"> 3</span>  region        = <span class="string">"us-central1"</span><br><span class="line-numbers"> 4</span>  network       = google_compute_network.vpc.name<br><span class="line-numbers"> 5</span>  ip_cidr_range = <span class="string">"10.8.0.0/28"</span><br><span class="line-numbers"> 6</span>  min_instances = 2<br><span class="line-numbers"> 7</span>  max_instances = 10<br><span class="line-numbers"> 8</span>  machine_type  = <span class="string">"e2-micro"</span><br><span class="line-numbers"> 9</span>}<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span>resource <span class="string">"google_cloud_run_service"</span> <span class="string">"service"</span> {<br><span class="line-numbers">12</span>  name     = <span class="string">"my-service"</span><br><span class="line-numbers">13</span>  location = <span class="string">"us-central1"</span><br><span class="line-numbers">14</span><br><span class="line-numbers">15</span>  template {<br><span class="line-numbers">16</span>    spec {<br><span class="line-numbers">17</span>      containers {<br><span class="line-numbers">18</span>        image = <span class="string">"gcr.io/my-project/my-app:latest"</span><br><span class="line-numbers">19</span>        env {<br><span class="line-numbers">20</span>          name  = <span class="string">"DATABASE_URL"</span><br><span class="line-numbers">21</span>          value = <span class="string">"10.0.1.100"</span><br><span class="line-numbers">22</span>        }<br><span class="line-numbers">23</span>      }<br><span class="line-numbers">24</span>      vpc_access {<br><span class="line-numbers">25</span>        connector = google_vpc_access_connector.connector.id<br><span class="line-numbers">26</span>      }<br><span class="line-numbers">27</span>    }<br><span class="line-numbers">28</span>  }<br><span class="line-numbers">29</span><br><span class="line-numbers">30</span>  traffic {<br><span class="line-numbers">31</span>    percent         = 100<br><span class="line-numbers">32</span>    latest_revision = true<br><span class="line-numbers">33</span>  }<br><span class="line-numbers">34</span>}<br><span class="line-numbers">35</span><br><span class="line-numbers">36</span>resource <span class="string">"google_compute_firewall"</span> <span class="string">"vpc_connector"</span> {<br><span class="line-numbers">37</span>  name    = <span class="string">"allow-vpc-connector"</span><br><span class="line-numbers">38</span>  network = google_compute_network.vpc.name<br><span class="line-numbers">39</span><br><span class="line-numbers">40</span>  allow {<br><span class="line-numbers">41</span>    protocol = <span class="string">"tcp"</span><br><span class="line-numbers">42</span>    ports    = [<span class="string">"3306"</span>]<br><span class="line-numbers">43</span>  }<br><span class="line-numbers">44</span><br><span class="line-numbers">45</span>  source_ranges = [<span class="string">"10.8.0.0/28"</span>]<br><span class="line-numbers">46</span>  target_tags   = [<span class="string">"vpc-connector"</span>]<br><span class="line-numbers">47</span>}</code>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🔒 VPC Networking Benefits</div>
+                    <ul>
+                        <li><strong>Secure Access:</strong> Private connectivity to VPC resources</li>
+                        <li><strong>Performance:</strong> Low-latency connections to databases</li>
+                        <li><strong>Compliance:</strong> Meet security requirements for regulated data</li>
+                        <li><strong>Cost Optimization:</strong> Avoid public IP costs for internal traffic</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monitoring Section -->
+    <div id="logging" class="content-section fade-in">
+        <div class="section-header">
+            <h2>📊 Monitoring & Logging</h2>
+            <p>Comprehensive observability and monitoring for Cloud Run services</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>📈 Advanced Monitoring Setup</h3>
+                <p>Configure comprehensive monitoring with Cloud Monitoring and custom metrics.</p>
+
+                <div class="code-container">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'python-monitoring')">Python</button>
+                        <button class="code-tab" onclick="switchTab(this, 'bash-monitoring')">Bash</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                </div>
+                <div class="code-content">
+                    <div id="python-monitoring" class="code-block active">
+                        <code><span class="line-numbers"> 1</span><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request<br><span class="line-numbers"> 2</span><span class="keyword">import</span> logging<br><span class="line-numbers"> 3</span><span class="keyword">import</span> time<br><span class="line-numbers"> 4</span><span class="keyword">from</span> google.cloud <span class="keyword">import</span> monitoring_v3<br><span class="line-numbers"> 5</span><br><span class="line-numbers"> 6</span>app = Flask(__name__)<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span><span class="comment"># Configure structured logging</span><br><span class="line-numbers"> 9</span>logging.basicConfig(level=logging.INFO)<br><span class="line-numbers">10</span>logger = logging.getLogger(__name__)<br><span class="line-numbers">11</span><br><span class="line-numbers">12</span><span class="comment"># Initialize Cloud Monitoring client</span><br><span class="line-numbers">13</span>client = monitoring_v3.MetricServiceClient()<br><span class="line-numbers">14</span>project_name = client.project_path(<span class="string">'my-project'</span>)<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Custom metrics</span><br><span class="line-numbers">17</span>REQUEST_COUNT = monitoring_v3.MetricDescriptor(<br><span class="line-numbers">18</span>    type=<span class="string">'custom.googleapis.com/request_count'</span>,<br><span class="line-numbers">19</span>    metric_kind=monitoring_v3.MetricDescriptor.MetricKind.CUMULATIVE,<br><span class="line-numbers">20</span>    value_type=monitoring_v3.MetricDescriptor.ValueType.INT64,<br><span class="line-numbers">21</span>    description=<span class="string">'Number of requests processed'</span><br><span class="line-numbers">22</span>)<br><span class="line-numbers">23</span><br><span class="line-numbers">24</span>@app.before_request<br><span class="line-numbers">25</span><span class="keyword">def</span> <span class="keyword">start_timer</span>():<br><span class="line-numbers">26</span>    request.start_time = time.time()<br><span class="line-numbers">27</span><br><span class="line-numbers">28</span>@app.after_request<br><span class="line-numbers">29</span><span class="keyword">def</span> <span class="keyword">log_request</span>(response):<br><span class="line-numbers">30</span>    <span class="keyword">if</span> request.path == <span class="string">'/health'</span>:<br><span class="line-numbers">31</span>        <span class="keyword">return</span> response<br><span class="line-numbers">32</span><br><span class="line-numbers">33</span>    duration = time.time() - request.start_time<br><span class="line-numbers">34</span><br><span class="line-numbers">35</span>    <span class="comment"># Structured logging</span><br><span class="line-numbers">36</span>    logger.info(<span class="string">'Request processed'</span>, extra={<br><span class="line-numbers">37</span>        <span class="string">'method'</span>: request.method,<br><span class="line-numbers">38</span>        <span class="string">'path'</span>: request.path,<br><span class="line-numbers">39</span>        <span class="string">'status'</span>: response.status_code,<br><span class="line-numbers">40</span>        <span class="string">'duration'</span>: <span class="string">f'{duration:.3f}s'</span>,<br><span class="line-numbers">41</span>        <span class="string">'user_agent'</span>: request.headers.get(<span class="string">'User-Agent'</span>, <span class="string">''</span>)<br><span class="line-numbers">42</span>    })<br><span class="line-numbers">43</span><br><span class="line-numbers">44</span>    <span class="comment"># Send custom metrics</span><br><span class="line-numbers">45</span>    series = monitoring_v3.TimeSeries()<br><span class="line-numbers">46</span>    series.metric.type = <span class="string">'custom.googleapis.com/request_count'</span><br><span class="line-numbers">47</span>    series.resource.type = <span class="string">'global'</span><br><span class="line-numbers">48</span>    series.metric.labels[<span class="string">'method'</span>] = request.method<br><span class="line-numbers">49</span>    series.metric.labels[<span class="string">'status'</span>] = str(response.status_code)<br><span class="line-numbers">50</span><br><span class="line-numbers">51</span>    point = monitoring_v3.Point()<br><span class="line-numbers">52</span>    point.value.int64_value = 1<br><span class="line-numbers">53</span>    point.interval.end_time.seconds = int(time.time())<br><span class="line-numbers">54</span>    series.points = [point]<br><span class="line-numbers">55</span><br><span class="line-numbers">56</span>    client.create_time_series(project_name, [series])<br><span class="line-numbers">57</span><br><span class="line-numbers">58</span>    <span class="keyword">return</span> response<br><span class="line-numbers">59</span><br><span class="line-numbers">60</span>@app.route(<span class="string">'/health'</span>)<br><span class="line-numbers">61</span><span class="keyword">def</span> <span class="keyword">health</span>():<br><span class="line-numbers">62</span>    <span class="keyword">return</span> {<span class="string">'status'</span>: <span class="string">'healthy'</span>}<br><span class="line-numbers">63</span><br><span class="line-numbers">64</span>@app.route(<span class="string">'/api/data'</span>)<br><span class="line-numbers">65</span><span class="keyword">def</span> <span class="keyword">get_data</span>():<br><span class="line-numbers">66</span>    <span class="keyword">try</span>:<br><span class="line-numbers">67</span>        <span class="comment"># Simulate processing</span><br><span class="line-numbers">68</span>        time.sleep(0.1)<br><span class="line-numbers">69</span>        <span class="keyword">return</span> {<span class="string">'data'</span>: <span class="string">'sample'</span>}<br><span class="line-numbers">70</span>    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:<br><span class="line-numbers">71</span>        logger.error(<span class="string">f'Error processing request: {str(e)}'</span>)<br><span class="line-numbers">72</span>        <span class="keyword">return</span> {<span class="string">'error'</span>: <span class="string">'Internal server error'</span>}, 500<br><span class="line-numbers">73</span><br><span class="line-numbers">74</span><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:<br><span class="line-numbers">75</span>    app.run(host=<span class="string">'0.0.0.0'</span>, port=int(os.environ.get(<span class="string">'PORT'</span>, 8080)))</code>
+                    </div>
+                    <div id="bash-monitoring" class="code-block">
+                        <code><span class="line-numbers"> 1</span><span class="comment">#!/bin/bash</span><br><span class="line-numbers"> 2</span><br><span class="line-numbers"> 3</span><span class="comment"># Create custom dashboard</span><br><span class="line-numbers"> 4</span>gcloud monitoring dashboards create my-dashboard \<br><span class="line-numbers"> 5</span>  --config-from-file=dashboard.json<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span><span class="comment"># Set up alerting policies</span><br><span class="line-numbers"> 8</span>gcloud alpha monitoring policies create error-rate-policy \<br><span class="line-numbers"> 9</span>  --display-name=<span class="string">"High Error Rate Alert"</span> \<br><span class="line-numbers">10</span>  --condition-filter=<span class="string">"metric.type=\"run.googleapis.com/request_count\" AND resource.type=\"cloud_run_revision\" AND metric.labels.response_code_class!=\"2xx\""</span> \<br><span class="line-numbers">11</span>  --condition-threshold-value=0.05 \<br><span class="line-numbers">12</span>  --condition-threshold-duration=300s \<br><span class="line-numbers">13</span>  --notification-channels=projects/my-project/notificationChannels/123<br><span class="line-numbers">14</span><br><span class="line-numbers">15</span><span class="comment"># View logs with advanced filtering</span><br><span class="line-numbers">16</span>gcloud logging read <span class="string">"resource.type=cloud_run_revision AND severity>=WARNING"</span> \<br><span class="line-numbers">17</span>  --limit=50 \<br><span class="line-numbers">18</span>  --format=<span class="string">"table(timestamp,severity,textPayload)"</span><br><span class="line-numbers">19</span><br><span class="line-numbers">20</span><span class="comment"># Export logs to BigQuery</span><br><span class="line-numbers">21</span>gcloud logging sinks create my-sink \<br><span class="line-numbers">22</span>  bigquery.googleapis.com/projects/my-project/datasets/cloud_run_logs \<br><span class="line-numbers">23</span>  --log-filter=<span class="string">"resource.type=cloud_run_revision"</span></code>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">📊 Monitoring Best Practices</div>
+                    <ul>
+                        <li><strong>Structured Logging:</strong> Use consistent log formats for better analysis</li>
+                        <li><strong>Custom Metrics:</strong> Track business-specific KPIs</li>
+                        <li><strong>Alerting:</strong> Set up alerts for critical issues</li>
+                        <li><strong>Log Analysis:</strong> Export logs to BigQuery for advanced analytics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debugging Section -->
+    <div id="debugging" class="content-section fade-in">
+        <div class="section-header">
+            <h2>🐛 Debugging & Troubleshooting</h2>
+            <p>Advanced debugging techniques and troubleshooting strategies for Cloud Run</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>🔍 Remote Debugging Setup</h3>
+                <p>Set up remote debugging for Cloud Run services with Cloud Debugger.</p>
+
+                <div class="code-container">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'python-debug')">Python</button>
+                        <button class="code-tab" onclick="switchTab(this, 'node-debug')">Node.js</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                </div>
+                <div class="code-content">
+                    <div id="python-debug" class="code-block active">
+                        <code><span class="line-numbers"> 1</span><span class="keyword">import</span> os<br><span class="line-numbers"> 2</span><span class="keyword">from</span> flask <span class="keyword">import</span> Flask<br><span class="line-numbers"> 3</span><span class="keyword">import</span> logging<br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span>app = Flask(__name__)<br><span class="line-numbers"> 6</span>logger = logging.getLogger(__name__)<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span><span class="comment"># Enable Cloud Debugger</span><br><span class="line-numbers"> 9</span><span class="keyword">try</span>:<br><span class="line-numbers">10</span>    <span class="keyword">import</span> googleclouddebugger<br><span class="line-numbers">11</span>    googleclouddebugger.enable(<br><span class="line-numbers">12</span>        module=<span class="string">'my-app'</span>,<br><span class="line-numbers">13</span>        version=<span class="string">'v1.0'</span><br><span class="line-numbers">14</span>    )<br><span class="line-numbers">15</span>    logger.info(<span class="string">"Cloud Debugger enabled"</span>)<br><span class="line-numbers">16</span><span class="keyword">except</span> ImportError:<br><span class="line-numbers">17</span>    logger.warning(<span class="string">"Cloud Debugger not available"</span>)<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span>@app.route(<span class="string">'/debug'</span>)<br><span class="line-numbers">20</span><span class="keyword">def</span> <span class="keyword">debug_endpoint</span>():<br><span class="line-numbers">21</span>    <span class="comment"># Add debug breakpoint</span><br><span class="line-numbers">22</span>    <span class="keyword">import</span> pdb; pdb.set_trace()  <span class="comment"># Only for local debugging</span><br><span class="line-numbers">23</span><br><span class="line-numbers">24</span>    data = {<br><span class="line-numbers">25</span>        <span class="string">'environment'</span>: os.environ.get(<span class="string">'GAE_ENV'</span>, <span class="string">'unknown'</span>),<br><span class="line-numbers">26</span>        <span class="string">'version'</span>: os.environ.get(<span class="string">'GAE_VERSION'</span>, <span class="string">'unknown'</span>),<br><span class="line-numbers">27</span>        <span class="string">'instance'</span>: os.environ.get(<span class="string">'GAE_INSTANCE'</span>, <span class="string">'unknown'</span>),<br><span class="line-numbers">28</span>        <span class="string">'memory'</span>: os.environ.get(<span class="string">'GAE_MEMORY_MB'</span>, <span class="string">'unknown'</span>)<br><span class="line-numbers">29</span>    }<br><span class="line-numbers">30</span><br><span class="line-numbers">31</span>    logger.info(<span class="string">f"Debug info: {data}"</span>)<br><span class="line-numbers">32</span>    <span class="keyword">return</span> data<br><br><span class="line-numbers">33</span>@app.route(<span class="string">'/health'</span>)<br><span class="line-numbers">34</span><span class="keyword">def</span> <span class="keyword">health</span>():<br><span class="line-numbers">35</span>    <span class="keyword">try</span>:<br><span class="line-numbers">36</span>        <span class="comment"># Check database connectivity</span><br><span class="line-numbers">37</span>        <span class="comment"># check_cache_health()</span><br><span class="line-numbers">38</span>        <span class="comment"># check_external_services()</span><br><span class="line-numbers">39</span><br><span class="line-numbers">40</span>        <span class="keyword">return</span> {<span class="string">'status'</span>: <span class="string">'healthy'</span>, <span class="string">'timestamp'</span>: os.environ.get(<span class="string">'GAE_DEPLOYMENT_TIME'</span>)}<br><span class="line-numbers">41</span>    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:<br><span class="line-numbers">42</span>        logger.error(<span class="string">f"Health check failed: {str(e)}"</span>)<br><span class="line-numbers">43</span>        <span class="keyword">return</span> {<span class="string">'status'</span>: <span class="string">'unhealthy'</span>, <span class="string">'error'</span>: str(e)}, 503<br><br><span class="line-numbers">44</span><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:<br><span class="line-numbers">45</span>    app.run(host=<span class="string">'0.0.0.0'</span>, port=int(os.environ.get(<span class="string">'PORT'</span>, 8080)))</code>
+                    </div>
+                    <div id="node-debug" class="code-block">
+                        <code><span class="line-numbers"> 1</span>const express = require(<span class="string">'express'</span>);<br><span class="line-numbers"> 2</span>const app = express();<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span><span class="comment">// Enable Cloud Debugger</span><br><span class="line-numbers"> 5</span><span class="keyword">try</span> {<br><span class="line-numbers"> 6</span>  require(<span class="string">'@google-cloud/debug-agent'</span>).start({<br><span class="line-numbers"> 7</span>    serviceContext: {<br><span class="line-numbers"> 8</span>      service: <span class="string">'my-app'</span>,<br><span class="line-numbers"> 9</span>      version: <span class="string">'v1.0'</span><br><span class="line-numbers">10</span>    }<br><span class="line-numbers">11</span>  });<br><span class="line-numbers">12</span>  console.log(<span class="string">'Cloud Debugger enabled'</span>);<br><span class="line-numbers">13</span>} <span class="keyword">catch</span> (error) {<br><span class="line-numbers">14</span>  console.warn(<span class="string">'Cloud Debugger not available'</span>);<br><span class="line-numbers">15</span>}<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span>app.get(<span class="string">'/debug'</span>, (req, res) => {<br><span class="line-numbers">18</span>  const debugInfo = {<br><span class="line-numbers">19</span>    environment: process.env.GAE_ENV || <span class="string">'unknown'</span>,<br><span class="line-numbers">20</span>    version: process.env.GAE_VERSION || <span class="string">'unknown'</span>,<br><span class="line-numbers">21</span>    instance: process.env.GAE_INSTANCE || <span class="string">'unknown'</span>,<br><span class="line-numbers">22</span>    memory: process.env.GAE_MEMORY_MB || <span class="string">'unknown'</span>,<br><span class="line-numbers">23</span>    uptime: process.uptime()<br><span class="line-numbers">24</span>  };<br><span class="line-numbers">25</span><br><span class="line-numbers">26</span>  console.log(<span class="string">'Debug info:'</span>, debugInfo);<br><span class="line-numbers">27</span>  res.json(debugInfo);<br><span class="line-numbers">28</span>});<br><br><span class="line-numbers">29</span>app.get(<span class="string">'/health'</span>, async (req, res) => {<br><span class="line-numbers">30</span>  <span class="keyword">try</span> {<br><span class="line-numbers">31</span>    <span class="comment">// Check dependencies</span><br><span class="line-numbers">32</span>    <span class="comment">// await checkDatabase();</span><br><span class="line-numbers">33</span>    <span class="comment">// await checkRedis();</span><br><span class="line-numbers">34</span><br><span class="line-numbers">35</span>    res.json({<br><span class="line-numbers">36</span>      status: <span class="string">'healthy'</span>,<br><span class="line-numbers">37</span>      timestamp: process.env.GAE_DEPLOYMENT_TIME,<br><span class="line-numbers">38</span>      uptime: process.uptime()<br><span class="line-numbers">39</span>    });<br><span class="line-numbers">40</span>  } <span class="keyword">catch</span> (error) {<br><span class="line-numbers">41</span>    console.error(<span class="string">'Health check failed:'</span>, error);<br><span class="line-numbers">42</span>    res.status(503).json({<br><span class="line-numbers">43</span>      status: <span class="string">'unhealthy'</span>,<br><span class="line-numbers">44</span>      error: error.message<br><span class="line-numbers">45</span>    });<br><span class="line-numbers">46</span>  }<br><span class="line-numbers">47</span>});<br><br><span class="line-numbers">48</span>const port = process.env.PORT || 8080;<br><span class="line-numbers">49</span>app.listen(port, () => {<br><span class="line-numbers">50</span>  console.log(<span class="string">`Server running on port ${port}`</span>);<br><span class="line-numbers">51</span>});</code>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🐛 Debugging Best Practices</div>
+                    <ul>
+                        <li><strong>Cloud Debugger:</strong> Set breakpoints without redeploying</li>
+                        <li><strong>Health Checks:</strong> Implement comprehensive health endpoints</li>
+                        <li><strong>Log Correlation:</strong> Use request IDs for tracing</li>
+                        <li><strong>Error Boundaries:</strong> Graceful error handling and recovery</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Optimization Section -->
+    <div id="performance" class="content-section fade-in">
+        <div class="section-header">
+            <h2>⚡ Performance Optimization</h2>
+            <p>Advanced techniques for optimizing Cloud Run service performance</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>🚀 Advanced Performance Tuning</h3>
+                <p>Optimize CPU, memory, and concurrency for maximum performance.</p>
+
+                <div class="code-container">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'yaml-performance')">YAML</button>
+                        <button class="code-tab" onclick="switchTab(this, 'bash-performance')">Bash</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                </div>
+                <div class="code-content">
+                    <div id="yaml-performance" class="code-block active">
+                        <code><span class="line-numbers"> 1</span>apiVersion: serving.knative.dev/v1<br><span class="line-numbers"> 2</span>kind: Service<br><span class="line-numbers"> 3</span>metadata:<br><span class="line-numbers"> 4</span>  name: optimized-service<br><span class="line-numbers"> 5</span>spec:<br><span class="line-numbers"> 6</span>  template:<br><span class="line-numbers"> 7</span>    metadata:<br><span class="line-numbers"> 8</span>      annotations:<br><span class="line-numbers"> 9</span>        autoscaling.knative.dev/maxScale: <span class="string">"100"</span><br><span class="line-numbers">10</span>        autoscaling.knative.dev/minScale: <span class="string">"1"</span><br><span class="line-numbers">11</span>        run.googleapis.com/cpu-throttling: <span class="string">"false"</span><br><span class="line-numbers">12</span>        run.googleapis.com/startup-cpu-boost: <span class="string">"true"</span><br><span class="line-numbers">13</span>    spec:<br><span class="line-numbers">14</span>      containers:<br><span class="line-numbers">15</span>      - image: gcr.io/my-project/my-app:latest<br><span class="line-numbers">16</span>        resources:<br><span class="line-numbers">17</span>          limits:<br><span class="line-numbers">18</span>            cpu: <span class="string">"2000m"</span><br><span class="line-numbers">19</span>            memory: <span class="string">"2Gi"</span><br><span class="line-numbers">20</span>        env:<br><span class="line-numbers">21</span>        - name: GOMAXPROCS<br><span class="line-numbers">22</span>          value: <span class="string">"2"</span><br><span class="line-numbers">23</span>        - name: NODE_ENV<br><span class="line-numbers">24</span>          value: <span class="string">"production"</span><br><span class="line-numbers">25</span>        ports:<br><span class="line-numbers">26</span>        - containerPort: 8080<br><span class="line-numbers">27</span>          protocol: TCP<br><span class="line-numbers">28</span>        startupProbe:<br><span class="line-numbers">29</span>          httpGet:<br><span class="line-numbers">30</span>            path: /health<br><span class="line-numbers">31</span>            port: 8080<br><span class="line-numbers">32</span>          initialDelaySeconds: 5<br><span class="line-numbers">33</span>          periodSeconds: 10<br><span class="line-numbers">34</span>          timeoutSeconds: 5<br><span class="line-numbers">35</span>          failureThreshold: 3<br><span class="line-numbers">36</span>        livenessProbe:<br><span class="line-numbers">37</span>          httpGet:<br><span class="line-numbers">38</span>            path: /health<br><span class="line-numbers">39</span>            port: 8080<br><span class="line-numbers">40</span>          initialDelaySeconds: 30<br><span class="line-numbers">41</span>          periodSeconds: 30<br><span class="line-numbers">42</span>          timeoutSeconds: 5<br><span class="line-numbers">43</span>          failureThreshold: 3</code>
+                    </div>
+                    <div id="bash-performance" class="code-block">
+                        <code><span class="line-numbers"> 1</span><span class="comment">#!/bin/bash</span><br><span class="line-numbers"> 2</span><br><span class="line-numbers"> 3</span><span class="comment"># Deploy with performance optimizations</span><br><span class="line-numbers"> 4</span>gcloud run deploy optimized-service \<br><span class="line-numbers"> 5</span>  --image gcr.io/my-project/my-app:latest \<br><span class="line-numbers"> 6</span>  --platform managed \<br><span class="line-numbers"> 7</span>  --region us-central1 \<br><span class="line-numbers"> 8</span>  --cpu 2 \<br><span class="line-numbers"> 9</span>  --memory 2Gi \<br><span class="line-numbers">10</span>  --concurrency 100 \<br><span class="line-numbers">11</span>  --max-instances 100 \<br><span class="line-numbers">12</span>  --min-instances 1 \<br><span class="line-numbers">13</span>  --no-cpu-throttling \<br><span class="line-numbers">14</span>  --set-env-vars GOMAXPROCS=2 \<br><span class="line-numbers">15</span>  --set-env-vars NODE_ENV=production \<br><span class="line-numbers">16</span>  --port 8080 \<br><span class="line-numbers">17</span>  --allow-unauthenticated<br><span class="line-numbers">18</span><br><span class="line-numbers">19</span><span class="comment"># Configure startup CPU boost</span><br><span class="line-numbers">20</span>gcloud run services update optimized-service \<br><span class="line-numbers">21</span>  --set-env-vars GAE_STARTUP_CPU_BOOST=true \<br><span class="line-numbers">22</span>  --region us-central1<br><span class="line-numbers">23</span><br><span class="line-numbers">24</span><span class="comment"># Set up Cloud CDN for static assets</span><br><span class="line-numbers">25</span>gcloud compute backend-buckets create my-assets \<br><span class="line-numbers">26</span>  --gcs-bucket-name my-assets-bucket<br><span class="line-numbers">27</span><br><span class="line-numbers">28</span>gcloud compute url-maps create my-url-map \<br><span class="line-numbers">29</span>  --default-backend-bucket my-assets<br><span class="line-numbers">30</span><br><span class="line-numbers">31</span><span class="comment"># Enable CDN</span><br><span class="line-numbers">32</span>gcloud compute backend-buckets update my-assets \<br><span class="line-numbers">33</span>  --enable-cdn \<br><span class="line-numbers">34</span>  --cache-mode CACHE_ALL_STATIC</code>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">⚡ Performance Optimization Tips</div>
+                    <ul>
+                        <li><strong>CPU Allocation:</strong> Match CPU to workload requirements</li>
+                        <li><strong>Memory Management:</strong> Optimize memory usage to reduce costs</li>
+                        <li><strong>Concurrency:</strong> Tune concurrency for optimal throughput</li>
+                        <li><strong>Startup Optimization:</strong> Use CPU boost for faster cold starts</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Features Section -->
+    <div id="jobs" class="content-section fade-in">
+        <div class="section-header">
+            <h2>🚀 Advanced Features</h2>
+            <p>Explore advanced Cloud Run capabilities and cutting-edge features</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>⚙️ Cloud Run Jobs</h3>
+                <p>Run batch jobs and scheduled tasks with Cloud Run Jobs.</p>
+
+                <div class="code-container">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'yaml-jobs')">YAML</button>
+                        <button class="code-tab" onclick="switchTab(this, 'bash-jobs')">Bash</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                </div>
+                <div class="code-content">
+                    <div id="yaml-jobs" class="code-block active">
+                        <code><span class="line-numbers"> 1</span>apiVersion: run.googleapis.com/v1<br><span class="line-numbers"> 2</span>kind: Job<br><span class="line-numbers"> 3</span>metadata:<br><span class="line-numbers"> 4</span>  name: data-processing-job<br><span class="line-numbers"> 5</span>  annotations:<br><span class="line-numbers"> 6</span>    run.googleapis.com/launch-stage: BETA<br><span class="line-numbers"> 7</span>spec:<br><span class="line-numbers"> 8</span>  template:<br><span class="line-numbers"> 9</span>    spec:<br><span class="line-numbers">10</span>      template:<br><span class="line-numbers">11</span>        spec:<br><span class="line-numbers">12</span>          containers:<br><span class="line-numbers">13</span>          - image: gcr.io/my-project/data-processor:latest<br><span class="line-numbers">14</span>            resources:<br><span class="line-numbers">15</span>              limits:<br><span class="line-numbers">16</span>                cpu: <span class="string">"1000m"</span><br><span class="line-numbers">17</span>                memory: <span class="string">"1Gi"</span><br><span class="line-numbers">18</span>            env:<br><span class="line-numbers">19</span>            - name: INPUT_BUCKET<br><span class="line-numbers">20</span>              value: <span class="string">"my-input-data"</span><br><span class="line-numbers">21</span>            - name: OUTPUT_BUCKET<br><span class="line-numbers">22</span>              value: <span class="string">"my-processed-data"</span><br><span class="line-numbers">23</span>            args:<br><span class="line-numbers">24</span>            - <span class="string">"--input"</span><br><span class="line-numbers">25</span>            - <span class="string">"gs://my-input-data/"</span><br><span class="line-numbers">26</span>            - <span class="string">"--output"</span><br><span class="line-numbers">27</span>            - <span class="string">"gs://my-processed-data/"</span><br><span class="line-numbers">28</span>          maxRetries: 3<br><span class="line-numbers">29</span>      parallelism: 5<br><span class="line-numbers">30</span>      taskCount: 10</code>
+                    </div>
+                    <div id="bash-jobs" class="code-block">
+                        <code><span class="line-numbers"> 1</span><span class="comment">#!/bin/bash</span><br><span class="line-numbers"> 2</span><br><span class="line-numbers"> 3</span><span class="comment"># Create and run a Cloud Run Job</span><br><span class="line-numbers"> 4</span>gcloud run jobs create data-processing-job \<br><span class="line-numbers"> 5</span>  --image gcr.io/my-project/data-processor:latest \<br><span class="line-numbers"> 6</span>  --cpu 1 \<br><span class="line-numbers"> 7</span>  --memory 1Gi \<br><span class="line-numbers"> 8</span>  --max-retries 3 \<br><span class="line-numbers"> 9</span>  --parallelism 5 \<br><span class="line-numbers">10</span>  --tasks 10 \<br><span class="line-numbers">11</span>  --set-env-vars INPUT_BUCKET=my-input-data \<br><span class="line-numbers">12</span>  --set-env-vars OUTPUT_BUCKET=my-processed-data \<br><span class="line-numbers">13</span>  --args="--input,gs://my-input-data/,--output,gs://my-processed-data/" \<br><span class="line-numbers">14</span>  --region us-central1<br><span class="line-numbers">15</span><br><span class="line-numbers">16</span><span class="comment"># Execute the job</span><br><span class="line-numbers">17</span>gcloud run jobs execute data-processing-job \<br><span class="line-numbers">18</span>  --region us-central1<br><span class="line-numbers">19</span><br><span class="line-numbers">20</span><span class="comment"># Monitor job execution</span><br><span class="line-numbers">21</span>gcloud run jobs executions list \<br><span class="line-numbers">22</span>  --job data-processing-job \<br><span class="line-numbers">23</span>  --region us-central1<br><br><span class="line-numbers">24</span><span class="comment"># Schedule recurring jobs with Cloud Scheduler</span><br><span class="line-numbers">25</span>gcloud scheduler jobs create http scheduled-backup \<br><span class="line-numbers">26</span>  --schedule <span class="string">"0 2 * * *"</span> \<br><span class="line-numbers">27</span>  --uri <span class="string">"https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/my-project/jobs/backup-job:run"</span> \<br><span class="line-numbers">28</span>  --http-method POST \<br><span class="line-numbers">29</span>  --oauth-service-account-email my-service-account@my-project.iam.gserviceaccount.com \<br><span class="line-numbers">30</span>  --region us-central1</code>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">⚙️ Cloud Run Jobs Benefits</div>
+                    <ul>
+                        <li><strong>Batch Processing:</strong> Run large-scale data processing tasks</li>
+                        <li><strong>Cost Effective:</strong> Pay only for actual compute time</li>
+                        <li><strong>Scalable:</strong> Parallel execution with configurable parallelism</li>
+                        <li><strong>Reliable:</strong> Built-in retry mechanisms and monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cloud Functions vs Cloud Run Section -->
+    <div id="functions" class="content-section fade-in">
+        <div class="section-header">
+            <h2>λ Cloud Functions vs Cloud Run</h2>
+            <p>Compare serverless platforms and choose the right tool for your use case</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>🔄 Platform Comparison</h3>
+                <p>Understanding when to use Cloud Functions vs Cloud Run.</p>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Cloud Functions</th>
+                                <th>Cloud Run</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Runtime</strong></td>
+                                <td>Node.js, Python, Go, Java, .NET, Ruby</td>
+                                <td>Any language (Docker)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cold Start</strong></td>
+                                <td>~100-500ms</td>
+                                <td>~1-3 seconds</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Execution Time</strong></td>
+                                <td>Max 9 minutes</td>
+                                <td>Up to 60 minutes</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scaling</strong></td>
+                                <td>Automatic (0-1000)</td>
+                                <td>Configurable (0-1000+)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CPU/Memory</strong></td>
+                                <td>Limited options</td>
+                                <td>Highly configurable</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use Cases</strong></td>
+                                <td>Event-driven, simple APIs</td>
+                                <td>Web apps, complex workloads</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'functions-example')">Cloud
+                            Functions</button>
+                        <button class="code-tab" onclick="switchTab(this, 'run-example')">Cloud Run</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                </div>
+                <div class="code-content">
+                    <div id="functions-example" class="code-block active">
+                        <code><span class="line-numbers"> 1</span><span class="comment">// Cloud Functions - Simple event processing</span><br><span class="line-numbers"> 2</span>const functions = require('@google-cloud/functions-framework');<br><span class="line-numbers"> 3</span><br><span class="line-numbers"> 4</span>functions.http('helloWorld', (req, res) => {<br><span class="line-numbers"> 5</span>  res.send(`Hello ${req.query.name || 'World'}!`);<br><span class="line-numbers"> 6</span>});<br><span class="line-numbers"> 7</span><br><span class="line-numbers"> 8</span><span class="comment">// Deploy: gcloud functions deploy helloWorld --runtime nodejs16 --trigger-http</span></code>
+                    </div>
+                    <div id="run-example" class="code-block">
+                        <code><span class="line-numbers"> 1</span><span class="comment">// Cloud Run - Full web application</span><br><span class="line-numbers"> 2</span>const express = require('express');<br><span class="line-numbers"> 3</span>const app = express();<br><span class="line-numbers"> 4</span><br><span class="line-numbers"> 5</span>app.use(express.json());<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span>app.get('/', (req, res) => {<br><span class="line-numbers"> 8</span>  res.json({ message: `Hello ${req.query.name || 'World'}!` });<br><span class="line-numbers"> 9</span>});<br><span class="line-numbers">10</span><br><span class="line-numbers">11</span>app.post('/api/process', async (req, res) => {<br><span class="line-numbers">12</span>  <span class="comment">// Complex business logic</span><br><span class="line-numbers">13</span>  const result = await processData(req.body);<br><span class="line-numbers">14</span>  res.json(result);<br><span class="line-numbers">15</span>});<br><span class="line-numbers">16</span><br><span class="line-numbers">17</span>const port = process.env.PORT || 8080;<br><span class="line-numbers">18</span>app.listen(port, () => console.log(`Server on port ${port}`));<br><span class="line-numbers">19</span><br><span class="line-numbers">20</span><span class="comment">// Deploy: gcloud run deploy --source . --platform managed</span></code>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">λ Choosing the Right Platform</div>
+                    <ul>
+                        <li><strong>Use Cloud Functions:</strong> Simple functions, event-driven workflows</li>
+                        <li><strong>Use Cloud Run:</strong> Web applications, complex logic, custom runtimes</li>
+                        <li><strong>Migration Path:</strong> Start with Functions, move to Run as complexity grows</li>
+                        <li><strong>Cost Optimization:</strong> Functions for sporadic traffic, Run for consistent loads
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multi-region Deployment Section -->
+    <div id="multi-region" class="content-section fade-in">
+        <div class="section-header">
+            <h2>🌍 Multi-region Deployment</h2>
+            <p>Deploy Cloud Run services across multiple regions for high availability</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>🚀 Global Deployment Strategy</h3>
+                <p>Implement multi-region deployments with load balancing and failover.</p>
+
+                <div class="code-container">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab(this, 'bash-multi')">Bash</button>
+                        <button class="code-tab" onclick="switchTab(this, 'terraform-multi')">Terraform</button>
+                    </div>
+                    <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                </div>
+                <div class="code-content">
+                    <div id="bash-multi" class="code-block active">
+                        <code><span class="line-numbers"> 1</span><span class="comment">#!/bin/bash</span><br><span class="line-numbers"> 2</span><br><span class="line-numbers"> 3</span><span class="comment"># Deploy to multiple regions</span><br><span class="line-numbers"> 4</span>REGIONS=("us-central1" "us-east1" "europe-west1")<br><span class="line-numbers"> 5</span>SERVICE_NAME="my-global-service"<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span><span class="keyword">for</span> REGION <span class="keyword">in</span> <span class="string">"${REGIONS[@]}"</span>; <span class="keyword">do</span><br><span class="line-numbers"> 8</span>  echo <span class="string">"Deploying to $REGION..."</span><br><span class="line-numbers"> 9</span>  gcloud run deploy <span class="string">"<span class="variable">$SERVICE_NAME</span>"</span> \<br><span class="line-numbers">10</span>    --image gcr.io/my-project/my-app:latest \<br><span class="line-numbers">11</span>    --platform managed \<br><span class="line-numbers">12</span>    --region <span class="string">"<span class="variable">$REGION</span>"</span> \<br><span class="line-numbers">13</span>    --allow-unauthenticated \<br><span class="line-numbers">14</span>    --set-env-vars REGION=<span class="string">"<span class="variable">$REGION</span>"</span><br><span class="line-numbers">15</span><span class="keyword">done</span><br><span class="line-numbers">16</span><br><span class="line-numbers">17</span><span class="comment"># Create global load balancer</span><br><span class="line-numbers">18</span>gcloud compute network-endpoint-groups create my-neg-us-central \<br><span class="line-numbers">19</span>  --region us-central1 \<br><span class="line-numbers">20</span>  --network-endpoint-type serverless \<br><span class="line-numbers">21</span>  --cloud-run-service my-global-service<br><span class="line-numbers">22</span><br><span class="line-numbers">23</span>gcloud compute network-endpoint-groups create my-neg-us-east \<br><span class="line-numbers">24</span>  --region us-east1 \<br><span class="line-numbers">25</span>  --network-endpoint-type serverless \<br><span class="line-numbers">26</span>  --cloud-run-service my-global-service<br><span class="line-numbers">27</span><br><span class="line-numbers">28</span>gcloud compute network-endpoint-groups create my-neg-europe \<br><span class="line-numbers">29</span>  --region europe-west1 \<br><span class="line-numbers">30</span>  --network-endpoint-type serverless \<br><span class="line-numbers">31</span>  --cloud-run-service my-global-service<br><span class="line-numbers">32</span><br><span class="line-numbers">33</span><span class="comment"># Create backend service</span><br><span class="line-numbers">34</span>gcloud compute backend-services create my-backend-service \<br><span class="line-numbers">35</span>  --global \<br><span class="line-numbers">36</span>  --protocol HTTP \<br><span class="line-numbers">37</span>  --timeout 30s<br><br><span class="line-numbers">38</span><span class="comment"># Add backends</span><br><span class="line-numbers">39</span>gcloud compute backend-services add-backend my-backend-service \<br><span class="line-numbers">40</span>  --global \<br><span class="line-numbers">41</span>  --network-endpoint-group my-neg-us-central \<br><span class="line-numbers">42</span>  --network-endpoint-group-region us-central1 \<br><span class="line-numbers">43</span>  --balancing-mode UTILIZATION \<br><span class="line-numbers">44</span>  --max-rate-per-endpoint 100<br><br><span class="line-numbers">45</span><span class="comment"># Create URL map and target proxy</span><br><span class="line-numbers">46</span>gcloud compute url-maps create my-url-map \<br><span class="line-numbers">47</span>  --default-service my-backend-service<br><br><span class="line-numbers">48</span>gcloud compute target-http-proxies create my-http-proxy \<br><span class="line-numbers">49</span>  --url-map my-url-map<br><br><span class="line-numbers">50</span><span class="comment"># Create global IP and forwarding rule</span><br><span class="line-numbers">51</span>gcloud compute addresses create my-global-ip \<br><span class="line-numbers">52</span>  --global \<br><span class="line-numbers">53</span>  --ip-version IPV4<br><br><span class="line-numbers">54</span>gcloud compute forwarding-rules create my-forwarding-rule \<br><span class="line-numbers">55</span>  --global \<br><span class="line-numbers">56</span>  --target-http-proxy my-http-proxy \<br><span class="line-numbers">57</span>  --ports 80 \<br><span class="line-numbers">58</span>  --address my-global-ip</code>
+                    </div>
+                    <div id="terraform-multi" class="code-block">
+                        <code><span class="line-numbers"> 1</span>variable <span class="string">"regions"</span> {<br><span class="line-numbers"> 2</span>  type        = list(string)<br><span class="line-numbers"> 3</span>  default     = [<span class="string">"us-central1"</span>, <span class="string">"us-east1"</span>, <span class="string">"europe-west1"</span>]<br><span class="line-numbers"> 4</span>  description = <span class="string">"Regions for multi-region deployment"</span><br><span class="line-numbers"> 5</span>}<br><span class="line-numbers"> 6</span><br><span class="line-numbers"> 7</span>resource <span class="string">"google_cloud_run_service"</span> <span class="string">"service"</span> {<br><span class="line-numbers"> 8</span>  for_each = toset(var.regions)<br><span class="line-numbers"> 9</span><br><span class="line-numbers">10</span>  name     = <span class="string">"my-global-service"</span><br><span class="line-numbers">11</span>  location = each.value<br><br><span class="line-numbers">12</span>  template {<br><span class="line-numbers">13</span>    spec {<br><span class="line-numbers">14</span>      containers {<br><span class="line-numbers">15</span>        image = <span class="string">"gcr.io/my-project/my-app:latest"</span><br><span class="line-numbers">16</span>        env {<br><span class="line-numbers">17</span>          name  = <span class="string">"REGION"</span><br><span class="line-numbers">18</span>          value = each.value<br><span class="line-numbers">19</span>        }<br><span class="line-numbers">20</span>      }<br><span class="line-numbers">21</span>    }<br><span class="line-numbers">22</span>  }<br><br><span class="line-numbers">23</span>  traffic {<br><span class="line-numbers">24</span>    percent         = 100<br><span class="line-numbers">25</span>    latest_revision = true<br><span class="line-numbers">26</span>  }<br><span class="line-numbers">27</span>}<br><br><span class="line-numbers">28</span>resource <span class="string">"google_compute_region_network_endpoint_group"</span> <span class="string">"neg"</span> {<br><span class="line-numbers">29</span>  for_each = toset(var.regions)<br><br><span class="line-numbers">30</span>  name                  = <span class="string">"my-neg-${each.value}"</span><br><span class="line-numbers">31</span>  region                = each.value<br><span class="line-numbers">32</span>  network_endpoint_type = <span class="string">"SERVERLESS"</span><br><span class="line-numbers">33</span><br><span class="line-numbers">34</span>  cloud_run {<br><span class="line-numbers">35</span>    service = google_cloud_run_service.service[each.value].name<br><span class="line-numbers">36</span>  }<br><span class="line-numbers">37</span>}<br><br><span class="line-numbers">38</span>resource <span class="string">"google_compute_backend_service"</span> <span class="string">"backend"</span> {<br><span class="line-numbers">39</span>  name        = <span class="string">"my-backend-service"</span><br><span class="line-numbers">40</span>  protocol    = <span class="string">"HTTP"</span><br><span class="line-numbers">41</span>  timeout_sec = 30<br><br><span class="line-numbers">42</span>  dynamic <span class="string">"backend"</span> {<br><span class="line-numbers">43</span>    for_each = var.regions<br><span class="line-numbers">44</span>    content {<br><span class="line-numbers">45</span>      group = google_compute_region_network_endpoint_group.neg[backend.value].id<br><span class="line-numbers">46</span>    }<br><span class="line-numbers">47</span>  }<br><span class="line-numbers">48</span>}<br><br><span class="line-numbers">49</span>resource <span class="string">"google_compute_url_map"</span> <span class="string">"url_map"</span> {<br><span class="line-numbers">50</span>  name            = <span class="string">"my-url-map"</span><br><span class="line-numbers">51</span>  default_service = google_compute_backend_service.backend.id<br><span class="line-numbers">52</span>}<br><br><span class="line-numbers">53</span>resource <span class="string">"google_compute_target_http_proxy"</span> <span class="string">"proxy"</span> {<br><span class="line-numbers">54</span>  name    = <span class="string">"my-http-proxy"</span><br><span class="line-numbers">55</span>  url_map = google_compute_url_map.url_map.id<br><span class="line-numbers">56</span>}<br><br><span class="line-numbers">57</span>resource <span class="string">"google_compute_global_address"</span> <span class="string">"ip"</span> {<br><span class="line-numbers">58</span>  name = <span class="string">"my-global-ip"</span><br><span class="line-numbers">59</span>}<br><br><span class="line-numbers">60</span>resource <span class="string">"google_compute_global_forwarding_rule"</span> <span class="string">"forwarding_rule"</span> {<br><span class="line-numbers">61</span>  name       = <span class="string">"my-forwarding-rule"</span><br><span class="line-numbers">62</span>  target     = google_compute_target_http_proxy.proxy.id<br><span class="line-numbers">63</span>  port_range = <span class="string">"80"</span><br><span class="line-numbers">64</span>  ip_address = google_compute_global_address.ip.address<br><span class="line-numbers">65</span>}</code>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🌍 Multi-region Benefits</div>
+                    <ul>
+                        <li><strong>High Availability:</strong> Automatic failover across regions</li>
+                        <li><strong>Low Latency:</strong> Route users to nearest region</li>
+                        <li><strong>Disaster Recovery:</strong> Survive regional outages</li>
+                        <li><strong>Compliance:</strong> Meet data residency requirements</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.content-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                        section.classList.remove('visible');
+                    });
+
+                    // Show selected section
+                    const sectionId = this.dataset.section;
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        targetSection.classList.add('visible');
+
+                        // Smooth scroll to section
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Show first section by default
+            const firstSection = document.getElementById('overview');
+            if (firstSection) {
+                firstSection.style.display = 'block';
+                firstSection.classList.add('visible');
+            }
+
+            // Intersection Observer for animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Create Cloud Run animation
+            function createCloudRunAnimation() {
+                const diagram = document.querySelector('.architecture-diagram');
+                if (!diagram) return;
+
+                for (let i = 0; i < 5; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'request-particle';
+                    particle.style.left = '75px';
+                    particle.style.top = '180px';
+                    particle.style.animationDelay = (i * 0.6) + 's';
+                    diagram.appendChild(particle);
+                }
+            }
+
+            createCloudRunAnimation();
+        });
+
+        // Tab switching functionality
+        function switchTab(clickedTab, targetId) {
+            const container = clickedTab.closest('.code-container');
+            const tabs = container.querySelectorAll('.code-tab');
+            const codeBlocks = container.querySelectorAll('.code-block');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            codeBlocks.forEach(block => block.classList.remove('active'));
+
+            clickedTab.classList.add('active');
+            document.getElementById(targetId).classList.add('active');
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const container = button.closest('.code-container');
+            const activeCodeBlock = container.querySelector('.code-block.active code');
+            if (activeCodeBlock) {
+                const textToCopy = activeCodeBlock.textContent || activeCodeBlock.innerText;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = button.textContent;
+                    button.textContent = '✅ Copied!';
+                    button.style.background = '#4CAF50';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

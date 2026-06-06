@@ -1,0 +1,266 @@
+# docker-compose.yml — Full Apache Airflow 2.9 Stack
+# ====================================================
+# Services:
+#   postgres        — Airflow metadata database
+#   redis           — Celery broker for CeleryExecutor
+#   airflow-init    — One-time DB init + admin user creation
+#   airflow-webserver
+#   airflow-scheduler
+#   airflow-worker  — Celery worker (runs tasks)
+#   airflow-flower  — Celery task monitoring UI (optional)
+#   poc-api         — Our FastAPI simulator (port 8000)
+#   poc-ui          — Our Streamlit UI (port 8501)
+#
+# Usage:
+#   docker-compose up -d          # Start everything
+#   docker-compose down -v        # Stop + delete volumes
+#
+# After start:
+#   Airflow UI:  http://localhost:8080  (admin / admin)
+#   FastAPI:     http://localhost:8000/docs
+#   Streamlit:   http://localhost:8501
+#   Flower:      http://localhost:5555
+
+version: "3.9"
+
+# ── Shared environment ─────────────────────────────────────────────────────
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.9.3-python3.11
+  environment:
+    &airflow-env
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CORE__FERNET_KEY: "46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLt0nFe6TA="
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
+    # Email (configure with real SMTP in production)
+    AIRFLOW__EMAIL__EMAIL_BACKEND: airflow.utils.email.send_email_smtp
+    AIRFLOW__SMTP__SMTP_HOST: smtp.gmail.com
+    AIRFLOW__SMTP__SMTP_PORT: "587"
+    AIRFLOW__SMTP__SMTP_STARTTLS: "true"
+    AIRFLOW__SMTP__SMTP_SSL: "false"
+    AIRFLOW__SMTP__SMTP_USER: ${AIRFLOW_SMTP_USER:-""}
+    AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW_SMTP_PASSWORD:-""}
+    AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW_SMTP_FROM:-"airflow@company.com"}
+    # Connections — set via environment variables (production pattern)
+    AIRFLOW_CONN_POSTGRES_DEFAULT: "postgresql://airflow:airflow@postgres:5432/airflow"
+    AIRFLOW_CONN_FS_DEFAULT: "fs:///?path=/"
+    # Python path for plugins
+    PYTHONPATH: "/opt/airflow/plugins:/opt/airflow/src"
+    _PIP_ADDITIONAL_REQUIREMENTS: ""
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./plugins:/opt/airflow/plugins
+    - ./config:/opt/airflow/config
+    - ./data:/opt/airflow/data
+    - ./logs:/opt/airflow/logs
+  user: "${AIRFLOW_UID:-50000}:0"
+  depends_on:
+    &airflow-depends
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+
+# ── Services ───────────────────────────────────────────────────────────────
+services:
+
+  # ── Postgres: Airflow metadata DB ────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: poc07-postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  # ── Redis: Celery broker ──────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: poc07-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 30s
+      retries: 50
+      start_period: 30s
+    restart: unless-stopped
+
+  # ── Airflow init: DB migrations + admin user ──────────────────────────────
+  airflow-init:
+    <<: *airflow-common
+    container_name: poc07-airflow-init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        echo "Initialising Airflow DB..."
+        airflow db upgrade
+        echo "Creating admin user..."
+        airflow users create \
+          --username admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@company.com \
+          --password admin || true
+        echo "Init complete."
+    environment:
+      <<: *airflow-env
+      _AIRFLOW_DB_MIGRATE: "true"
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: admin
+    user: "0:0"
+    restart: on-failure
+
+  # ── Airflow Webserver ──────────────────────────────────────────────────────
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: poc07-airflow-webserver
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *airflow-depends
+      airflow-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    labels:
+      - "description=Airflow Web UI"
+
+  # ── Airflow Scheduler ──────────────────────────────────────────────────────
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: poc07-airflow-scheduler
+    command: scheduler
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *airflow-depends
+      airflow-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # ── Airflow Celery Worker ──────────────────────────────────────────────────
+  airflow-worker:
+    <<: *airflow-common
+    container_name: poc07-airflow-worker
+    command: celery worker
+    environment:
+      <<: *airflow-env
+      DUMB_INIT_SETSID: "0"
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" -t 10'
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *airflow-depends
+      airflow-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # ── Celery Flower (optional — task monitoring) ────────────────────────────
+  airflow-flower:
+    <<: *airflow-common
+    container_name: poc07-airflow-flower
+    command: celery flower
+    ports:
+      - "5555:5555"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *airflow-depends
+      airflow-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # ── POC FastAPI service ────────────────────────────────────────────────────
+  poc-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: poc07-api
+    command: python main.py api --api-port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./dags:/app/dags
+      - ./config:/app/config
+      - ./data:/app/data
+    environment:
+      PYTHONPATH: /app
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "description=POC-07 FastAPI simulator"
+
+  # ── POC Streamlit UI ───────────────────────────────────────────────────────
+  poc-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: poc07-ui
+    command: python main.py ui --ui-port 8501
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./dags:/app/dags
+      - ./config:/app/config
+      - ./data:/app/data
+    environment:
+      PYTHONPATH: /app
+    depends_on:
+      - poc-api
+    restart: unless-stopped
+    labels:
+      - "description=POC-07 Streamlit UI"
+
+# ── Volumes ────────────────────────────────────────────────────────────────
+volumes:
+  postgres-db-volume:
+
+# ── Networks ───────────────────────────────────────────────────────────────
+networks:
+  default:
+    name: poc07-network

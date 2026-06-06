@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLOps Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --mlops-green: #10B981;
+            --mlops-blue: #3B82F6;
+            --mlops-purple: #8B5CF6;
+            --mlops-orange: #F59E0B;
+            --mlops-red: #EF4444;
+            --mlops-dark: #1F2937;
+            --mlops-light: #F9FAFB;
+            --primary-color: #10B981;
+            --secondary-color: #3B82F6;
+            --accent-color: #8B5CF6;
+            --warning-color: #F59E0B;
+            --info-color: #EF4444;
+            --dark-color: #1F2937;
+            --light-color: #F9FAFB;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--mlops-dark);
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            min-height: 200px;
+        }
+
+        .btn-mlops {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-mlops:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-outline-mlops {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-mlops:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: var(--mlops-light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--mlops-dark);
+        }
+
+        .feature-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .interactive-section {
+            background: var(--mlops-light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .mlops-pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #10B981, #8B5CF6);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .pipeline-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .pipeline-arrow {
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        .model-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .deployment-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .deployment-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .perf-metric-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .execution-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--mlops-light);
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--mlops-dark);
+        }
+
+        .stat-value {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .input-group-custom {
+            margin-bottom: 15px;
+        }
+
+        .input-group-custom label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--mlops-dark);
+        }
+
+        .input-group-custom input,
+        .input-group-custom select,
+        .input-group-custom textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-group-custom textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .badge-custom {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        .badge-success {
+            background: #10B981;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #EF4444;
+            color: white;
+        }
+
+        .badge-info {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .pipeline-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .pipeline-stage {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .monitoring-chart {
+            background: var(--mlops-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            min-height: 150px;
+            position: relative;
+        }
+
+        .metric-line {
+            position: absolute;
+            height: 2px;
+            background: var(--primary-color);
+            border-radius: 1px;
+        }
+
+        .metric-point {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .drift-indicator {
+            background: var(--mlops-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .drift-bar {
+            background: var(--secondary-color);
+            height: 20px;
+            border-radius: 4px;
+            margin: 5px 0;
+            position: relative;
+        }
+
+        .drift-fill {
+            background: var(--warning-color);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .experiment-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .ab-test {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 15px 0;
+        }
+
+        .test-variant {
+            background: var(--mlops-light);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .variant-a {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .variant-b {
+            border-left: 4px solid var(--secondary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [models, setModels] = useState([
+                {
+                    id: 'model-1',
+                    name: 'Customer Churn Predictor v2.1',
+                    version: '2.1.0',
+                    status: 'deployed',
+                    accuracy: 0.87,
+                    latency: '45ms',
+                    lastTrained: '2024-01-15',
+                    framework: 'scikit-learn'
+                },
+                {
+                    id: 'model-2',
+                    name: 'Image Classifier v1.3',
+                    version: '1.3.2',
+                    status: 'training',
+                    accuracy: 0.92,
+                    latency: '120ms',
+                    lastTrained: '2024-01-10',
+                    framework: 'TensorFlow'
+                },
+                {
+                    id: 'model-3',
+                    name: 'Recommendation Engine v3.0',
+                    version: '3.0.1',
+                    status: 'staged',
+                    accuracy: 0.78,
+                    latency: '85ms',
+                    lastTrained: '2024-01-12',
+                    framework: 'PyTorch'
+                }
+            ]);
+            const [deployments, setDeployments] = useState([
+                {
+                    id: 'deploy-1',
+                    modelName: 'Customer Churn Predictor',
+                    environment: 'production',
+                    status: 'healthy',
+                    replicas: 3,
+                    cpu: 65,
+                    memory: 78,
+                    requests: 1250
+                },
+                {
+                    id: 'deploy-2',
+                    modelName: 'Image Classifier',
+                    environment: 'staging',
+                    status: 'updating',
+                    replicas: 2,
+                    cpu: 45,
+                    memory: 62,
+                    requests: 850
+                },
+                {
+                    id: 'deploy-3',
+                    modelName: 'Recommendation Engine',
+                    environment: 'canary',
+                    status: 'testing',
+                    replicas: 1,
+                    cpu: 30,
+                    memory: 45,
+                    requests: 320
+                }
+            ]);
+            const [experiments, setExperiments] = useState([
+                {
+                    id: 'exp-1',
+                    name: 'Model A/B Test - Q1 2024',
+                    status: 'running',
+                    variants: [
+                        { name: 'Control', model: 'v2.0', traffic: 50, conversion: 0.23 },
+                        { name: 'Treatment', model: 'v2.1', traffic: 50, conversion: 0.27 }
+                    ],
+                    duration: '14 days',
+                    winner: null
+                },
+                {
+                    id: 'exp-2',
+                    name: 'Feature Engineering Test',
+                    status: 'completed',
+                    variants: [
+                        { name: 'Baseline', model: 'v1.0', traffic: 33, conversion: 0.19 },
+                        { name: 'Enhanced', model: 'v1.1', traffic: 33, conversion: 0.24 },
+                        { name: 'Advanced', model: 'v1.2', traffic: 34, conversion: 0.26 }
+                    ],
+                    duration: '21 days',
+                    winner: 'Advanced'
+                }
+            ]);
+            const [monitoring, setMonitoring] = useState({
+                accuracy: [0.85, 0.87, 0.86, 0.88, 0.87, 0.89, 0.88],
+                latency: [45, 42, 48, 44, 46, 43, 45],
+                throughput: [1200, 1250, 1180, 1320, 1280, 1350, 1300],
+                dataDrift: 0.12,
+                conceptDrift: 0.08
+            });
+            const [pipeline, setPipeline] = useState([
+                { stage: 'Data Ingestion', status: 'completed', duration: '2m 30s' },
+                { stage: 'Data Validation', status: 'completed', duration: '1m 15s' },
+                { stage: 'Feature Engineering', status: 'running', duration: '5m 42s' },
+                { stage: 'Model Training', status: 'pending', duration: null },
+                { stage: 'Model Validation', status: 'pending', duration: null },
+                { stage: 'Model Deployment', status: 'pending', duration: null }
+            ]);
+            const [code, setCode] = useState(`# MLOps Pipeline with MLflow
+import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+import pandas as pd
+
+# Set MLflow experiment
+mlflow.set_experiment("Customer Churn Prediction")
+
+with mlflow.start_run():
+    # Load and prepare data
+    data = pd.read_csv("customer_data.csv")
+    X = data.drop('churn', axis=1)
+    y = data['churn']
+
+    # Model training
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(X, y)
+
+    # Predictions and metrics
+    predictions = model.predict(X)
+    accuracy = accuracy_score(y, predictions)
+
+    # Log parameters, metrics, and model
+    mlflow.log_param("n_estimators", 100)
+    mlflow.log_metric("accuracy", accuracy)
+    mlflow.sklearn.log_model(model, "model")
+
+    print(f"Model trained with accuracy: {accuracy:.3f}")
+    print("Model logged to MLflow")
+
+# Model deployment with Docker
+# Dockerfile content:
+"""
+FROM python:3.9-slim
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY model.pkl .
+COPY app.py .
+
+EXPOSE 5000
+CMD ["python", "app.py"]
+"""
+
+# FastAPI deployment
+from fastapi import FastAPI
+import joblib
+
+app = FastAPI()
+model = joblib.load("model.pkl")
+
+@app.post("/predict")
+def predict(data: dict):
+    prediction = model.predict([list(data.values())])
+    return {"prediction": int(prediction[0])}`);
+            const [output, setOutput] = useState('');
+            const [isExecuting, setIsExecuting] = useState(false);
+            const [selectedModel, setSelectedModel] = useState('model-1');
+            const [performance, setPerformance] = useState({
+                deploymentTime: '3m 45s',
+                modelSize: '245 MB',
+                coldStartTime: '12s',
+                throughput: '1250 req/min'
+            });
+
+            const executePipeline = async () => {
+                setIsExecuting(true);
+                setOutput('Starting MLOps pipeline...\n');
+
+                // Simulate pipeline execution
+                setTimeout(() => {
+                    setOutput(prev => prev + '✓ Data ingestion completed\n' +
+                        '✓ Data validation passed\n' +
+                        '✓ Feature engineering finished\n' +
+                        '✓ Model training completed\n' +
+                        '✓ Model validation successful\n' +
+                        '✓ Model deployed to production\n\n' +
+                        'Pipeline completed successfully!\n' +
+                        'Model deployed at: https://api.example.com/v1/predict\n' +
+                        'Monitoring dashboard: https://monitoring.example.com');
+                    setIsExecuting(false);
+                }, 3000);
+            };
+
+            const deployModel = (modelId) => {
+                const model = models.find(m => m.id === modelId);
+                if (model) {
+                    setOutput(`Deploying ${model.name}...\n` +
+                        '✓ Building container image\n' +
+                        '✓ Running health checks\n' +
+                        '✓ Setting up auto-scaling\n' +
+                        '✓ Configuring monitoring\n' +
+                        `✓ Deployment completed\n\n` +
+                        `Model ${model.name} is now live in production!`);
+                }
+            };
+
+            const runExperiment = () => {
+                setOutput('Starting A/B experiment...\n' +
+                    '✓ Creating experiment variants\n' +
+                    '✓ Setting up traffic splitting (50/50)\n' +
+                    '✓ Configuring metrics collection\n' +
+                    '✓ Starting experiment\n\n' +
+                    'Experiment "Model Performance Test" is now running\n' +
+                    'Duration: 14 days\n' +
+                    'Expected completion: 2024-02-01');
+            };
+
+            const retrainModel = (modelId) => {
+                const model = models.find(m => m.id === modelId);
+                if (model) {
+                    setOutput(`Retraining ${model.name}...\n` +
+                        '✓ Checking for new training data\n' +
+                        '✓ Running feature engineering\n' +
+                        '✓ Training new model version\n' +
+                        '✓ Validating performance\n' +
+                        '✓ Preparing for deployment\n\n' +
+                        `Model ${model.name} retrained successfully!\n` +
+                        'New version ready for staging deployment');
+                }
+            };
+
+            const getStatusBadge = (status) => {
+                const classes = {
+                    'deployed': 'badge-success',
+                    'training': 'badge-warning',
+                    'staged': 'badge-info',
+                    'healthy': 'badge-success',
+                    'updating': 'badge-warning',
+                    'testing': 'badge-info',
+                    'running': 'badge-success',
+                    'completed': 'badge-success'
+                };
+                return classes[status] || 'badge-secondary';
+            };
+
+            const getPipelineStatusColor = (status) => {
+                const colors = {
+                    'completed': '#10B981',
+                    'running': '#F59E0B',
+                    'pending': '#6B7280'
+                };
+                return colors[status] || '#6B7280';
+            };
+
+            return (
+                <div className="demo-container">
+                    {/* Header */}
+                    <div className="header">
+                        <h1><i className="fas fa-cogs"></i> MLOps</h1>
+                        <p>Machine Learning Operations for production ML systems</p>
+                    </div>
+
+                    {/* Navigation Tabs */}
+                    <ul className="nav nav-tabs justify-content-center mb-4">
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('overview')}>
+                                <i className="fas fa-info-circle"></i> Overview
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'models' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('models')}>
+                                <i className="fas fa-brain"></i> Models
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'pipeline' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('pipeline')}>
+                                <i className="fas fa-stream"></i> Pipeline
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'deployment' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('deployment')}>
+                                <i className="fas fa-rocket"></i> Deployment
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'monitoring' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('monitoring')}>
+                                <i className="fas fa-chart-line"></i> Monitoring
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'experiments' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('experiments')}>
+                                <i className="fas fa-flask"></i> Experiments
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'editor' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('editor')}>
+                                <i className="fas fa-terminal"></i> Code Editor
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'performance' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('performance')}>
+                                <i className="fas fa-tachometer-alt"></i> Performance
+                            </button>
+                        </li>
+                    </ul>
+
+                    {/* Tab Content */}
+                    <div className="tab-content">
+                        {/* Overview Tab */}
+                        {activeTab === 'overview' && (
+                            <div>
+                                <div className="feature-grid">
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-infinity"></i>
+                                        </div>
+                                        <div className="feature-title">CI/CD for ML</div>
+                                        <div className="feature-description">
+                                            Automated pipelines for model training, testing, and deployment with version control.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-eye"></i>
+                                        </div>
+                                        <div className="feature-title">Model Monitoring</div>
+                                        <div className="feature-description">
+                                            Real-time monitoring of model performance, data drift, and system health.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-balance-scale"></i>
+                                        </div>
+                                        <div className="feature-title">A/B Testing</div>
+                                        <div className="feature-description">
+                                            Experiment with different model versions to optimize performance and user experience.
+                                        </div>
+                                    </div>
+                                    <div className="feature-card">
+                                        <div className="feature-icon">
+                                            <i className="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div className="feature-title">Model Governance</div>
+                                        <div className="feature-description">
+                                            Track model lineage, versions, and compliance requirements throughout the lifecycle.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mlops-pipeline">
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-database"></i>
+                                        <div>Data</div>
+                                        <small>Ingestion & Prep</small>
+                                    </div>
+                                    <div className="pipeline-arrow">→</div>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-brain"></i>
+                                        <div>Train</div>
+                                        <small>Model Development</small>
+                                    </div>
+                                    <div className="pipeline-arrow">→</div>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-vial"></i>
+                                        <div>Test</div>
+                                        <small>Validation</small>
+                                    </div>
+                                    <div className="pipeline-arrow">→</div>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-rocket"></i>
+                                        <div>Deploy</div>
+                                        <small>Production</small>
+                                    </div>
+                                    <div className="pipeline-arrow">→</div>
+                                    <div className="pipeline-step">
+                                        <i className="fas fa-chart-line"></i>
+                                        <div>Monitor</div>
+                                        <small>Observability</small>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Models Tab */}
+                        {activeTab === 'models' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h3>Model Registry & Versioning</h3>
+                                    <button className="btn btn-mlops" data-bs-toggle="modal" data-bs-target="#registerModelModal">
+                                        <i className="fas fa-plus"></i> Register Model
+                                    </button>
+                                </div>
+
+                                <div className="row">
+                                    <div className="col-md-8">
+                                        {models.map(model => (
+                                            <div key={model.id} className="model-card mb-3">
+                                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                                    <h5>{model.name}</h5>
+                                                    <span className={`badge ${getStatusBadge(model.status)}`}>
+                                                        {model.status.toUpperCase()}
+                                                    </span>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <div className="mb-2">
+                                                            <strong>Version:</strong> {model.version}
+                                                        </div>
+                                                        <div className="mb-2">
+                                                            <strong>Framework:</strong> {model.framework}
+                                                        </div>
+                                                        <div className="mb-2">
+                                                            <strong>Last Trained:</strong> {model.lastTrained}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        <div className="mb-2">
+                                                            <strong>Accuracy:</strong> {(model.accuracy * 100).toFixed(1)}%
+                                                        </div>
+                                                        <div className="mb-2">
+                                                            <strong>Latency:</strong> {model.latency}
+                                                        </div>
+                                                        <div className="mb-2">
+                                                            <strong>Status:</strong> <span className={`badge ${getStatusBadge(model.status)}`}>{model.status}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-3">
+                                                    <button className="btn btn-outline-mlops btn-sm me-2"
+                                                        onClick={() => deployModel(model.id)}>
+                                                        <i className="fas fa-rocket"></i> Deploy
+                                                    </button>
+                                                    <button className="btn btn-outline-mlops btn-sm me-2"
+                                                        onClick={() => retrainModel(model.id)}>
+                                                        <i className="fas fa-sync"></i> Retrain
+                                                    </button>
+                                                    <button className="btn btn-outline-mlops btn-sm">
+                                                        <i className="fas fa-chart-bar"></i> Metrics
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className="interactive-section">
+                                            <h5>Model Actions</h5>
+                                            <div className="input-group-custom">
+                                                <label>Select Model:</label>
+                                                <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>
+                                                    {models.map(model => (
+                                                        <option key={model.id} value={model.id}>{model.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <button className="btn btn-mlops w-100 mb-2">
+                                                <i className="fas fa-download"></i> Download Model
+                                            </button>
+                                            <button className="btn btn-mlops w-100 mb-2">
+                                                <i className="fas fa-code-branch"></i> Create Version
+                                            </button>
+                                            <button className="btn btn-mlops w-100 mb-2">
+                                                <i className="fas fa-exchange-alt"></i> Compare Versions
+                                            </button>
+                                            <button className="btn btn-mlops w-100">
+                                                <i className="fas fa-archive"></i> Archive Model
+                                            </button>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Model Validation</h5>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-check-circle"></i> Run Tests
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-balance-scale"></i> Performance Check
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-shield-alt"></i> Security Scan
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100">
+                                                <i className="fas fa-stethoscope"></i> Health Check
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Pipeline Tab */}
+                        {activeTab === 'pipeline' && (
+                            <div>
+                                <h3>CI/CD Pipeline for ML</h3>
+                                <div className="pipeline-visual">
+                                    {pipeline.map((stage, index) => (
+                                        <div key={index} className="pipeline-stage"
+                                            style={{ backgroundColor: getPipelineStatusColor(stage.status) }}>
+                                            <div>{stage.stage}</div>
+                                            <small>{stage.status}</small>
+                                            {stage.duration && <small>{stage.duration}</small>}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Pipeline Configuration</h5>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-play"></i> Run Full Pipeline
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-step-forward"></i> Run Single Stage
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-pause"></i> Pause Pipeline
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100">
+                                                <i className="fas fa-stop"></i> Stop Pipeline
+                                            </button>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-code"></i> View Pipeline Code
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-history"></i> Pipeline History
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-cog"></i> Configure Pipeline
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100">
+                                                <i className="fas fa-chart-line"></i> Pipeline Metrics
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Pipeline as Code (GitHub Actions)</h5>
+                                    <div className="code-editor" style={{ minHeight: '200px' }}>
+                                        {`name: ML Pipeline
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  train-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install mlflow
+    - name: Run tests
+      run: pytest
+    - name: Train model
+      run: python train.py
+    - name: Log to MLflow
+      run: python log_to_mlflow.py
+    - name: Deploy to staging
+      if: github.ref == 'refs/heads/main'
+      run: python deploy.py --env staging`}
+                                    </div>
+                                    <button className="btn btn-mlops mt-2" onClick={executePipeline}>
+                                        <i className="fas fa-play"></i> Execute Pipeline
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Deployment Tab */}
+                        {activeTab === 'deployment' && (
+                            <div>
+                                <h3>Model Deployment Strategies</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        {deployments.map(deployment => (
+                                            <div key={deployment.id} className="deployment-card mb-3">
+                                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                                    <h5>{deployment.modelName}</h5>
+                                                    <span className={`badge ${getStatusBadge(deployment.status)}`}>
+                                                        {deployment.status}
+                                                    </span>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <div className="mb-2">
+                                                            <strong>Environment:</strong> {deployment.environment}
+                                                        </div>
+                                                        <div className="mb-2">
+                                                            <strong>Replicas:</strong> {deployment.replicas}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        <div className="mb-2">
+                                                            <strong>CPU:</strong> {deployment.cpu}%
+                                                        </div>
+                                                        <div className="mb-2">
+                                                            <strong>Memory:</strong> {deployment.memory}%
+                                                        </div>
+                                                        <div className="mb-2">
+                                                            <strong>Requests:</strong> {deployment.requests}/min
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-3">
+                                                    <button className="btn btn-outline-mlops btn-sm me-2">
+                                                        <i className="fas fa-eye"></i> Logs
+                                                    </button>
+                                                    <button className="btn btn-outline-mlops btn-sm me-2">
+                                                        <i className="fas fa-tachometer-alt"></i> Metrics
+                                                    </button>
+                                                    <button className="btn btn-outline-mlops btn-sm">
+                                                        <i className="fas fa-cog"></i> Config
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="interactive-section">
+                                            <h5>Deployment Options</h5>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-server"></i> Kubernetes Deployment
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-cloud"></i> Serverless (Lambda)
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-mobile-alt"></i> Edge Deployment
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-box"></i> Container Deployment
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100">
+                                                <i className="fas fa-code-branch"></i> Blue-Green Deployment
+                                            </button>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Scaling Strategies</h5>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-expand-arrows-alt"></i> Horizontal Scaling
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-arrow-up"></i> Vertical Scaling
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-clock"></i> Auto-scaling
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100">
+                                                <i className="fas fa-balance-scale"></i> Load Balancing
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Monitoring Tab */}
+                        {activeTab === 'monitoring' && (
+                            <div>
+                                <h3>Model Monitoring & Observability</h3>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="monitoring-chart">
+                                            <h6>Model Accuracy Trend</h6>
+                                            {monitoring.accuracy.map((acc, index) => (
+                                                <div key={index}
+                                                    className="metric-point"
+                                                    style={{
+                                                        left: `${(index / (monitoring.accuracy.length - 1)) * 100}%`,
+                                                        top: `${(1 - acc) * 100}%`
+                                                    }}
+                                                    title={`Day ${index + 1}: ${(acc * 100).toFixed(1)}%`}></div>
+                                            ))}
+                                        </div>
+
+                                        <div className="monitoring-chart">
+                                            <h6>Latency Trend</h6>
+                                            {monitoring.latency.map((lat, index) => (
+                                                <div key={index}
+                                                    className="metric-point"
+                                                    style={{
+                                                        left: `${(index / (monitoring.latency.length - 1)) * 100}%`,
+                                                        top: `${(lat / 150) * 100}%`
+                                                    }}
+                                                    title={`Day ${index + 1}: ${lat}ms`}></div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="drift-indicator">
+                                            <h6>Data Drift Detection</h6>
+                                            <div className="drift-bar">
+                                                <div className="drift-fill" style={{ width: `${monitoring.dataDrift * 100}%` }}></div>
+                                            </div>
+                                            <small>Current drift: {(monitoring.dataDrift * 100).toFixed(1)}%</small>
+                                        </div>
+
+                                        <div className="drift-indicator">
+                                            <h6>Concept Drift Detection</h6>
+                                            <div className="drift-bar">
+                                                <div className="drift-fill" style={{ width: `${monitoring.conceptDrift * 100}%` }}></div>
+                                            </div>
+                                            <small>Current drift: {(monitoring.conceptDrift * 100).toFixed(1)}%</small>
+                                        </div>
+
+                                        <div className="interactive-section">
+                                            <h5>Monitoring Actions</h5>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-bell"></i> Set Alerts
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-chart-bar"></i> View Dashboards
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100 mb-2">
+                                                <i className="fas fa-exclamation-triangle"></i> Drift Analysis
+                                            </button>
+                                            <button className="btn btn-outline-mlops w-100">
+                                                <i className="fas fa-redo"></i> Trigger Retraining
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Experiments Tab */}
+                        {activeTab === 'experiments' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h3>A/B Testing & Experiments</h3>
+                                    <button className="btn btn-mlops" onClick={runExperiment}>
+                                        <i className="fas fa-plus"></i> New Experiment
+                                    </button>
+                                </div>
+
+                                <div className="row">
+                                    {experiments.map(experiment => (
+                                        <div key={experiment.id} className="col-md-6 mb-3">
+                                            <div className="experiment-card">
+                                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                                    <h5>{experiment.name}</h5>
+                                                    <span className={`badge ${getStatusBadge(experiment.status)}`}>
+                                                        {experiment.status}
+                                                    </span>
+                                                </div>
+                                                <div className="mb-2">
+                                                    <strong>Duration:</strong> {experiment.duration}
+                                                </div>
+                                                {experiment.winner && (
+                                                    <div className="mb-2">
+                                                        <strong>Winner:</strong> <span className="text-success">{experiment.winner}</span>
+                                                    </div>
+                                                )}
+
+                                                <div className="ab-test">
+                                                    {experiment.variants.map((variant, index) => (
+                                                        <div key={index} className={`test-variant ${index === 0 ? 'variant-a' : 'variant-b'}`}>
+                                                            <h6>{variant.name}</h6>
+                                                            <div className="mb-1">
+                                                                <strong>Traffic:</strong> {variant.traffic}%
+                                                            </div>
+                                                            <div className="mb-1">
+                                                                <strong>Conversion:</strong> {(variant.conversion * 100).toFixed(1)}%
+                                                            </div>
+                                                            <div>
+                                                                <strong>Model:</strong> {variant.model}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                <div className="mt-3">
+                                                    <button className="btn btn-outline-mlops btn-sm me-2">
+                                                        <i className="fas fa-chart-bar"></i> Results
+                                                    </button>
+                                                    <button className="btn btn-outline-mlops btn-sm me-2">
+                                                        <i className="fas fa-stop"></i> Stop
+                                                    </button>
+                                                    <button className="btn btn-outline-mlops btn-sm">
+                                                        <i className="fas fa-share"></i> Share
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Code Editor Tab */}
+                        {activeTab === 'editor' && (
+                            <div>
+                                <h3>MLOps Implementation Code</h3>
+                                <div className="code-editor">
+                                    <pre>{code}</pre>
+                                </div>
+                                <div className="mt-3">
+                                    <button
+                                        className="btn btn-mlops me-2"
+                                        onClick={executePipeline}
+                                        disabled={isExecuting}
+                                    >
+                                        {isExecuting ? (
+                                            <>
+                                                <i className="fas fa-spinner fa-spin"></i> Executing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fas fa-play"></i> Run Pipeline
+                                            </>
+                                        )}
+                                    </button>
+                                    <button className="btn btn-outline-mlops">
+                                        <i className="fas fa-download"></i> Download Code
+                                    </button>
+                                </div>
+                                {output && (
+                                    <div className="code-output">
+                                        {output}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Performance Tab */}
+                        {activeTab === 'performance' && (
+                            <div>
+                                <h3>Performance Metrics & Benchmarks</h3>
+                                <div className="performance-metrics">
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.deploymentTime}</div>
+                                        <div className="perf-metric-label">Deployment Time</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.modelSize}</div>
+                                        <div className="perf-metric-label">Model Size</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.coldStartTime}</div>
+                                        <div className="perf-metric-label">Cold Start Time</div>
+                                    </div>
+                                    <div className="perf-metric-card">
+                                        <div className="perf-metric-value">{performance.throughput}</div>
+                                        <div className="perf-metric-label">Throughput</div>
+                                    </div>
+                                </div>
+
+                                <div className="execution-stats">
+                                    <div className="stat-item">
+                                        <span className="stat-label">Framework:</span>
+                                        <span className="stat-value">MLflow 2.8.1</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Container Runtime:</span>
+                                        <span className="stat-value">Docker 24.0</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Orchestrator:</span>
+                                        <span className="stat-value">Kubernetes 1.27</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Monitoring:</span>
+                                        <span className="stat-value">Prometheus + Grafana</span>
+                                    </div>
+                                </div>
+
+                                <div className="interactive-section">
+                                    <h5>Performance Optimization</h5>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <h6>Model Optimization</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-compress text-success"></i> Model quantization</li>
+                                                <li><i className="fas fa-cut text-success"></i> Pruning techniques</li>
+                                                <li><i className="fas fa-tachometer-alt text-success"></i> ONNX conversion</li>
+                                                <li><i className="fas fa-microchip text-success"></i> GPU acceleration</li>
+                                            </ul>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <h6>Infrastructure Optimization</h6>
+                                            <ul className="list-unstyled">
+                                                <li><i className="fas fa-server text-warning"></i> Auto-scaling policies</li>
+                                                <li><i className="fas fa-memory text-warning"></i> Memory optimization</li>
+                                                <li><i className="fas fa-network-wired text-warning"></i> CDN integration</li>
+                                                <li><i className="fas fa-database text-warning"></i> Caching strategies</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Modals */}
+                    {/* Register Model Modal */}
+                    <div className="modal fade" id="registerModelModal" tabIndex="-1">
+                        <div className="modal-dialog">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Register New Model</h5>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div className="modal-body">
+                                    <div className="input-group-custom">
+                                        <label>Model Name:</label>
+                                        <input type="text" placeholder="e.g., Fraud Detection Model" />
+                                    </div>
+                                    <div className="input-group-custom">
+                                        <label>Version:</label>
+                                        <input type="text" placeholder="e.g., 1.0.0" />
+                                    </div>
+                                    <div className="input-group-custom">
+                                        <label>Framework:</label>
+                                        <select>
+                                            <option>scikit-learn</option>
+                                            <option>TensorFlow</option>
+                                            <option>PyTorch</option>
+                                            <option>XGBoost</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" className="btn btn-mlops" data-bs-dismiss="modal">Register Model</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Learning Resources */}
+                    <div className="demo-card">
+                        <div className="card-header">
+                            <h3><i className="fas fa-graduation-cap"></i> Learn More</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5>Official Resources</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://mlflow.org/" target="_blank"><i className="fas fa-external-link-alt"></i> MLflow</a></li>
+                                        <li><a href="https://www.kubeflow.org/" target="_blank"><i className="fas fa-external-link-alt"></i> Kubeflow</a></li>
+                                        <li><a href="https://dvc.org/" target="_blank"><i className="fas fa-external-link-alt"></i> DVC</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5>Learning & Community</h5>
+                                    <ul className="list-unstyled">
+                                        <li><a href="https://neptune.ai/blog/mlops-what-it-is-why-it-matters-and-how-to-implement-it" target="_blank"><i className="fas fa-external-link-alt"></i> MLOps Guide</a></li>
+                                        <li><a href="https://github.com/visenger/awesome-mlops" target="_blank"><i className="fas fa-external-link-alt"></i> Awesome MLOps</a></li>
+                                        <li><a href="https://stackoverflow.com/questions/tagged/mlops" target="_blank"><i className="fas fa-external-link-alt"></i> Stack Overflow</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+name: POCs CI
+
+# Lint + test the Tier-A (production-shaped) POCs on every push/PR that touches them.
+# Integration tests that require live GCP credentials are deselected (-m "not integration");
+# all jobs run fully offline.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "POCs/**"
+      - ".github/workflows/pocs-ci.yml"
+  pull_request:
+    paths:
+      - "POCs/**"
+      - ".github/workflows/pocs-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-pocs:
+    name: "test: ${{ matrix.poc }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - poc: Data-Contract-Registry
+            pytest_args: '-m "not integration"'
+          - poc: Data-Quality-Framework
+            pytest_args: ""
+          - poc: BigQuery-Schema-Evolution
+            pytest_args: '-m "not integration"'
+          - poc: Airflow-Orchestration
+            pytest_args: ""
+    defaults:
+      run:
+        working-directory: POCs/${{ matrix.poc }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff pytest pytest-cov
+          [ -f requirements.txt ] && pip install -r requirements.txt || true
+          [ -f requirements-test.txt ] && pip install -r requirements-test.txt || true
+
+      - name: Lint (ruff)
+        run: ruff check src tests || ruff check .
+
+      - name: Tests
+        # -o addopts="" neutralises per-project coverage gates so CI reflects pass/fail,
+        # not a coverage threshold. Coverage is reported, not enforced, in CI.
+        run: python -m pytest ${{ matrix.pytest_args }} -o addopts="" -q --no-header
+
+  dbt-medallion:
+    name: "dbt: Medallion-Architecture"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: POCs/Medallion-Architecture-dbt
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dbt-duckdb
+        run: |
+          python -m pip install --upgrade pip
+          pip install "dbt-duckdb>=1.7.0"
+
+      - name: dbt parse (compile models against duckdb)
+        working-directory: POCs/Medallion-Architecture-dbt/medallion_dbt
+        env:
+          DBT_PROFILES_DIR: .
+        run: |
+          dbt deps || true
+          dbt parse

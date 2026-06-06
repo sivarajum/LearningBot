@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeScript Interactive Demo</title>
+    <script src="https://unpkg.com/typescript@4.9.5/lib/typescript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --typescript-blue: #3178C6;
+            --typescript-dark: #1e1e1e;
+            --typescript-light: #f8f9fa;
+            --typescript-accent: #007ACC;
+            --primary-color: #3178C6;
+            --secondary-color: #1e1e1e;
+            --accent-color: #007ACC;
+            --warning-color: #FFA500;
+            --info-color: #3178C6;
+            --dark-color: #1e1e1e;
+            --light-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #3178C6 0%, #1e1e1e 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 300px;
+            border: 1px solid #dee2e6;
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(49, 120, 198, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(49, 120, 198, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .type-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 200px;
+        }
+
+        .type-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .type-card:hover {
+            transform: scale(1.05);
+        }
+
+        .type-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .type-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .interface-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .interface-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .interface-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-interface {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .perf-metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .type-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .builder-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .builder-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .builder-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-builder {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-builder-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .error-highlight {
+            background: #ffe6e6;
+            border-left: 4px solid #dc3545;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .success-highlight {
+            background: #e6ffe6;
+            border-left: 4px solid #28a745;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="demo-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-code"></i> TypeScript Interactive Demo</h1>
+                <p>Master TypeScript with strong typing, interfaces, and advanced features</p>
+            </div>
+
+            <!-- TypeScript Features Overview -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-star"></i> TypeScript Key Features</h3>
+                </div>
+                <div class="card-body">
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-tag"></i></div>
+                            <div class="feature-title">Static Typing</div>
+                            <div class="feature-description">Add type annotations to variables, functions, and objects
+                                for better code reliability and IDE support.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-project-diagram"></i></div>
+                            <div class="feature-title">Interfaces</div>
+                            <div class="feature-description">Define contracts for object shapes with interfaces,
+                                ensuring type safety across your codebase.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-cubes"></i></div>
+                            <div class="feature-title">Classes & OOP</div>
+                            <div class="feature-description">Full object-oriented programming support with classes,
+                                inheritance, and access modifiers.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-magic"></i></div>
+                            <div class="feature-title">Generics</div>
+                            <div class="feature-description">Create reusable components and functions that work with
+                                multiple types using generic type parameters.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-union"></i></div>
+                            <div class="feature-title">Union & Intersection Types</div>
+                            <div class="feature-description">Combine types with unions (|) and intersections (&) for
+                                flexible and precise type definitions.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-tools"></i></div>
+                            <div class="feature-title">Advanced Types</div>
+                            <div class="feature-description">Utility types like Partial, Pick, Omit, and mapped types
+                                for sophisticated type transformations.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TypeScript Playground -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i className="fas fa-playground"></i> TypeScript Playground</h3>
+                </div>
+                <div class="card-body">
+                    <div id="monaco-editor" style="height: 400px; border: 1px solid #dee2e6; border-radius: 8px;"></div>
+                    <div style="margin-top: 15px;">
+                        <button class="run-btn" id="compile-btn" disabled>
+                            <i class="fas fa-play"></i> Compile & Run
+                        </button>
+                        <button class="run-btn" id="format-btn" style="margin-left: 10px;">
+                            <i class="fas fa-magic"></i> Format Code
+                        </button>
+                        <button class="run-btn" id="load-template-btn" style="margin-left: 10px;">
+                            <i class="fas fa-file-import"></i> Load Template
+                        </button>
+                    </div>
+                    <div id="output-panel" class="output-panel" style="display: none;"></div>
+                    <div id="error-panel" class="error-highlight" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Type System Demo -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tag"></i> Type System</h3>
+                </div>
+                <div class="card-body">
+                    <div class="type-demo">
+                        <!-- Type Examples -->
+                        <div v-for="typeExample in typeExamples" :key="typeExample.id" class="type-card">
+                            <div><i :class="typeExample.icon"></i></div>
+                            <div class="type-value">{{ typeExample.name }}</div>
+                            <div class="type-label">{{ typeExample.description }}</div>
+                            <div style="font-size: 11px; opacity: 0.8; margin-top: 5px;">{{ typeExample.example }}</div>
+                        </div>
+
+                        <!-- Control Buttons -->
+                        <div style="position: absolute; bottom: 20px; right: 20px;">
+                            <button class="run-btn" @click="refreshTypes" style="margin-right: 10px;">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                            <button class="run-btn" @click="addCustomType"
+                                style="background: linear-gradient(45deg, #28a745, #20c997);">
+                                <i class="fas fa-plus"></i> Add Custom Type
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TypeScript Operations -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-cogs"></i> TypeScript Operations</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Operation Tabs -->
+                    <div class="operation-tabs">
+                        <button class="operation-tab active" @click="activeTab = 'interfaces'">
+                            <i class="fas fa-project-diagram"></i> Interfaces
+                        </button>
+                        <button class="operation-tab" @click="activeTab = 'classes'">
+                            <i class="fas fa-cubes"></i> Classes
+                        </button>
+                        <button class="operation-tab" @click="activeTab = 'generics'">
+                            <i class="fas fa-magic"></i> Generics
+                        </button>
+                        <button class="operation-tab" @click="activeTab = 'advanced'">
+                            <i class="fas fa-tools"></i> Advanced Types
+                        </button>
+                    </div>
+
+                    <!-- Interfaces Tab -->
+                    <div v-show="activeTab === 'interfaces'">
+                        <h4>Interface Builder</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Interface Name:</label>
+                                        <input type="text" class="form-control" v-model="interfaceConfig.name"
+                                            placeholder="User">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Properties (name:type, comma-separated):</label>
+                                        <input type="text" class="form-control" v-model="interfaceConfig.properties"
+                                            placeholder="id:number, name:string, email:string">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Optional Properties:</label>
+                                        <input type="text" class="form-control" v-model="interfaceConfig.optional"
+                                            placeholder="age?:number, phone?:string">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Methods:</label>
+                                        <input type="text" class="form-control" v-model="interfaceConfig.methods"
+                                            placeholder="getFullName():string, updateEmail(email:string):void">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="createInterface" :disabled="!interfaceConfig.name">
+                                <i class="fas fa-plus"></i> Create Interface
+                            </button>
+                        </div>
+                        <div v-if="operationResult" class="response-display">
+                            <h5>Generated Interface:</h5>
+                            <pre>{{ operationResult }}</pre>
+                        </div>
+                    </div>
+
+                    <!-- Classes Tab -->
+                    <div v-show="activeTab === 'classes'">
+                        <h4>Class Builder</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Class Name:</label>
+                                        <input type="text" class="form-control" v-model="classConfig.name"
+                                            placeholder="Person">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Properties:</label>
+                                        <input type="text" class="form-control" v-model="classConfig.properties"
+                                            placeholder="private name:string, public age:number">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Constructor Parameters:</label>
+                                        <input type="text" class="form-control" v-model="classConfig.constructor"
+                                            placeholder="name:string, age:number">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Methods:</label>
+                                        <input type="text" class="form-control" v-model="classConfig.methods"
+                                            placeholder="getName():string, setAge(age:number):void">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="createClass" :disabled="!classConfig.name">
+                                <i class="fas fa-cube"></i> Create Class
+                            </button>
+                        </div>
+                        <div v-if="operationResult" class="response-display">
+                            <h5>Generated Class:</h5>
+                            <pre>{{ operationResult }}</pre>
+                        </div>
+                    </div>
+
+                    <!-- Generics Tab -->
+                    <div v-show="activeTab === 'generics'">
+                        <h4>Generic Types</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Generic Function Name:</label>
+                                        <input type="text" class="form-control" v-model="genericConfig.functionName"
+                                            placeholder="identity">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Type Parameters:</label>
+                                        <input type="text" class="form-control" v-model="genericConfig.typeParams"
+                                            placeholder="T, U">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Function Signature:</label>
+                                        <input type="text" class="form-control" v-model="genericConfig.signature"
+                                            placeholder="(value: T): T">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Constraints:</label>
+                                        <input type="text" class="form-control" v-model="genericConfig.constraints"
+                                            placeholder="T extends object, U extends keyof T">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="createGeneric" :disabled="!genericConfig.functionName">
+                                <i class="fas fa-magic"></i> Create Generic
+                            </button>
+                        </div>
+                        <div v-if="operationResult" class="response-display">
+                            <h5>Generated Generic:</h5>
+                            <pre>{{ operationResult }}</pre>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Types Tab -->
+                    <div v-show="activeTab === 'advanced'">
+                        <h4>Advanced Type Utilities</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Base Type:</label>
+                                        <input type="text" class="form-control" v-model="advancedConfig.baseType"
+                                            placeholder="interface User { id: number; name: string; email: string; age: number; }">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Utility Type:</label>
+                                        <select class="form-control" v-model="advancedConfig.utility">
+                                            <option value="Partial">Partial<T>
+                                            </option>
+                                            <option value="Required">Required<T>
+                                            </option>
+                                            <option value="Readonly">Readonly<T>
+                                            </option>
+                                            <option value="Pick">Pick<T, K>
+                                            </option>
+                                            <option value="Omit">Omit<T, K>
+                                            </option>
+                                            <option value="Record">Record<K, T>
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Keys (for Pick/Omit/Record):</label>
+                                        <input type="text" class="form-control" v-model="advancedConfig.keys"
+                                            placeholder="name, email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Custom Type Name:</label>
+                                        <input type="text" class="form-control" v-model="advancedConfig.customName"
+                                            placeholder="UserProfile">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" @click="createAdvancedType" :disabled="!advancedConfig.baseType">
+                                <i class="fas fa-tools"></i> Create Advanced Type
+                            </button>
+                        </div>
+                        <div v-if="operationResult" class="response-display">
+                            <h5>Generated Advanced Type:</h5>
+                            <pre>{{ operationResult }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Type Builder -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tools"></i> Type Builder</h3>
+                </div>
+                <div class="card-body">
+                    <div class="type-builder">
+                        <h5>Build Custom Types</h5>
+                        <div v-for="(typeDef, index) in customTypes" :key="index" class="builder-row">
+                            <div class="builder-header">
+                                <span class="builder-type">{{ typeDef.type }}: {{ typeDef.name }}</span>
+                                <button class="remove-builder" @click="removeCustomType(index)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <pre style="font-size: 12px; margin: 10px 0;">{{ typeDef.definition }}</pre>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Add Type:</label>
+                            <select class="form-control" v-model="newTypeType">
+                                <option value="">Select type...</option>
+                                <option value="Interface">Interface</option>
+                                <option value="Type Alias">Type Alias</option>
+                                <option value="Class">Class</option>
+                                <option value="Enum">Enum</option>
+                                <option value="Union Type">Union Type</option>
+                            </select>
+                        </div>
+
+                        <button class="add-builder-btn" @click="addCustomType" :disabled="!newTypeType">
+                            <i class="fas fa-plus"></i> Add Type
+                        </button>
+
+                        <button class="run-btn" @click="generateTypeDefinitions" :disabled="customTypes.length === 0"
+                            style="margin-left: 10px;">
+                            <i class="fas fa-code"></i> Generate Types
+                        </button>
+
+                        <div class="code-editor">
+                            <strong>Generated Type Definitions:</strong><br>
+                            {{ generatedTypes }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tachometer-alt"></i> TypeScript Performance</h3>
+                </div>
+                <div class="card-body">
+                    <div class="performance-metrics">
+                        <div class="perf-metric-card">
+                            <div class="perf-metric-value">{{ performance.compileTime }}ms</div>
+                            <div class="perf-metric-label">Compile Time</div>
+                        </div>
+                        <div class="perf-metric-card">
+                            <div class="perf-metric-value">{{ performance.typeErrors }}</div>
+                            <div class="perf-metric-label">Type Errors</div>
+                        </div>
+                        <div class="perf-metric-card">
+                            <div class="perf-metric-value">{{ performance.bundleSize }}</div>
+                            <div class="perf-metric-label">Bundle Size (KB)</div>
+                        </div>
+                        <div class="perf-metric-card">
+                            <div class="perf-metric-value">{{ performance.typeCoverage }}%</div>
+                            <div class="perf-metric-label">Type Coverage</div>
+                        </div>
+                    </div>
+
+                    <div class="execution-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">TypeScript Version:</span>
+                            <span class="stat-value">4.9.5</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Target:</span>
+                            <span class="stat-value">ES2020</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Module System:</span>
+                            <span class="stat-value">ESModules</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Strict Mode:</span>
+                            <span class="stat-value">Enabled</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Resources -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-book"></i> Learn More</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Official Resources</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="https://www.typescriptlang.org/" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> TypeScript Official Site</a></li>
+                                <li><a href="https://www.typescriptlang.org/docs/" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> TypeScript Handbook</a></li>
+                                <li><a href="https://github.com/microsoft/TypeScript" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> TypeScript GitHub</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Learning & Community</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="https://www.typescriptlang.org/play" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> TypeScript Playground</a></li>
+                                <li><a href="https://www.codecademy.com/learn/learn-typescript" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> Codecademy TypeScript</a></li>
+                                <li><a href="https://egghead.io/courses/up-and-running-with-typescript"
+                                        target="_blank"><i class="fas fa-external-link-alt"></i> Egghead.io</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    activeTab: 'interfaces',
+                    editor: null,
+                    currentCode: `// Welcome to TypeScript!
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+const user: User = {
+  id: 1,
+  name: "John Doe",
+  email: "john@example.com"
+};
+
+console.log(user);`,
+
+                    // Type examples
+                    typeExamples: [
+                        { id: 1, name: 'string', icon: 'fas fa-quote-left', description: 'Text values', example: '"hello"' },
+                        { id: 2, name: 'number', icon: 'fas fa-hashtag', description: 'Numeric values', example: '42' },
+                        { id: 3, name: 'boolean', icon: 'fas fa-toggle-on', description: 'True/false values', example: 'true' },
+                        { id: 4, name: 'array', icon: 'fas fa-list', description: 'Collections of values', example: '[1, 2, 3]' },
+                        { id: 5, name: 'object', icon: 'fas fa-cube', description: 'Complex data structures', example: '{name: "John"}' },
+                        { id: 6, name: 'null', icon: 'fas fa-ban', description: 'Absence of value', example: 'null' },
+                        { id: 7, name: 'undefined', icon: 'fas fa-question', description: 'Uninitialized value', example: 'undefined' },
+                        { id: 8, name: 'any', icon: 'fas fa-asterisk', description: 'Any type (avoid)', example: 'any' }
+                    ],
+
+                    // Interface configuration
+                    interfaceConfig: {
+                        name: '',
+                        properties: '',
+                        optional: '',
+                        methods: ''
+                    },
+
+                    // Class configuration
+                    classConfig: {
+                        name: '',
+                        properties: '',
+                        constructor: '',
+                        methods: ''
+                    },
+
+                    // Generic configuration
+                    genericConfig: {
+                        functionName: '',
+                        typeParams: '',
+                        signature: '',
+                        constraints: ''
+                    },
+
+                    // Advanced type configuration
+                    advancedConfig: {
+                        baseType: '',
+                        utility: 'Partial',
+                        keys: '',
+                        customName: ''
+                    },
+
+                    operationResult: '',
+
+                    // Custom types builder
+                    customTypes: [
+                        {
+                            type: 'Interface',
+                            name: 'Person',
+                            definition: `interface Person {\n  id: number;\n  name: string;\n  age: number;\n  email?: string;\n}`
+                        }
+                    ],
+                    newTypeType: '',
+
+                    // Performance metrics
+                    performance: {
+                        compileTime: 245,
+                        typeErrors: 0,
+                        bundleSize: 89,
+                        typeCoverage: 98.5
+                    }
+                }
+            },
+            computed: {
+                generatedTypes() {
+                    if (this.customTypes.length === 0) return '// Add custom types above';
+
+                    let types = '';
+
+                    this.customTypes.forEach((typeDef, index) => {
+                        types += `// ${typeDef.type}: ${typeDef.name}\n`;
+                        types += typeDef.definition;
+                        if (index < this.customTypes.length - 1) {
+                            types += '\n\n';
+                        }
+                    });
+
+                    return types;
+                }
+            },
+            methods: {
+                async initMonacoEditor() {
+                    // Initialize Monaco Editor
+                    require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } });
+
+                    require(['vs/editor/editor.main'], () => {
+                        this.editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+                            value: this.currentCode,
+                            language: 'typescript',
+                            theme: 'vs-dark',
+                            fontSize: 14,
+                            minimap: { enabled: false },
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true
+                        });
+
+                        // Enable compile button
+                        document.getElementById('compile-btn').disabled = false;
+
+                        // Setup event listeners
+                        this.setupEditorEvents();
+                    });
+                },
+
+                setupEditorEvents() {
+                    // Compile button
+                    document.getElementById('compile-btn').addEventListener('click', () => {
+                        this.compileTypeScript();
+                    });
+
+                    // Format button
+                    document.getElementById('format-btn').addEventListener('click', () => {
+                        if (this.editor) {
+                            this.editor.getAction('editor.action.formatDocument').run();
+                        }
+                    });
+
+                    // Load template button
+                    document.getElementById('load-template-btn').addEventListener('click', () => {
+                        this.loadTemplate();
+                    });
+                },
+
+                compileTypeScript() {
+                    if (!this.editor) return;
+
+                    const code = this.editor.getValue();
+                    const outputPanel = document.getElementById('output-panel');
+                    const errorPanel = document.getElementById('error-panel');
+
+                    try {
+                        // Compile TypeScript to JavaScript
+                        const result = ts.transpile(code, {
+                            target: ts.ScriptTarget.ES2020,
+                            module: ts.ModuleKind.CommonJS,
+                            strict: true,
+                            esModuleInterop: true,
+                            skipLibCheck: true
+                        });
+
+                        // Try to execute the compiled JavaScript
+                        let output = '';
+                        const originalLog = console.log;
+                        console.log = (...args) => {
+                            output += args.map(arg =>
+                                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+                            ).join(' ') + '\n';
+                        };
+
+                        try {
+                            // Create a new function to execute the code
+                            const executeCode = new Function('console', result);
+                            executeCode(console);
+
+                            outputPanel.textContent = 'Compiled JavaScript:\n\n' + result + '\n\nExecution Output:\n\n' + output;
+                            outputPanel.style.display = 'block';
+                            errorPanel.style.display = 'none';
+                        } catch (execError) {
+                            outputPanel.textContent = 'Compiled JavaScript:\n\n' + result + '\n\nExecution Error:\n\n' + execError.message;
+                            outputPanel.style.display = 'block';
+                            errorPanel.style.display = 'none';
+                        }
+
+                        console.log = originalLog;
+
+                    } catch (error) {
+                        errorPanel.textContent = 'TypeScript Compilation Error:\n\n' + error.message;
+                        errorPanel.style.display = 'block';
+                        outputPanel.style.display = 'none';
+                    }
+                },
+
+                loadTemplate() {
+                    const template = `// TypeScript Advanced Features Demo
+
+// 1. Interface with optional properties and methods
+interface User {
+  readonly id: number;
+  name: string;
+  email: string;
+  age?: number;
+  getFullName(): string;
+}
+
+// 2. Generic function with constraints
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+// 3. Union and intersection types
+type Status = 'active' | 'inactive' | 'pending';
+type Timestamped = { createdAt: Date; updatedAt: Date };
+type UserWithTimestamp = User & Timestamped;
+
+// 4. Utility types
+type PartialUser = Partial<User>;
+type UserWithoutId = Omit<User, 'id'>;
+type UserNameAndEmail = Pick<User, 'name' | 'email'>;
+
+// 5. Class with generics
+class Repository<T> {
+  private items: T[] = [];
+
+  add(item: T): void {
+    this.items.push(item);
+  }
+
+  find(predicate: (item: T) => boolean): T | undefined {
+    return this.items.find(predicate);
+  }
+
+  getAll(): T[] {
+    return [...this.items];
+  }
+}
+
+// Usage examples
+const user: User = {
+  id: 1,
+  name: 'John Doe',
+  email: 'john@example.com',
+  getFullName() {
+    return this.name;
+  }
+};
+
+const userRepo = new Repository<User>();
+userRepo.add(user);
+
+console.log('User:', user);
+console.log('All users:', userRepo.getAll());
+console.log('User name:', getProperty(user, 'name'));`;
+
+                    if (this.editor) {
+                        this.editor.setValue(template);
+                    }
+                },
+
+                refreshTypes() {
+                    // Simulate refreshing type examples
+                    this.typeExamples.forEach(type => {
+                        // Could update examples dynamically
+                    });
+                },
+
+                addCustomType() {
+                    const templates = {
+                        'Interface': {
+                            name: 'NewInterface',
+                            definition: `interface NewInterface {\n  id: number;\n  name: string;\n}`
+                        },
+                        'Type Alias': {
+                            name: 'NewType',
+                            definition: `type NewType = string | number;`
+                        },
+                        'Class': {
+                            name: 'NewClass',
+                            definition: `class NewClass {\n  constructor(public name: string) {}\n}`
+                        },
+                        'Enum': {
+                            name: 'NewEnum',
+                            definition: `enum NewEnum {\n  First = 1,\n  Second = 2\n}`
+                        },
+                        'Union Type': {
+                            name: 'NewUnion',
+                            definition: `type NewUnion = 'success' | 'error' | 'loading';`
+                        }
+                    };
+
+                    const template = templates[this.newTypeType];
+                    if (template) {
+                        this.customTypes.push({
+                            type: this.newTypeType,
+                            name: template.name,
+                            definition: template.definition
+                        });
+                    }
+
+                    this.newTypeType = '';
+                },
+
+                removeCustomType(index) {
+                    this.customTypes.splice(index, 1);
+                },
+
+                async generateTypeDefinitions() {
+                    // The computed property handles the generation
+                    await this.delay(100);
+                },
+
+                async createInterface() {
+                    this.operationResult = '';
+
+                    try {
+                        let interfaceCode = `interface ${this.interfaceConfig.name} {\n`;
+
+                        // Add properties
+                        if (this.interfaceConfig.properties) {
+                            const props = this.interfaceConfig.properties.split(',').map(p => p.trim());
+                            props.forEach(prop => {
+                                const [name, type] = prop.split(':').map(s => s.trim());
+                                if (name && type) {
+                                    interfaceCode += `  ${name}: ${type};\n`;
+                                }
+                            });
+                        }
+
+                        // Add optional properties
+                        if (this.interfaceConfig.optional) {
+                            const optionalProps = this.interfaceConfig.optional.split(',').map(p => p.trim());
+                            optionalProps.forEach(prop => {
+                                const [name, type] = prop.split(':').map(s => s.trim());
+                                if (name && type) {
+                                    interfaceCode += `  ${name}?: ${type};\n`;
+                                }
+                            });
+                        }
+
+                        // Add methods
+                        if (this.interfaceConfig.methods) {
+                            const methods = this.interfaceConfig.methods.split(',').map(m => m.trim());
+                            methods.forEach(method => {
+                                interfaceCode += `  ${method};\n`;
+                            });
+                        }
+
+                        interfaceCode += '}';
+
+                        this.operationResult = interfaceCode;
+
+                        // Reset form
+                        this.interfaceConfig = {
+                            name: '',
+                            properties: '',
+                            optional: '',
+                            methods: ''
+                        };
+
+                    } catch (error) {
+                        this.operationResult = 'Error: ' + error.message;
+                    }
+                },
+
+                async createClass() {
+                    this.operationResult = '';
+
+                    try {
+                        let classCode = `class ${this.classConfig.name} {\n`;
+
+                        // Add properties
+                        if (this.classConfig.properties) {
+                            const props = this.classConfig.properties.split(',').map(p => p.trim());
+                            props.forEach(prop => {
+                                classCode += `  ${prop};\n`;
+                            });
+                            classCode += '\n';
+                        }
+
+                        // Add constructor
+                        if (this.classConfig.constructor) {
+                            classCode += `  constructor(${this.classConfig.constructor}) {\n`;
+                            const params = this.classConfig.constructor.split(',').map(p => p.trim());
+                            params.forEach(param => {
+                                const paramName = param.split(':')[0].trim();
+                                classCode += `    this.${paramName} = ${paramName};\n`;
+                            });
+                            classCode += '  }\n\n';
+                        }
+
+                        // Add methods
+                        if (this.classConfig.methods) {
+                            const methods = this.classConfig.methods.split(',').map(m => m.trim());
+                            methods.forEach(method => {
+                                classCode += `  ${method} {\n    // TODO: implement\n  }\n\n`;
+                            });
+                        }
+
+                        classCode += '}';
+
+                        this.operationResult = classCode;
+
+                        // Reset form
+                        this.classConfig = {
+                            name: '',
+                            properties: '',
+                            constructor: '',
+                            methods: ''
+                        };
+
+                    } catch (error) {
+                        this.operationResult = 'Error: ' + error.message;
+                    }
+                },
+
+                async createGeneric() {
+                    this.operationResult = '';
+
+                    try {
+                        let genericCode = '';
+
+                        if (this.genericConfig.constraints) {
+                            genericCode = `function ${this.genericConfig.functionName}<${this.genericConfig.typeParams}>(\n  ${this.genericConfig.signature}\n) {\n  // TODO: implement\n}`;
+                        } else {
+                            genericCode = `function ${this.genericConfig.functionName}<${this.genericConfig.typeParams}>(\n  ${this.genericConfig.signature}\n) {\n  // TODO: implement\n}`;
+                        }
+
+                        this.operationResult = genericCode;
+
+                        // Reset form
+                        this.genericConfig = {
+                            functionName: '',
+                            typeParams: '',
+                            signature: '',
+                            constraints: ''
+                        };
+
+                    } catch (error) {
+                        this.operationResult = 'Error: ' + error.message;
+                    }
+                },
+
+                async createAdvancedType() {
+                    this.operationResult = '';
+
+                    try {
+                        let advancedCode = '';
+
+                        switch (this.advancedConfig.utility) {
+                            case 'Partial':
+                                advancedCode = `type ${this.advancedConfig.customName || 'PartialType'} = Partial<{\n${this.advancedConfig.baseType}\n}>;`;
+                                break;
+                            case 'Required':
+                                advancedCode = `type ${this.advancedConfig.customName || 'RequiredType'} = Required<{\n${this.advancedConfig.baseType}\n}>;`;
+                                break;
+                            case 'Readonly':
+                                advancedCode = `type ${this.advancedConfig.customName || 'ReadonlyType'} = Readonly<{\n${this.advancedConfig.baseType}\n}>;`;
+                                break;
+                            case 'Pick':
+                                advancedCode = `type ${this.advancedConfig.customName || 'PickedType'} = Pick<{\n${this.advancedConfig.baseType}\n}, '${this.advancedConfig.keys}'>;`;
+                                break;
+                            case 'Omit':
+                                advancedCode = `type ${this.advancedConfig.customName || 'OmittedType'} = Omit<{\n${this.advancedConfig.baseType}\n}, '${this.advancedConfig.keys}'>;`;
+                                break;
+                            case 'Record':
+                                advancedCode = `type ${this.advancedConfig.customName || 'RecordType'} = Record<'${this.advancedConfig.keys}', {\n${this.advancedConfig.baseType}\n}>;`;
+                                break;
+                        }
+
+                        this.operationResult = advancedCode;
+
+                        // Reset form
+                        this.advancedConfig = {
+                            baseType: '',
+                            utility: 'Partial',
+                            keys: '',
+                            customName: ''
+                        };
+
+                    } catch (error) {
+                        this.operationResult = 'Error: ' + error.message;
+                    }
+                },
+
+                delay(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+            },
+
+            mounted() {
+                // Initialize Monaco Editor after Vue is mounted
+                this.$nextTick(() => {
+                    this.initMonacoEditor();
+                });
+
+                // Simulate performance updates
+                setInterval(() => {
+                    this.performance.compileTime = Math.floor(Math.random() * 50 + 200);
+                    this.performance.typeErrors = Math.floor(Math.random() * 3);
+                    this.performance.bundleSize = Math.floor(Math.random() * 20 + 80);
+                    this.performance.typeCoverage = (98 + Math.random()).toFixed(1);
+                }, 5000);
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>

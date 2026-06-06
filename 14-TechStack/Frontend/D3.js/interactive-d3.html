@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3.js Interactive Demo</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --d3-orange: #F7931E;
+            --d3-dark: #2C3E50;
+            --d3-light: #f8f9fa;
+            --d3-accent: #FF6B35;
+            --primary-color: #F7931E;
+            --secondary-color: #2C3E50;
+            --accent-color: #FF6B35;
+            --warning-color: #FFA500;
+            --info-color: #F7931E;
+            --dark-color: #2C3E50;
+            --light-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F7931E 0%, #2C3E50 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .code-editor {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 200px;
+            border: 1px solid #dee2e6;
+        }
+
+        .run-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 147, 30, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .operation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .operation-tab {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .operation-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .operation-tab:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(247, 147, 30, 0.2);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 400px;
+            position: relative;
+            border: 2px solid #F7931E;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: scale(1.05);
+        }
+
+        .chart-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .chart-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .data-point {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .perf-metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .perf-metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .perf-metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .chart-builder {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .builder-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .builder-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .builder-type {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .remove-builder {
+            color: #dc3545;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        .add-builder-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .animation-controls {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .control-row {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-container {
+                padding: 10px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .operation-tabs {
+                flex-direction: column;
+            }
+
+            .operation-tab {
+                margin-bottom: 5px;
+            }
+
+            .performance-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="demo-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-chart-bar"></i> D3.js Interactive Demo</h1>
+                <p>Master data visualization with D3.js - SVG manipulation, animations, and interactive charts</p>
+            </div>
+
+            <!-- D3.js Features Overview -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-star"></i> D3.js Key Features</h3>
+                </div>
+                <div class="card-body">
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-code"></i></div>
+                            <div class="feature-title">DOM Manipulation</div>
+                            <div class="feature-description">Powerful selection API for manipulating DOM elements with
+                                data binding and dynamic updates.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="feature-title">Scales & Axes</div>
+                            <div class="feature-description">Flexible scaling functions to map data domains to visual
+                                ranges with automatic axis generation.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-play"></i></div>
+                            <div class="feature-title">Animations & Transitions</div>
+                            <div class="feature-description">Smooth animations and transitions for creating engaging
+                                data visualizations and interactions.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-mouse-pointer"></i></div>
+                            <div class="feature-title">Interactive Charts</div>
+                            <div class="feature-description">Event handling for mouse interactions, tooltips, zooming,
+                                and dynamic data exploration.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-shapes"></i></div>
+                            <div class="feature-title">SVG & Canvas</div>
+                            <div class="feature-description">Full control over SVG elements and shapes with support for
+                                both SVG and HTML5 Canvas rendering.</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-database"></i></div>
+                            <div class="feature-title">Data Binding</div>
+                            <div class="feature-description">Seamless data binding with enter/update/exit patterns for
+                                efficient DOM updates.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Preview -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-eye"></i> Chart Preview</h3>
+                </div>
+                <div class="card-body">
+                    <div id="chart-preview" class="chart-container">
+                        <div style="text-align: center; padding: 40px;">
+                            <i class="fas fa-chart-bar" style="font-size: 3rem; color: #F7931E;"></i>
+                            <h3>D3.js Chart Preview</h3>
+                            <p>Your visualizations will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Editor -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-code"></i> D3.js Code Editor</h3>
+                </div>
+                <div class="card-body">
+                    <textarea class="code-editor" id="d3-code-editor" placeholder="Write your D3.js code here...">// D3.js Bar Chart Example
+const data = [10, 20, 30, 40, 50];
+
+const svg = d3.select('#chart-preview')
+  .append('svg')
+  .attr('width', 400)
+  .attr('height', 300);
+
+svg.selectAll('rect')
+  .data(data)
+  .enter()
+  .append('rect')
+  .attr('x', (d, i) => i * 60 + 50)
+  .attr('y', d => 250 - d * 4)
+  .attr('width', 40)
+  .attr('height', d => d * 4)
+  .attr('fill', '#F7931E');</textarea>
+                    <div style="margin-top: 15px;">
+                        <button class="run-btn" id="run-d3-code">
+                            <i class="fas fa-play"></i> Run D3 Code
+                        </button>
+                        <button class="run-btn" id="clear-chart">
+                            <i class="fas fa-trash"></i> Clear Chart
+                        </button>
+                        <button class="run-btn" id="load-template">
+                            <i class="fas fa-file-import"></i> Load Template
+                        </button>
+                    </div>
+                    <div id="d3-output" class="output-panel" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- D3.js Operations -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-cogs"></i> D3.js Operations</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Operation Tabs -->
+                    <div class="operation-tabs">
+                        <button class="operation-tab active" id="tab-selections">
+                            <i class="fas fa-mouse-pointer"></i> Selections
+                        </button>
+                        <button class="operation-tab" id="tab-scales">
+                            <i class="fas fa-balance-scale"></i> Scales & Axes
+                        </button>
+                        <button class="operation-tab" id="tab-animations">
+                            <i class="fas fa-play"></i> Animations
+                        </button>
+                        <button class="operation-tab" id="tab-charts">
+                            <i class="fas fa-chart-bar"></i> Chart Types
+                        </button>
+                    </div>
+
+                    <!-- Selections Tab -->
+                    <div id="selections-content">
+                        <h4>DOM Selections & Data Binding</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Data Array:</label>
+                                        <input type="text" class="form-control" id="selection-data"
+                                            value="[10, 20, 30, 40, 50]">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Element Type:</label>
+                                        <select class="form-control" id="element-type">
+                                            <option value="rect">Rectangle (Bar)</option>
+                                            <option value="circle">Circle</option>
+                                            <option value="text">Text</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Fill Color:</label>
+                                        <input type="color" class="form-control" id="fill-color" value="#F7931E">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Animation Duration (ms):</label>
+                                        <input type="number" class="form-control" id="animation-duration" value="1000">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" id="create-selection">
+                                <i class="fas fa-plus"></i> Create Selection
+                            </button>
+                        </div>
+                        <div id="selection-result" class="response-display" style="display: none;"></div>
+                    </div>
+
+                    <!-- Scales & Axes Tab -->
+                    <div id="scales-content" style="display: none;">
+                        <h4>Scales & Axes</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Scale Type:</label>
+                                        <select class="form-control" id="scale-type">
+                                            <option value="linear">Linear Scale</option>
+                                            <option value="band">Band Scale (Categorical)</option>
+                                            <option value="time">Time Scale</option>
+                                            <option value="log">Log Scale</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Domain (min,max):</label>
+                                        <input type="text" class="form-control" id="scale-domain" value="0,100">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Range (min,max):</label>
+                                        <input type="text" class="form-control" id="scale-range" value="0,300">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Include Axis:</label>
+                                        <input type="checkbox" id="include-axis" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" id="create-scale">
+                                <i class="fas fa-balance-scale"></i> Create Scale & Axis
+                            </button>
+                        </div>
+                        <div id="scale-result" class="response-display" style="display: none;"></div>
+                    </div>
+
+                    <!-- Animations Tab -->
+                    <div id="animations-content" style="display: none;">
+                        <h4>Animations & Transitions</h4>
+                        <div class="interactive-demo">
+                            <div class="animation-controls">
+                                <div class="control-row">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Animation Type:</label>
+                                                <select class="form-control" id="animation-type">
+                                                    <option value="fade">Fade In/Out</option>
+                                                    <option value="grow">Grow/Shrink</option>
+                                                    <option value="move">Move</option>
+                                                    <option value="color">Color Change</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Duration (ms):</label>
+                                                <input type="number" class="form-control" id="anim-duration"
+                                                    value="2000">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Easing:</label>
+                                                <select class="form-control" id="easing-type">
+                                                    <option value="easeLinear">Linear</option>
+                                                    <option value="easeQuad">Quadratic</option>
+                                                    <option value="easeCubic">Cubic</option>
+                                                    <option value="easeBounce">Bounce</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="run-btn" id="start-animation">
+                                        <i class="fas fa-play"></i> Start Animation
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="animation-result" class="response-display" style="display: none;"></div>
+                    </div>
+
+                    <!-- Chart Types Tab -->
+                    <div id="charts-content" style="display: none;">
+                        <h4>Chart Types</h4>
+                        <div class="interactive-demo">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Chart Type:</label>
+                                        <select class="form-control" id="chart-type">
+                                            <option value="bar">Bar Chart</option>
+                                            <option value="line">Line Chart</option>
+                                            <option value="pie">Pie Chart</option>
+                                            <option value="scatter">Scatter Plot</option>
+                                            <option value="area">Area Chart</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Data Points:</label>
+                                        <input type="number" class="form-control" id="data-points" value="5" min="3"
+                                            max="20">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Width:</label>
+                                        <input type="number" class="form-control" id="chart-width" value="400">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Height:</label>
+                                        <input type="number" class="form-control" id="chart-height" value="300">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="run-btn" id="create-chart">
+                                <i class="fas fa-chart-bar"></i> Create Chart
+                            </button>
+                        </div>
+                        <div id="chart-result" class="response-display" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Visualization -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-database"></i> Data Visualization</h3>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <!-- Data Points -->
+                        <div v-for="point in dataPoints" :key="point.id" class="data-point">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>{{ point.label }}</strong>: {{ point.value }}
+                                </div>
+                                <div style="font-size: 12px; color: #6c757d;">
+                                    Index: {{ point.index }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Control Buttons -->
+                        <div style="position: absolute; bottom: 20px; right: 20px;">
+                            <button class="run-btn" @click="refreshData" style="margin-right: 10px;">
+                                <i class="fas fa-sync"></i> Refresh Data
+                            </button>
+                            <button class="run-btn" @click="addDataPoint"
+                                style="background: linear-gradient(45deg, #28a745, #20c997);">
+                                <i class="fas fa-plus"></i> Add Data Point
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Builder -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tools"></i> Chart Builder</h3>
+                </div>
+                <div class="card-body">
+                    <div class="chart-builder">
+                        <h5>Build Custom Charts</h5>
+                        <div v-for="(chart, index) in customCharts" :key="index" class="builder-row">
+                            <div class="builder-header">
+                                <span class="builder-type">{{ chart.type }}: {{ chart.name }}</span>
+                                <button class="remove-builder" @click="removeCustomChart(index)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <pre style="font-size: 12px; margin: 10px 0;">{{ chart.code }}</pre>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Add Chart Type:</label>
+                            <select class="form-control" v-model="newChartType">
+                                <option value="">Select chart type...</option>
+                                <option value="Bar Chart">Bar Chart</option>
+                                <option value="Line Chart">Line Chart</option>
+                                <option value="Pie Chart">Pie Chart</option>
+                                <option value="Scatter Plot">Scatter Plot</option>
+                                <option value="Histogram">Histogram</option>
+                            </select>
+                        </div>
+
+                        <button class="add-builder-btn" @click="addCustomChart" :disabled="!newChartType">
+                            <i class="fas fa-plus"></i> Add Chart
+                        </button>
+
+                        <button class="run-btn" @click="generateChartCode" :disabled="customCharts.length === 0"
+                            style="margin-left: 10px;">
+                            <i class="fas fa-code"></i> Generate Code
+                        </button>
+
+                        <div class="code-editor">
+                            <strong>Generated D3.js Code:</strong><br>
+                            {{ generatedChartCode }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tachometer-alt"></i> D3.js Performance</h3>
+                </div>
+                <div class="card-body">
+                    <div class="performance-metrics">
+                        <div class="perf-metric-card">
+                            <div class="perf-metric-value">{{ performance.renderTime }}ms</div>
+                            <div class="perf-metric-label">Render Time</div>
+                        </div>
+                        <div class="perf-metric-card">
+                            <div class="perf-metric-value">{{ performance.dataPoints }}</div>
+                            <div class="perf-metric-label">Data Points</div>
+                        </div>
+                        <div class="perf-metric-card">
+                            <div class="perf-metric-value">{{ performance.animations }}</div>
+                            <div class="perf-metric-label">Active Animations</div>
+                        </div>
+                        <div class="perf-metric-card">
+                            <div class="perf-metric-value">{{ performance.memoryUsage }}MB</div>
+                            <div class="perf-metric-label">Memory Usage</div>
+                        </div>
+                    </div>
+
+                    <div class="execution-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">D3.js Version:</span>
+                            <span class="stat-value">v7.8.5</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">SVG Elements:</span>
+                            <span class="stat-value">{{ performance.svgElements }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Data Bindings:</span>
+                            <span class="stat-value">{{ performance.dataBindings }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Transitions:</span>
+                            <span class="stat-value">{{ performance.transitions }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Resources -->
+            <div class="demo-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-book"></i> Learn More</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Official Resources</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="https://d3js.org/" target="_blank"><i class="fas fa-external-link-alt"></i>
+                                        D3.js Official Site</a></li>
+                                <li><a href="https://github.com/d3/d3" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> D3.js GitHub</a></li>
+                                <li><a href="https://observablehq.com/@d3" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> D3 Observable</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Learning & Community</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="https://d3js.org/getting-started" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> Getting Started</a></li>
+                                <li><a href="https://www.d3-graph-gallery.com/" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> D3 Graph Gallery</a></li>
+                                <li><a href="https://bl.ocks.org/" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i> bl.ocks.org</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    dataPoints: [
+                        { id: 1, label: 'Data Point 1', value: 10, index: 0 },
+                        { id: 2, label: 'Data Point 2', value: 20, index: 1 },
+                        { id: 3, label: 'Data Point 3', value: 30, index: 2 },
+                        { id: 4, label: 'Data Point 4', value: 40, index: 3 },
+                        { id: 5, label: 'Data Point 5', value: 50, index: 4 }
+                    ],
+
+                    customCharts: [
+                        {
+                            type: 'Bar Chart',
+                            name: 'Simple Bar Chart',
+                            code: `const data = [10, 20, 30, 40, 50];\n\nconst svg = d3.select('#chart-container')\n  .append('svg')\n  .attr('width', 400)\n  .attr('height', 300);\n\nsvg.selectAll('rect')\n  .data(data)\n  .enter()\n  .append('rect')\n  .attr('x', (d, i) => i * 60 + 50)\n  .attr('y', d => 250 - d * 4)\n  .attr('width', 40)\n  .attr('height', d => d * 4)\n  .attr('fill', '#F7931E');`
+                        }
+                    ],
+                    newChartType: '',
+
+                    // Performance metrics
+                    performance: {
+                        renderTime: 45,
+                        dataPoints: 150,
+                        animations: 3,
+                        memoryUsage: 2.3,
+                        svgElements: 25,
+                        dataBindings: 12,
+                        transitions: 8
+                    }
+                }
+            },
+            computed: {
+                generatedChartCode() {
+                    if (this.customCharts.length === 0) return '// Add charts above to generate code';
+
+                    let code = '';
+
+                    this.customCharts.forEach((chart, index) => {
+                        code += `// ${chart.type}: ${chart.name}\n`;
+                        code += chart.code;
+                        if (index < this.customCharts.length - 1) {
+                            code += '\n\n---\n\n';
+                        }
+                    });
+
+                    return code;
+                }
+            },
+            methods: {
+                refreshData() {
+                    this.dataPoints.forEach(point => {
+                        point.value = Math.floor(Math.random() * 100) + 10;
+                    });
+                },
+
+                addDataPoint() {
+                    const newPoint = {
+                        id: Date.now(),
+                        label: `Data Point ${this.dataPoints.length + 1}`,
+                        value: Math.floor(Math.random() * 100) + 10,
+                        index: this.dataPoints.length
+                    };
+                    this.dataPoints.push(newPoint);
+                },
+
+                addCustomChart() {
+                    if (!this.newChartType) return;
+
+                    const templates = {
+                        'Bar Chart': {
+                            name: 'Custom Bar Chart',
+                            code: `const data = [15, 25, 35, 45, 55, 65];\n\nconst svg = d3.select('#chart-container')\n  .append('svg')\n  .attr('width', 500)\n  .attr('height', 350);\n\nconst xScale = d3.scaleBand()\n  .domain(data.map((d, i) => i))\n  .range([50, 450])\n  .padding(0.1);\n\nconst yScale = d3.scaleLinear()\n  .domain([0, d3.max(data)])\n  .range([300, 50]);\n\nsvg.selectAll('rect')\n  .data(data)\n  .enter()\n  .append('rect')\n  .attr('x', (d, i) => xScale(i))\n  .attr('y', d => yScale(d))\n  .attr('width', xScale.bandwidth())\n  .attr('height', d => 300 - yScale(d))\n  .attr('fill', '#F7931E')\n  .attr('opacity', 0.8);`
+                        },
+                        'Line Chart': {
+                            name: 'Custom Line Chart',
+                            code: `const data = [\n  {x: 0, y: 10}, {x: 1, y: 20}, {x: 2, y: 15},\n  {x: 3, y: 25}, {x: 4, y: 30}, {x: 5, y: 22}\n];\n\nconst svg = d3.select('#chart-container')\n  .append('svg')\n  .attr('width', 500)\n  .attr('height', 350);\n\nconst xScale = d3.scaleLinear()\n  .domain(d3.extent(data, d => d.x))\n  .range([50, 450]);\n\nconst yScale = d3.scaleLinear()\n  .domain([0, d3.max(data, d => d.y)])\n  .range([300, 50]);\n\nconst line = d3.line()\n  .x(d => xScale(d.x))\n  .y(d => yScale(d.y));\n\nsvg.append('path')\n  .datum(data)\n  .attr('fill', 'none')\n  .attr('stroke', '#F7931E')\n  .attr('stroke-width', 3)\n  .attr('d', line);`
+                        },
+                        'Pie Chart': {
+                            name: 'Custom Pie Chart',
+                            code: `const data = [30, 20, 25, 15, 10];\nconst colors = ['#F7931E', '#FF6B35', '#28a745', '#007bff', '#6c757d'];\n\nconst svg = d3.select('#chart-container')\n  .append('svg')\n  .attr('width', 400)\n  .attr('height', 400);\n\nconst pie = d3.pie();\nconst arc = d3.arc()\n  .innerRadius(0)\n  .outerRadius(150);\n\nconst arcs = svg.selectAll('arc')\n  .data(pie(data))\n  .enter()\n  .append('g')\n  .attr('transform', 'translate(200, 200)');\n\narcs.append('path')\n  .attr('fill', (d, i) => colors[i])\n  .attr('d', arc);`
+                        },
+                        'Scatter Plot': {
+                            name: 'Custom Scatter Plot',
+                            code: `const data = [\n  {x: 10, y: 20}, {x: 20, y: 35}, {x: 30, y: 25},\n  {x: 40, y: 45}, {x: 50, y: 30}, {x: 60, y: 50}\n];\n\nconst svg = d3.select('#chart-container')\n  .append('svg')\n  .attr('width', 500)\n  .attr('height', 350);\n\nconst xScale = d3.scaleLinear()\n  .domain([0, d3.max(data, d => d.x)])\n  .range([50, 450]);\n\nconst yScale = d3.scaleLinear()\n  .domain([0, d3.max(data, d => d.y)])\n  .range([300, 50]);\n\nsvg.selectAll('circle')\n  .data(data)\n  .enter()\n  .append('circle')\n  .attr('cx', d => xScale(d.x))\n  .attr('cy', d => yScale(d.y))\n  .attr('r', 6)\n  .attr('fill', '#F7931E')\n  .attr('opacity', 0.8);`
+                        },
+                        'Histogram': {
+                            name: 'Custom Histogram',
+                            code: `const data = [12, 19, 8, 15, 22, 18, 25, 14, 16, 20, 13, 17];\n\nconst svg = d3.select('#chart-container')\n  .append('svg')\n  .attr('width', 500)\n  .attr('height', 350);\n\nconst histogram = d3.histogram()\n  .value(d => d)\n  .domain(d3.extent(data))\n  .thresholds(8);\n\nconst bins = histogram(data);\n\nconst xScale = d3.scaleLinear()\n  .domain([d3.min(bins, d => d.x0), d3.max(bins, d => d.x1)])\n  .range([50, 450]);\n\nconst yScale = d3.scaleLinear()\n  .domain([0, d3.max(bins, d => d.length)])\n  .range([300, 50]);\n\nsvg.selectAll('rect')\n  .data(bins)\n  .enter()\n  .append('rect')\n  .attr('x', d => xScale(d.x0))\n  .attr('y', d => yScale(d.length))\n  .attr('width', d => xScale(d.x1) - xScale(d.x0) - 2)\n  .attr('height', d => 300 - yScale(d.length))\n  .attr('fill', '#F7931E')\n  .attr('opacity', 0.8);`
+                        }
+                    };
+
+                    const template = templates[this.newChartType];
+                    if (template) {
+                        this.customCharts.push({
+                            type: this.newChartType,
+                            name: template.name,
+                            code: template.code
+                        });
+                    }
+
+                    this.newChartType = '';
+                },
+
+                removeCustomChart(index) {
+                    this.customCharts.splice(index, 1);
+                },
+
+                async generateChartCode() {
+                    // The computed property handles the generation
+                    await this.delay(100);
+                },
+
+                delay(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+            },
+
+            mounted() {
+                // Initialize D3.js operations
+                this.initD3Operations();
+
+                // Simulate performance updates
+                setInterval(() => {
+                    this.performance.renderTime = Math.floor(Math.random() * 30 + 20);
+                    this.performance.dataPoints = Math.floor(Math.random() * 50 + 100);
+                    this.performance.animations = Math.floor(Math.random() * 5 + 1);
+                    this.performance.memoryUsage = (Math.random() * 1 + 2).toFixed(1);
+                    this.performance.svgElements = Math.floor(Math.random() * 20 + 20);
+                    this.performance.dataBindings = Math.floor(Math.random() * 10 + 10);
+                    this.performance.transitions = Math.floor(Math.random() * 5 + 5);
+                }, 3000);
+            },
+
+            methods: {
+                ...this.methods,
+                initD3Operations() {
+                    // Tab switching
+                    document.querySelectorAll('.operation-tab').forEach(tab => {
+                        tab.addEventListener('click', () => {
+                            document.querySelectorAll('.operation-tab').forEach(t => t.classList.remove('active'));
+                            document.querySelectorAll('[id$="-content"]').forEach(c => c.style.display = 'none');
+                            tab.classList.add('active');
+                            document.getElementById(tab.id.replace('tab-', '') + '-content').style.display = 'block';
+                        });
+                    });
+
+                    // Run D3 code
+                    document.getElementById('run-d3-code').addEventListener('click', () => {
+                        this.runD3Code();
+                    });
+
+                    // Clear chart
+                    document.getElementById('clear-chart').addEventListener('click', () => {
+                        d3.select('#chart-preview').selectAll('*').remove();
+                        document.getElementById('d3-output').style.display = 'none';
+                    });
+
+                    // Load template
+                    document.getElementById('load-template').addEventListener('click', () => {
+                        this.loadD3Template();
+                    });
+
+                    // Create selection
+                    document.getElementById('create-selection').addEventListener('click', () => {
+                        this.createD3Selection();
+                    });
+
+                    // Create scale
+                    document.getElementById('create-scale').addEventListener('click', () => {
+                        this.createD3Scale();
+                    });
+
+                    // Start animation
+                    document.getElementById('start-animation').addEventListener('click', () => {
+                        this.startD3Animation();
+                    });
+
+                    // Create chart
+                    document.getElementById('create-chart').addEventListener('click', () => {
+                        this.createD3Chart();
+                    });
+                },
+
+                runD3Code() {
+                    const code = document.getElementById('d3-code-editor').value;
+                    const output = document.getElementById('d3-output');
+
+                    try {
+                        // Clear previous chart
+                        d3.select('#chart-preview').selectAll('*').remove();
+
+                        // Execute D3 code
+                        const executeCode = new Function('d3', 'document', code);
+                        executeCode(d3, document);
+
+                        output.textContent = 'D3.js code executed successfully!\n\nChart rendered in preview area.';
+                        output.style.display = 'block';
+
+                    } catch (error) {
+                        output.textContent = 'Error executing D3.js code:\n\n' + error.message;
+                        output.style.display = 'block';
+                    }
+                },
+
+                loadD3Template() {
+                    const template = `// D3.js Interactive Scatter Plot
+const data = Array.from({length: 20}, () => ({
+  x: Math.random() * 400 + 50,
+  y: Math.random() * 200 + 50,
+  size: Math.random() * 20 + 5
+}));
+
+const svg = d3.select('#chart-preview')
+  .append('svg')
+  .attr('width', 500)
+  .attr('height', 300);
+
+// Add circles
+svg.selectAll('circle')
+  .data(data)
+  .enter()
+  .append('circle')
+  .attr('cx', d => d.x)
+  .attr('cy', d => d.y)
+  .attr('r', d => d.size)
+  .attr('fill', '#F7931E')
+  .attr('opacity', 0.7)
+  .on('mouseover', function() {
+    d3.select(this)
+      .transition()
+      .duration(200)
+      .attr('r', d => d.size * 1.5)
+      .attr('opacity', 1);
+  })
+  .on('mouseout', function() {
+    d3.select(this)
+      .transition()
+      .duration(200)
+      .attr('r', d => d.size)
+      .attr('opacity', 0.7);
+  });
+
+// Add axes
+const xScale = d3.scaleLinear().domain([0, 500]).range([0, 500]);
+const yScale = d3.scaleLinear().domain([0, 300]).range([300, 0]);
+
+const xAxis = d3.axisBottom(xScale);
+const yAxis = d3.axisLeft(yScale);
+
+svg.append('g')
+  .attr('transform', 'translate(0, 280)')
+  .call(xAxis);
+
+svg.append('g')
+  .attr('transform', 'translate(40, 0)')
+  .call(yAxis);`;
+
+                    document.getElementById('d3-code-editor').value = template;
+                },
+
+                createD3Selection() {
+                    const dataInput = document.getElementById('selection-data').value;
+                    const elementType = document.getElementById('element-type').value;
+                    const fillColor = document.getElementById('fill-color').value;
+                    const duration = parseInt(document.getElementById('animation-duration').value);
+
+                    try {
+                        const data = JSON.parse(dataInput);
+
+                        // Clear previous chart
+                        d3.select('#chart-preview').selectAll('*').remove();
+
+                        const svg = d3.select('#chart-preview')
+                            .append('svg')
+                            .attr('width', 500)
+                            .attr('height', 300);
+
+                        const selection = svg.selectAll(elementType)
+                            .data(data)
+                            .enter()
+                            .append(elementType);
+
+                        if (elementType === 'rect') {
+                            selection
+                                .attr('x', (d, i) => i * 60 + 50)
+                                .attr('y', 250)
+                                .attr('width', 40)
+                                .attr('height', 0)
+                                .attr('fill', fillColor)
+                                .transition()
+                                .duration(duration)
+                                .attr('y', d => 250 - d * 3)
+                                .attr('height', d => d * 3);
+                        } else if (elementType === 'circle') {
+                            selection
+                                .attr('cx', (d, i) => i * 60 + 70)
+                                .attr('cy', 150)
+                                .attr('r', 0)
+                                .attr('fill', fillColor)
+                                .transition()
+                                .duration(duration)
+                                .attr('r', d => d / 2);
+                        } else if (elementType === 'text') {
+                            selection
+                                .attr('x', (d, i) => i * 60 + 70)
+                                .attr('y', 150)
+                                .attr('text-anchor', 'middle')
+                                .attr('fill', fillColor)
+                                .attr('opacity', 0)
+                                .text(d => d)
+                                .transition()
+                                .duration(duration)
+                                .attr('opacity', 1);
+                        }
+
+                        const result = document.getElementById('selection-result');
+                        result.innerHTML = `<h5>Selection Created Successfully</h5><p>Data bound to ${elementType} elements with ${duration}ms animation.</p>`;
+                        result.style.display = 'block';
+
+                    } catch (error) {
+                        const result = document.getElementById('selection-result');
+                        result.innerHTML = `<h5>Error</h5><p>${error.message}</p>`;
+                        result.style.display = 'block';
+                    }
+                },
+
+                createD3Scale() {
+                    const scaleType = document.getElementById('scale-type').value;
+                    const domainInput = document.getElementById('scale-domain').value;
+                    const rangeInput = document.getElementById('scale-range').value;
+                    const includeAxis = document.getElementById('include-axis').checked;
+
+                    try {
+                        const domain = domainInput.split(',').map(d => parseFloat(d.trim()));
+                        const range = rangeInput.split(',').map(r => parseFloat(r.trim()));
+
+                        // Clear previous chart
+                        d3.select('#chart-preview').selectAll('*').remove();
+
+                        const svg = d3.select('#chart-preview')
+                            .append('svg')
+                            .attr('width', 500)
+                            .attr('height', 350);
+
+                        let scale;
+                        if (scaleType === 'linear') {
+                            scale = d3.scaleLinear().domain(domain).range(range);
+                        } else if (scaleType === 'band') {
+                            scale = d3.scaleBand().domain(domain.map((d, i) => i)).range(range).padding(0.1);
+                        } else if (scaleType === 'time') {
+                            scale = d3.scaleTime().domain(domain.map(d => new Date(d))).range(range);
+                        } else if (scaleType === 'log') {
+                            scale = d3.scaleLog().domain(domain).range(range);
+                        }
+
+                        // Create sample data and visualization
+                        const sampleData = Array.from({ length: 10 }, (_, i) => i * 10);
+
+                        if (scaleType === 'band') {
+                            svg.selectAll('rect')
+                                .data(sampleData)
+                                .enter()
+                                .append('rect')
+                                .attr('x', (d, i) => scale(i))
+                                .attr('y', 300)
+                                .attr('width', scale.bandwidth())
+                                .attr('height', 0)
+                                .attr('fill', '#F7931E')
+                                .transition()
+                                .duration(1000)
+                                .attr('y', d => 300 - d * 2)
+                                .attr('height', d => d * 2);
+                        } else {
+                            svg.selectAll('circle')
+                                .data(sampleData)
+                                .enter()
+                                .append('circle')
+                                .attr('cx', (d, i) => scale(d))
+                                .attr('cy', 150)
+                                .attr('r', 0)
+                                .attr('fill', '#F7931E')
+                                .transition()
+                                .duration(1000)
+                                .attr('r', d => d / 5);
+                        }
+
+                        if (includeAxis) {
+                            const xAxis = d3.axisBottom(scale);
+                            svg.append('g')
+                                .attr('transform', 'translate(0, 320)')
+                                .call(xAxis);
+                        }
+
+                        const result = document.getElementById('scale-result');
+                        result.innerHTML = `<h5>Scale Created Successfully</h5><p>${scaleType} scale with domain [${domain}] and range [${range}]. ${includeAxis ? 'Axis included.' : ''}</p>`;
+                        result.style.display = 'block';
+
+                    } catch (error) {
+                        const result = document.getElementById('scale-result');
+                        result.innerHTML = `<h5>Error</h5><p>${error.message}</p>`;
+                        result.style.display = 'block';
+                    }
+                },
+
+                startD3Animation() {
+                    const animationType = document.getElementById('animation-type').value;
+                    const duration = parseInt(document.getElementById('anim-duration').value);
+                    const easing = document.getElementById('easing-type').value;
+
+                    // Clear previous chart
+                    d3.select('#chart-preview').selectAll('*').remove();
+
+                    const svg = d3.select('#chart-preview')
+                        .append('svg')
+                        .attr('width', 500)
+                        .attr('height', 300);
+
+                    // Create sample elements
+                    const elements = svg.selectAll('rect')
+                        .data([1, 2, 3, 4, 5])
+                        .enter()
+                        .append('rect')
+                        .attr('x', (d, i) => i * 80 + 50)
+                        .attr('y', 150)
+                        .attr('width', 40)
+                        .attr('height', 40)
+                        .attr('fill', '#F7931E')
+                        .attr('opacity', 1);
+
+                    // Apply animation based on type
+                    let transition = elements.transition().duration(duration);
+
+                    if (easing !== 'easeLinear') {
+                        transition = transition.ease(d3[easing]);
+                    }
+
+                    switch (animationType) {
+                        case 'fade':
+                            transition
+                                .attr('opacity', 0.2)
+                                .transition()
+                                .duration(duration)
+                                .attr('opacity', 1);
+                            break;
+                        case 'grow':
+                            transition
+                                .attr('width', 80)
+                                .attr('height', 80)
+                                .attr('x', (d, i) => i * 80 + 30)
+                                .attr('y', 130)
+                                .transition()
+                                .duration(duration)
+                                .attr('width', 40)
+                                .attr('height', 40)
+                                .attr('x', (d, i) => i * 80 + 50)
+                                .attr('y', 150);
+                            break;
+                        case 'move':
+                            transition
+                                .attr('x', (d, i) => i * 80 + 150)
+                                .transition()
+                                .duration(duration)
+                                .attr('x', (d, i) => i * 80 + 50);
+                            break;
+                        case 'color':
+                            transition
+                                .attr('fill', '#FF6B35')
+                                .transition()
+                                .duration(duration)
+                                .attr('fill', '#F7931E');
+                            break;
+                    }
+
+                    const result = document.getElementById('animation-result');
+                    result.innerHTML = `<h5>Animation Started</h5><p>${animationType} animation with ${duration}ms duration and ${easing} easing.</p>`;
+                    result.style.display = 'block';
+                },
+
+                createD3Chart() {
+                    const chartType = document.getElementById('chart-type').value;
+                    const dataPoints = parseInt(document.getElementById('data-points').value);
+                    const width = parseInt(document.getElementById('chart-width').value);
+                    const height = parseInt(document.getElementById('chart-height').value);
+
+                    // Clear previous chart
+                    d3.select('#chart-preview').selectAll('*').remove();
+
+                    const svg = d3.select('#chart-preview')
+                        .append('svg')
+                        .attr('width', width)
+                        .attr('height', height);
+
+                    // Generate sample data
+                    const data = Array.from({ length: dataPoints }, () => Math.floor(Math.random() * 100) + 10);
+
+                    switch (chartType) {
+                        case 'bar':
+                            const xScale = d3.scaleBand()
+                                .domain(data.map((d, i) => i))
+                                .range([50, width - 50])
+                                .padding(0.1);
+
+                            const yScale = d3.scaleLinear()
+                                .domain([0, d3.max(data)])
+                                .range([height - 50, 50]);
+
+                            svg.selectAll('rect')
+                                .data(data)
+                                .enter()
+                                .append('rect')
+                                .attr('x', (d, i) => xScale(i))
+                                .attr('y', height - 50)
+                                .attr('width', xScale.bandwidth())
+                                .attr('height', 0)
+                                .attr('fill', '#F7931E')
+                                .transition()
+                                .duration(1000)
+                                .attr('y', d => yScale(d))
+                                .attr('height', d => height - 50 - yScale(d));
+                            break;
+
+                        case 'line':
+                            const lineData = data.map((d, i) => ({ x: i, y: d }));
+                            const lineXScale = d3.scaleLinear()
+                                .domain([0, dataPoints - 1])
+                                .range([50, width - 50]);
+
+                            const lineYScale = d3.scaleLinear()
+                                .domain([0, d3.max(data)])
+                                .range([height - 50, 50]);
+
+                            const line = d3.line()
+                                .x(d => lineXScale(d.x))
+                                .y(d => lineYScale(d.y));
+
+                            const path = svg.append('path')
+                                .datum(lineData)
+                                .attr('fill', 'none')
+                                .attr('stroke', '#F7931E')
+                                .attr('stroke-width', 3)
+                                .attr('d', line);
+
+                            // Animate line drawing
+                            const pathLength = path.node().getTotalLength();
+                            path
+                                .attr('stroke-dasharray', pathLength)
+                                .attr('stroke-dashoffset', pathLength)
+                                .transition()
+                                .duration(2000)
+                                .attr('stroke-dashoffset', 0);
+                            break;
+
+                        case 'pie':
+                            const pie = d3.pie();
+                            const arc = d3.arc()
+                                .innerRadius(0)
+                                .outerRadius(Math.min(width, height) / 3);
+
+                            const colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+                            const arcs = svg.selectAll('arc')
+                                .data(pie(data))
+                                .enter()
+                                .append('g')
+                                .attr('transform', `translate(${width / 2}, ${height / 2})`);
+
+                            arcs.append('path')
+                                .attr('fill', (d, i) => colors(i))
+                                .attr('d', arc)
+                                .attr('opacity', 0)
+                                .transition()
+                                .delay((d, i) => i * 200)
+                                .duration(500)
+                                .attr('opacity', 1);
+                            break;
+
+                        case 'scatter':
+                            const scatterData = data.map((d, i) => ({ x: i * (width / dataPoints), y: d }));
+                            const scatterXScale = d3.scaleLinear()
+                                .domain([0, dataPoints - 1])
+                                .range([50, width - 50]);
+
+                            const scatterYScale = d3.scaleLinear()
+                                .domain([0, d3.max(data)])
+                                .range([height - 50, 50]);
+
+                            svg.selectAll('circle')
+                                .data(scatterData)
+                                .enter()
+                                .append('circle')
+                                .attr('cx', d => scatterXScale(d.x / (width / dataPoints)))
+                                .attr('cy', height - 50)
+                                .attr('r', 0)
+                                .attr('fill', '#F7931E')
+                                .attr('opacity', 0.7)
+                                .transition()
+                                .delay((d, i) => i * 100)
+                                .duration(500)
+                                .attr('cy', d => scatterYScale(d.y))
+                                .attr('r', 6);
+                            break;
+
+                        case 'area':
+                            const areaData = data.map((d, i) => ({ x: i, y: d }));
+                            const areaXScale = d3.scaleLinear()
+                                .domain([0, dataPoints - 1])
+                                .range([50, width - 50]);
+
+                            const areaYScale = d3.scaleLinear()
+                                .domain([0, d3.max(data)])
+                                .range([height - 50, 50]);
+
+                            const area = d3.area()
+                                .x(d => areaXScale(d.x))
+                                .y0(height - 50)
+                                .y1(d => areaYScale(d.y));
+
+                            svg.append('path')
+                                .datum(areaData)
+                                .attr('fill', '#F7931E')
+                                .attr('fill-opacity', 0.3)
+                                .attr('stroke', '#F7931E')
+                                .attr('stroke-width', 2)
+                                .attr('d', area)
+                                .attr('opacity', 0)
+                                .transition()
+                                .duration(1500)
+                                .attr('opacity', 1);
+                            break;
+                    }
+
+                    const result = document.getElementById('chart-result');
+                    result.innerHTML = `<h5>${chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart Created</h5><p>Chart with ${dataPoints} data points, ${width}x${height} dimensions.</p>`;
+                    result.style.display = 'block';
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>

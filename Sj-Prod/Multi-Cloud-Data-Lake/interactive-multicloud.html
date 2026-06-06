@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Cloud Data Lake - Interactive Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --aws-color: #FF9900;
+            --azure-color: #0078D4;
+            --gcp-color: #4285f4;
+            --databricks-color: #FF3621;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .cloud-card {
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .aws-card { background: var(--aws-color); }
+        .azure-card { background: var(--azure-color); }
+        .gcp-card { background: var(--gcp-color); }
+        .databricks-card { background: var(--databricks-color); }
+
+        .data-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+
+            return (
+                <div className="demo-container">
+                    <div className="header">
+                        <h1><i className="fas fa-cloud"></i> Multi-Cloud Data Lake</h1>
+                        <p>AWS + Azure + GCP Unified Architecture</p>
+                    </div>
+
+                    <ul className="nav nav-tabs justify-content-center mb-4">
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('overview')}>
+                                Overview
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className={`nav-link ${activeTab === 'architecture' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('architecture')}>
+                                Architecture
+                            </button>
+                        </li>
+                    </ul>
+
+                    {activeTab === 'overview' && (
+                        <div className="demo-card">
+                            <div className="card-header" style={{background: 'linear-gradient(45deg, #667eea, #764ba2)', color: 'white', padding: '20px'}}>
+                                <h3><i className="fas fa-info-circle"></i> Multi-Cloud Overview</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="data-flow">
+                                    <div className="cloud-card aws-card">
+                                        <i className="fab fa-aws fa-3x mb-2"></i>
+                                        <h5>AWS S3</h5>
+                                        <p>Data Lake Storage</p>
+                                    </div>
+                                    <i className="fas fa-arrow-right fa-2x"></i>
+                                    <div className="cloud-card azure-card">
+                                        <i className="fab fa-microsoft fa-3x mb-2"></i>
+                                        <h5>Azure ADLS</h5>
+                                        <p>Data Lake Storage</p>
+                                    </div>
+                                    <i className="fas fa-arrow-right fa-2x"></i>
+                                    <div className="cloud-card gcp-card">
+                                        <i className="fab fa-google fa-3x mb-2"></i>
+                                        <h5>GCP Storage</h5>
+                                        <p>Data Lake Storage</p>
+                                    </div>
+                                    <i className="fas fa-arrow-down fa-2x"></i>
+                                    <div className="cloud-card databricks-card">
+                                        <i className="fas fa-database fa-3x mb-2"></i>
+                                        <h5>Databricks</h5>
+                                        <p>Unified Processing</p>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4">
+                                    <h5>Key Benefits:</h5>
+                                    <ul>
+                                        <li>✅ Avoid vendor lock-in</li>
+                                        <li>✅ Use best services from each cloud</li>
+                                        <li>✅ Unified processing with Databricks</li>
+                                        <li>✅ Cost optimization across clouds</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'architecture' && (
+                        <div className="demo-card">
+                            <div className="card-header" style={{background: 'linear-gradient(45deg, #667eea, #764ba2)', color: 'white', padding: '20px'}}>
+                                <h3><i className="fas fa-sitemap"></i> Architecture</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="row">
+                                    <div className="col-md-4">
+                                        <div className="cloud-card aws-card">
+                                            <h5>AWS Services</h5>
+                                            <ul className="text-start">
+                                                <li>S3 - Storage</li>
+                                                <li>Glue - ETL</li>
+                                                <li>EMR - Spark</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className="cloud-card azure-card">
+                                            <h5>Azure Services</h5>
+                                            <ul className="text-start">
+                                                <li>ADLS - Storage</li>
+                                                <li>ADF - ETL</li>
+                                                <li>Synapse - Analytics</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className="cloud-card gcp-card">
+                                            <h5>GCP Services</h5>
+                                            <ul className="text-start">
+                                                <li>Cloud Storage</li>
+                                                <li>BigQuery - Analytics</li>
+                                                <li>Dataflow - Processing</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 text-center">
+                                    <div className="cloud-card databricks-card">
+                                        <h5>Databricks - Unified Processing</h5>
+                                        <p>Processes data from all three clouds in one platform</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+</html>
+

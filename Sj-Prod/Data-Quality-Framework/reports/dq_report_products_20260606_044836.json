@@ -1,0 +1,579 @@
+{
+  "metadata": {
+    "generated_at": "2026-06-06T04:48:36.002124Z",
+    "framework_version": "1.0.0",
+    "dataset_name": "products",
+    "framework": "Enterprise Data Quality Framework \u2014 POC-09"
+  },
+  "scorecard": {
+    "dataset_name": "products",
+    "scored_at": "2026-06-06T04:48:36.002076Z",
+    "overall_score": 98.8,
+    "overall_grade": "A",
+    "grade_description": "Excellent \u2014 data is production-ready",
+    "total_rules": 7,
+    "passed_rules": 4,
+    "failed_rules": 3,
+    "row_count": 100,
+    "critical_issues": [
+      "product_code_unique (product_code): Column 'product_code' uniqueness: 96 distinct values in 100 non-null rows (uniqueness rate: 96.0%). ",
+      "product_name_not_null (product_name): Column 'product_name' has 3 null/empty values out of 100 rows (97.0% complete).",
+      "price_positive (price): Column 'price' range [0.01, +inf]: 4 of 100 rows fail (96.0% pass)."
+    ],
+    "dimensions": {
+      "completeness": {
+        "dimension": "completeness",
+        "weight": 0.3,
+        "rule_count": 3,
+        "score": 99.0,
+        "weighted_contribution": 29.7,
+        "passed_rules": 2,
+        "failed_rules": 1,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "product_name_not_null"
+        ]
+      },
+      "validity": {
+        "dimension": "validity",
+        "weight": 0.25,
+        "rule_count": 2,
+        "score": 98.0,
+        "weighted_contribution": 24.5,
+        "passed_rules": 1,
+        "failed_rules": 1,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "price_positive"
+        ]
+      },
+      "uniqueness": {
+        "dimension": "uniqueness",
+        "weight": 0.2,
+        "rule_count": 2,
+        "score": 98.0,
+        "weighted_contribution": 19.6,
+        "passed_rules": 1,
+        "failed_rules": 1,
+        "grade": "A",
+        "grade_description": "Excellent \u2014 data is production-ready",
+        "failing_rules": [
+          "product_code_unique"
+        ]
+      },
+      "consistency": {
+        "dimension": "consistency",
+        "weight": 0.15,
+        "rule_count": 0,
+        "score": 100.0,
+        "weighted_contribution": 15.0,
+        "passed_rules": 0,
+        "failed_rules": 0,
+        "grade": "A",
+        "grade_description": "No rules configured",
+        "failing_rules": []
+      },
+      "freshness": {
+        "dimension": "freshness",
+        "weight": 0.1,
+        "rule_count": 0,
+        "score": 100.0,
+        "weighted_contribution": 10.0,
+        "passed_rules": 0,
+        "failed_rules": 0,
+        "grade": "A",
+        "grade_description": "No rules configured",
+        "failing_rules": []
+      }
+    }
+  },
+  "profile": {
+    "dataset_name": "products",
+    "profiled_at": "2026-06-06T04:48:35.997646Z",
+    "row_count": 100,
+    "column_count": 7,
+    "duplicate_rows": 0,
+    "duplicate_rate": 0.0,
+    "columns": [
+      {
+        "column": "product_code",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 100,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 96,
+        "distinct_rate": 0.96,
+        "min_value": 8,
+        "max_value": 8,
+        "mean_value": 8.0,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "PROD0070",
+            "count": 2
+          },
+          {
+            "value": "PROD0053",
+            "count": 2
+          },
+          {
+            "value": "PROD0067",
+            "count": 2
+          },
+          {
+            "value": "PROD0090",
+            "count": 2
+          },
+          {
+            "value": "PROD0001",
+            "count": 1
+          }
+        ],
+        "sample_values": [
+          "PROD0084",
+          "PROD0054",
+          "PROD0071",
+          "PROD0046",
+          "PROD0045"
+        ]
+      },
+      {
+        "column": "product_name",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 100,
+        "null_count": 3,
+        "null_rate": 0.03,
+        "distinct_count": 97,
+        "distinct_rate": 1.0,
+        "min_value": 11,
+        "max_value": 19,
+        "mean_value": 15.48,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "Standard Device 488",
+            "count": 1
+          },
+          {
+            "value": "Lite Widget 134",
+            "count": 1
+          },
+          {
+            "value": "Standard Gadget 887",
+            "count": 1
+          },
+          {
+            "value": "Classic Kit 965",
+            "count": 1
+          },
+          {
+            "value": "Ultra Tool 612",
+            "count": 1
+          }
+        ],
+        "sample_values": [
+          "Pro Widget 670",
+          "Basic Widget 425",
+          "Basic Widget 978",
+          "Pro Widget 290",
+          "Ultra Device 697"
+        ]
+      },
+      {
+        "column": "category",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 100,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 6,
+        "distinct_rate": 0.06,
+        "min_value": 4,
+        "max_value": 11,
+        "mean_value": 6.04,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "Food",
+            "count": 22
+          },
+          {
+            "value": "Books",
+            "count": 18
+          },
+          {
+            "value": "Home",
+            "count": 17
+          },
+          {
+            "value": "Clothing",
+            "count": 15
+          },
+          {
+            "value": "Electronics",
+            "count": 14
+          }
+        ],
+        "sample_values": [
+          "Sports",
+          "Clothing",
+          "Home",
+          "Food",
+          "Food"
+        ]
+      },
+      {
+        "column": "price",
+        "dtype": "float64",
+        "inferred_type": "numeric",
+        "total_count": 100,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 100,
+        "distinct_rate": 1.0,
+        "min_value": -46.12,
+        "max_value": 999.97,
+        "mean_value": 518.3659,
+        "std_dev": 277.3125,
+        "median_value": 541.06,
+        "top_values": [
+          {
+            "value": "569.11",
+            "count": 1
+          },
+          {
+            "value": "669.45",
+            "count": 1
+          },
+          {
+            "value": "858.58",
+            "count": 1
+          },
+          {
+            "value": "821.78",
+            "count": 1
+          },
+          {
+            "value": "738.17",
+            "count": 1
+          }
+        ],
+        "sample_values": [
+          "578.35",
+          "769.74",
+          "669.13",
+          "328.22",
+          "305.95"
+        ]
+      },
+      {
+        "column": "stock_quantity",
+        "dtype": "float64",
+        "inferred_type": "numeric",
+        "total_count": 100,
+        "null_count": 5,
+        "null_rate": 0.05,
+        "distinct_count": 84,
+        "distinct_rate": 0.8842,
+        "min_value": 7.0,
+        "max_value": 986.0,
+        "mean_value": 516.4105,
+        "std_dev": 280.4901,
+        "median_value": 512.0,
+        "top_values": [
+          {
+            "value": "290.0",
+            "count": 3
+          },
+          {
+            "value": "714.0",
+            "count": 2
+          },
+          {
+            "value": "466.0",
+            "count": 2
+          },
+          {
+            "value": "179.0",
+            "count": 2
+          },
+          {
+            "value": "227.0",
+            "count": 2
+          }
+        ],
+        "sample_values": [
+          "763.0",
+          "830.0",
+          "714.0",
+          "467.0",
+          "793.0"
+        ]
+      },
+      {
+        "column": "sku",
+        "dtype": "object",
+        "inferred_type": "text",
+        "total_count": 100,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 100,
+        "distinct_rate": 1.0,
+        "min_value": 10,
+        "max_value": 10,
+        "mean_value": 10.0,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "9YNOYLC4WE",
+            "count": 1
+          },
+          {
+            "value": "YATBRAEUQI",
+            "count": 1
+          },
+          {
+            "value": "6UPFAPM16U",
+            "count": 1
+          },
+          {
+            "value": "1D32RUG1ZS",
+            "count": 1
+          },
+          {
+            "value": "56QGPY2C6F",
+            "count": 1
+          }
+        ],
+        "sample_values": [
+          "8MP34XELTT",
+          "PGIJ8XPVQW",
+          "AW1BXHEA9U",
+          "9IZ23ABDUH",
+          "56WVECH6TZ"
+        ]
+      },
+      {
+        "column": "in_stock",
+        "dtype": "bool",
+        "inferred_type": "boolean",
+        "total_count": 100,
+        "null_count": 0,
+        "null_rate": 0.0,
+        "distinct_count": 2,
+        "distinct_rate": 0.02,
+        "min_value": null,
+        "max_value": null,
+        "mean_value": null,
+        "std_dev": null,
+        "median_value": null,
+        "top_values": [
+          {
+            "value": "True",
+            "count": 95
+          },
+          {
+            "value": "False",
+            "count": 5
+          }
+        ],
+        "sample_values": [
+          "False",
+          "True",
+          "True",
+          "True",
+          "True"
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "dataset_name": "products",
+    "validated_at": "2026-06-06T04:48:36.001083Z",
+    "row_count": 100,
+    "total_rules": 7,
+    "passed_rules": 4,
+    "failed_rules": 3,
+    "error_rules": 0,
+    "overall_passed": false,
+    "summary_by_dimension": {
+      "completeness": {
+        "total_rules": 3,
+        "passed": 2,
+        "failed": 1,
+        "avg_score": 0.99
+      },
+      "validity": {
+        "total_rules": 2,
+        "passed": 1,
+        "failed": 1,
+        "avg_score": 0.98
+      },
+      "uniqueness": {
+        "total_rules": 2,
+        "passed": 1,
+        "failed": 1,
+        "avg_score": 0.98
+      },
+      "consistency": {
+        "total_rules": 0,
+        "passed": 0,
+        "failed": 0,
+        "avg_score": null
+      },
+      "freshness": {
+        "total_rules": 0,
+        "passed": 0,
+        "failed": 0,
+        "avg_score": null
+      }
+    },
+    "rule_results": [
+      {
+        "rule_name": "product_code_not_null",
+        "column": "product_code",
+        "dimension": "completeness",
+        "severity": "error",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 0,
+        "total_count": 100,
+        "pass_rate": 1.0,
+        "details": "Column 'product_code' has 0 null/empty values out of 100 rows (100.0% complete).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "product_code_unique",
+        "column": "product_code",
+        "dimension": "uniqueness",
+        "severity": "error",
+        "passed": false,
+        "score": 0.96,
+        "failing_count": 4,
+        "total_count": 100,
+        "pass_rate": 0.96,
+        "details": "Column 'product_code' uniqueness: 96 distinct values in 100 non-null rows (uniqueness rate: 96.0%). 4 duplicate rows found.",
+        "failing_values": [
+          "PROD0053",
+          "PROD0067",
+          "PROD0070",
+          "PROD0090"
+        ]
+      },
+      {
+        "rule_name": "product_name_not_null",
+        "column": "product_name",
+        "dimension": "completeness",
+        "severity": "error",
+        "passed": false,
+        "score": 0.97,
+        "failing_count": 3,
+        "total_count": 100,
+        "pass_rate": 0.97,
+        "details": "Column 'product_name' has 3 null/empty values out of 100 rows (97.0% complete).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "price_positive",
+        "column": "price",
+        "dimension": "validity",
+        "severity": "error",
+        "passed": false,
+        "score": 0.96,
+        "failing_count": 4,
+        "total_count": 100,
+        "pass_rate": 0.96,
+        "details": "Column 'price' range [0.01, +inf]: 4 of 100 rows fail (96.0% pass).",
+        "failing_values": [
+          "-1.57",
+          "-16.99",
+          "-46.12",
+          "-11.52"
+        ]
+      },
+      {
+        "rule_name": "category_allowed",
+        "column": "category",
+        "dimension": "validity",
+        "severity": "error",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 0,
+        "total_count": 100,
+        "pass_rate": 1.0,
+        "details": "Column 'category' allowed values ['Books', 'Clothing', 'Electronics', 'Food', 'Home', 'Sports']: 0 of 100 rows fail (100.0% pass).",
+        "failing_values": []
+      },
+      {
+        "rule_name": "stock_completeness",
+        "column": "stock_quantity",
+        "dimension": "completeness",
+        "severity": "warning",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 5,
+        "total_count": 100,
+        "pass_rate": 0.95,
+        "details": "Column 'stock_quantity' null rate is 5.00% (threshold: 10.0%). PASSED \u2014 5 nulls in 100 rows.",
+        "failing_values": []
+      },
+      {
+        "rule_name": "sku_mostly_unique",
+        "column": "sku",
+        "dimension": "uniqueness",
+        "severity": "warning",
+        "passed": true,
+        "score": 1.0,
+        "failing_count": 0,
+        "total_count": 100,
+        "pass_rate": 1.0,
+        "details": "Column 'sku' uniqueness ratio: 100.0% (threshold: 98.0%). 100 distinct / 100 non-null. PASSED.",
+        "failing_values": []
+      }
+    ]
+  },
+  "alerts": [
+    {
+      "alert_id": "ALERT-0002",
+      "severity": "error",
+      "dimension": "uniqueness",
+      "rule_name": "product_code_unique",
+      "column": "product_code",
+      "message": "4 of 100 rows fail rule 'product_code_unique' (pass rate: 96.0%)",
+      "failing_count": 4,
+      "total_count": 100
+    },
+    {
+      "alert_id": "ALERT-0003",
+      "severity": "error",
+      "dimension": "completeness",
+      "rule_name": "product_name_not_null",
+      "column": "product_name",
+      "message": "3 of 100 rows fail rule 'product_name_not_null' (pass rate: 97.0%)",
+      "failing_count": 3,
+      "total_count": 100
+    },
+    {
+      "alert_id": "ALERT-0004",
+      "severity": "error",
+      "dimension": "validity",
+      "rule_name": "price_positive",
+      "column": "price",
+      "message": "4 of 100 rows fail rule 'price_positive' (pass rate: 96.0%)",
+      "failing_count": 4,
+      "total_count": 100
+    }
+  ],
+  "recommendations": [
+    "Column 'product_code' has 4 duplicate values. Add DISTINCT or dedup step in ETL. Investigate upstream system for duplicate record generation.",
+    "Column 'product_name' has 3.0% null values. Consider: (1) add NOT NULL constraint at source, (2) impute with domain-appropriate default, (3) review if field is truly required."
+  ]
+}
